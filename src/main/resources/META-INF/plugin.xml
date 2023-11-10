@@ -1,0 +1,73 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>org.plugin.plugin</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Plugin</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="ameer.anqawe@gmail.com" url="https://www.yourcompany.com">testCompany</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description>This is a gamified plugin using gamekins</description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+   <!-- <depends>com.intellij.modules.coverage</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.java</depends>-->
+
+
+    <actions resource-bundle="messages.BasicActionsBundle">
+
+        <action
+                id="testC"
+                class="org.plugin.plugin.Action"
+                text="Gamekins"
+                description="Run Gamekins plugin"
+                icon="AllIcons.Actions.AddList">
+
+            <add-to-group
+                    group-id="ToolsMenu"
+                    anchor="first"
+            />
+
+            <!--
+            The second <override-text> element uses the alternate attribute
+            "use-text-of-place" to define a location (EditorPopup) to use the
+            same text as is used in MainMenu. It is a way to specify the use
+            of an alternate menu text in multiple discrete menu groups.
+            -->
+            <override-text place="MainMenu" text="Gamekins"/>
+            <override-text place="EditorPopup" use-text-of-place="MainMenu"/>
+
+            <synonym text="GC"/>
+            <keyboard-shortcut
+                    keymap="$default"
+                    first-keystroke="control G"/>
+
+            <keyboard-shortcut
+                    keymap="Mac OS X"
+                    first-keystroke="control G"
+                    remove="true"/>
+
+            <keyboard-shortcut
+                    keymap="Mac OS X 10.5+"
+                    first-keystroke="control G"
+                    replace-all="true"/>
+        </action>
+    </actions>
+
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+
+    </extensions>
+
+</idea-plugin>
