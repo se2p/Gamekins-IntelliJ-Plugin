@@ -1,15 +1,13 @@
-package org.plugin.plugin
+package org.plugin.plugin.panels
 
-
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.JBColor
 import com.intellij.ui.util.maximumHeight
-import org.plugin.plugin.panels.*
-
 import java.awt.*
 import javax.swing.*
+import javax.swing.border.LineBorder
 
-class GamekinsDialog(project: Project?) : DialogWrapper(project) {
+
+class MainPanel: JPanel() {
 
     private val lLeaderboardButton = JButton("Leaderboard")
     private val lCurrentChallengesButton = JButton("Current Quests & Challenges")
@@ -21,27 +19,24 @@ class GamekinsDialog(project: Project?) : DialogWrapper(project) {
     private val lCompletedChallengesPanel = CompletedQuestsChallengesPanel()
     private val lHelpPanel = HelpPanel()
 
-    private val mainPanel = JPanel()
     private val contentPanel = JPanel()
 
     init {
-        init()
-        title = "Gamekins"
-    }
 
-    override fun createCenterPanel(): JComponent? {
-
-        mainPanel.layout = GridBagLayout()
+        this.layout = GridBagLayout()
         contentPanel.layout = GridBagLayout()
-        mainPanel.size = Dimension(700, 700)
-        mainPanel.maximumSize = Dimension(800, 700)
 
         val buttonsPanel = JPanel()
         buttonsPanel.layout = BoxLayout(buttonsPanel, BoxLayout.Y_AXIS)
+        buttonsPanel.alignmentX = Component.CENTER_ALIGNMENT
+        buttonsPanel.alignmentY = Component.CENTER_ALIGNMENT
+        buttonsPanel.add(Box.createRigidArea(Dimension(0, 20)))
+
         buttonsPanel.add(lLeaderboardButton)
         buttonsPanel.add(lCurrentChallengesButton)
         buttonsPanel.add(lCompletedChallengesButton)
         buttonsPanel.add(lHelpButton)
+
 
 
         val buttonWidth = 220
@@ -52,7 +47,8 @@ class GamekinsDialog(project: Project?) : DialogWrapper(project) {
             button.maximumSize = Dimension(buttonWidth, Int.MAX_VALUE);
             button.maximumHeight = buttonHeight
             buttonsPanel.add(button)
-            buttonsPanel.add(Box.createVerticalStrut(10)) // Add spacing between buttons
+            buttonsPanel.add(Box.createVerticalStrut(10))
+            button.setFont(Font("SansSerif", Font.BOLD, 12))
         }
 
         lLeaderboardButton.addActionListener { switchToPanel(lLeaderboardPanel) }
@@ -68,13 +64,11 @@ class GamekinsDialog(project: Project?) : DialogWrapper(project) {
         gbc.weightx = 0.1
         gbc.weighty = 1.0
         gbc.fill = GridBagConstraints.BOTH
-        mainPanel.add(buttonsPanel, gbc)
+        this.add(buttonsPanel, gbc)
         gbc.gridx = 1
         gbc.weightx = 0.9
 
-        mainPanel.add(contentPanel, gbc)
-
-        return mainPanel
+        this.add(contentPanel, gbc)
     }
 
     private fun switchToPanel(panel: JComponent) {
@@ -86,7 +80,7 @@ class GamekinsDialog(project: Project?) : DialogWrapper(project) {
         gbc.fill = GridBagConstraints.BOTH
 
         contentPanel.removeAll()
-        contentPanel.add(panel, gbc)
+        contentPanel.add(panel, gbc, )
         contentPanel.revalidate()
         contentPanel.repaint()
     }

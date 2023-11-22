@@ -1,13 +1,15 @@
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class ChallengeParameter(
   val workspace: Workspace,
   @SerializedName("jacocoCSVPath") val jacocoCsvPath: String,
   @SerializedName("searchCommitCount") val searchCommitCount: Int,
   @SerializedName("showPitOutput") val showPitOutput: Boolean,
-  @SerializedName("projectCoverage") val projectCoverage: Int,
+  @SerializedName("projectCoverage") val projectCoverage: Double,
   @SerializedName("currentQuestsCount") val currentQuestsCount: Int,
-  val solved: Int,
+  val solved: Long,
   val remote: String,
   val branch: String,
   @SerializedName("jacocoResultsPath") val jacocoResultsPath: String,
@@ -19,6 +21,7 @@ data class ChallengeParameter(
   @SerializedName("projectName") val projectName: String
 )
 
+@Serializable
 data class Workspace(
   val parent: Workspace?,
   @SerializedName("totalDiskSpace") val totalDiskSpace: Long,
@@ -31,6 +34,7 @@ data class Workspace(
 )
 
 
+@Serializable
 data class Challenge(
   val snippet: String?,
   val score: Int?,
@@ -39,7 +43,7 @@ data class Challenge(
   val name: String?,
   @SerializedName("toolTip") val hasToolTip: Boolean? = false,
   @SerializedName("highlightedFileContent") val highlightedFileContent: String? = null,
-  val solved: Int? = 0,
+  val solved: Long? = 0,
   val parameters: ChallengeParameter? = null,
   @SerializedName("toolTipText") val toolTipText: String? = null,
   val generalReason: String? = null,
@@ -47,6 +51,7 @@ data class Challenge(
 
 data class RejectedChallenge(val first: Challenge, val second: String)
 
+@Serializable
 data class ChallengeList(val currentChallenges: List<Challenge>)
 
 data class StoredChallengeList(val storedChallenges: List<Challenge>)

@@ -1,25 +1,15 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
     <id>org.plugin.plugin</id>
-
-    <!-- Public plugin name should be written in Title Case.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Plugin</name>
+    <name>Gamekins Plugin</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="ameer.anqawe@gmail.com" url="https://www.yourcompany.com">testCompany</vendor>
 
-    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description>This is a gamified plugin using gamekins</description>
 
-    <!-- Product and plugin compatibility requirements.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
-   <!-- <depends>com.intellij.modules.coverage</depends>
-    <depends>com.intellij.modules.java</depends>
+    <!--<depends>com.intellij.modules.java</depends>
     <depends>com.intellij.java</depends>-->
 
 
@@ -67,6 +57,11 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
+
+        <!-- Change the id to something else (e.g. Personal ID) for the control group and change the group MyBundle.properties -->
+        <toolWindow factoryClass="org.plugin.plugin.MainToolWindow" id="Gamekins"/>
+        <postStartupActivity implementation="org.plugin.plugin.ProjectActivity" />
 
     </extensions>
 

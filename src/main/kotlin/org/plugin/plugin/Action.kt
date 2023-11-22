@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.ui.switcher.QuickActionProvider
+import javax.swing.SwingUtilities
 
 class Action : AnAction() {
     override fun getActionUpdateThread(): ActionUpdateThread {
@@ -23,9 +24,7 @@ class Action : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project
         if (project != null) {
-
-            val dialog = GamekinsDialog(project)
-            dialog.show()
+            SwingUtilities.invokeLater { AuthenticationDialog(project) }
         }
     }
 }
