@@ -1,5 +1,6 @@
 package org.plugin.plugin
 
+
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
@@ -8,7 +9,9 @@ import com.intellij.openapi.project.Project
 class ProjectService(project: Project): Disposable{
 
     init {
+        Utility.startWebSocket()
     }
+
 
     override fun dispose() = Unit
 }

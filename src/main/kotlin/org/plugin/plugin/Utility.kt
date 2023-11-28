@@ -2,39 +2,36 @@ package org.plugin.plugin
 
 import Challenge
 import ChallengeList
-import StoredChallengeList
 import com.google.gson.Gson
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
+import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.plugin.plugin.components.IconCellRenderer
-import org.plugin.plugin.data.*
+import org.plugin.plugin.data.Message
+import org.plugin.plugin.data.QuestTask
+import org.plugin.plugin.data.QuestsListTasks
+import org.plugin.plugin.data.RestClient
 import org.plugin.plugin.panels.AcceptedRejectedChallengesPanel
 import org.plugin.plugin.panels.CurrentQuestsChallengesPanel
 import java.awt.*
-import java.awt.event.ActionEvent
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
-import java.util.*
 import java.util.prefs.Preferences
 import javax.swing.*
 import javax.swing.border.CompoundBorder
 import javax.swing.border.LineBorder
-import javax.swing.table.DefaultTableCellRenderer
-import javax.swing.table.DefaultTableModel
 
 
 object Utility {
 
-     val lPreferences = Preferences.userRoot().node("org.plugin.plugin.panels")
+    val lPreferences = Preferences.userRoot().node("org.plugin.plugin.panels")
 
     var lCurrentQuestsChallengesPanel: CurrentQuestsChallengesPanel? = null
 
@@ -69,7 +66,7 @@ object Utility {
         mainPanel.add(AcceptedRejectedChallengesPanel(), gbc)
     }
 
-     fun createRejectModal(challenge: String?) {
+    fun createRejectModal(challenge: String?) {
 
         val rejectModal = JDialog()
         rejectModal.setTitle("Reject Challenge")
@@ -106,7 +103,7 @@ object Utility {
         closeModalButton.addActionListener { rejectModal.dispose() }
 
         rejectButton.addActionListener {
-            rejectChallenge( challenge, reasonTextArea.getText()) { success, errorMessage ->
+            rejectChallenge(challenge, reasonTextArea.getText()) { success, errorMessage ->
                 if (success) {
                     rejectModal.dispose()
                     showMessageDialog("Reject successful!")
@@ -258,7 +255,8 @@ object Utility {
                 "job" to lProjectName
             )
 
-            val response = RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_CURRENT_QUESTS_TASKS, queryParams)
+            val response =
+                RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_CURRENT_QUESTS_TASKS, queryParams)
             val questsTasksList = Gson().fromJson(response, QuestsListTasks::class.java).currentQuestTasks
 
             val lQuestsPanel = JPanel()
@@ -321,13 +319,13 @@ object Utility {
         }
     }
 
-     fun resizeImageIcon(icon: ImageIcon, width: Int, height: Int): ImageIcon {
+    fun resizeImageIcon(icon: ImageIcon, width: Int, height: Int): ImageIcon {
         val img = icon.image
         val resizedImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH)
         return ImageIcon(resizedImg)
     }
 
-     fun storeChallenge(aInChallenge: String?, aInCallback: (Boolean, String) -> Unit) {
+    fun storeChallenge(aInChallenge: String?, aInCallback: (Boolean, String) -> Unit) {
 
         val lProjectName = lPreferences.get("projectName", "")
         if (lProjectName != "") {
@@ -335,7 +333,8 @@ object Utility {
             val mediaType = "application/json; charset=utf-8".toMediaType()
             val requestBody = json.toRequestBody(mediaType)
 
-            val lResponse = RestClient.getInstance().post(Constants.API_BASE_URL + Constants.STORE_CHALLENGE, requestBody)
+            val lResponse =
+                RestClient.getInstance().post(Constants.API_BASE_URL + Constants.STORE_CHALLENGE, requestBody)
 
             val gson = Gson()
             val message = gson.fromJson(lResponse, Message::class.java)
@@ -357,7 +356,8 @@ object Utility {
             val json = """{"job": "$lProjectName", "challengeName": "$challenge"}"""
             val mediaType = "application/json; charset=utf-8".toMediaType()
             val requestBody = json.toRequestBody(mediaType)
-            val lResponse = RestClient.getInstance().post(Constants.API_BASE_URL + Constants.RESTORE_CHALLENGE, requestBody)
+            val lResponse =
+                RestClient.getInstance().post(Constants.API_BASE_URL + Constants.RESTORE_CHALLENGE, requestBody)
 
 
             val kindValue = gson.fromJson(lResponse, Message::class.java).message.kind
@@ -379,7 +379,8 @@ object Utility {
             val mediaType = "application/json; charset=utf-8".toMediaType()
             val requestBody = json.toRequestBody(mediaType)
 
-            val lResponse = RestClient.getInstance().post(Constants.API_BASE_URL + Constants.UNSHELVE_CHALLENGE, requestBody)
+            val lResponse =
+                RestClient.getInstance().post(Constants.API_BASE_URL + Constants.UNSHELVE_CHALLENGE, requestBody)
 
             val kindValue = gson.fromJson(lResponse, Message::class.java).message.kind
 
@@ -402,7 +403,8 @@ object Utility {
             val mediaType = "application/json; charset=utf-8".toMediaType()
             val requestBody = json.toRequestBody(mediaType)
 
-            val lResponse = RestClient.getInstance().post(Constants.API_BASE_URL + Constants.REJECT_CHALLENGE, requestBody)
+            val lResponse =
+                RestClient.getInstance().post(Constants.API_BASE_URL + Constants.REJECT_CHALLENGE, requestBody)
 
             val kindValue = gson.fromJson(lResponse, Message::class.java).message.kind
 
@@ -428,8 +430,7 @@ object Utility {
     }
 
     fun isAuthenticated(): Boolean {
-        val tokenFile = File(Constants.TOKEN_FILE_PATH)
-        return tokenFile.exists() && isTokenValid(readToken())
+        return lPreferences.get("token", "") != ""
     }
 
     fun saveToken(aInToken: String) {
@@ -448,7 +449,7 @@ object Utility {
         JOptionPane.showMessageDialog(null, errorMessage, "Error", JOptionPane.ERROR_MESSAGE)
     }
 
-     fun getCurrentChallenges(): List<Challenge>? {
+    fun getCurrentChallenges(): List<Challenge>? {
 
         val lProjectName = lPreferences.get("projectName", "")
         if (lProjectName != "") {
@@ -456,10 +457,45 @@ object Utility {
             val queryParams = mapOf(
                 "job" to lProjectName
             )
-            val lResponse = RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_CURRENT_CHALLENGES, queryParams)
+            val lResponse =
+                RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_CURRENT_CHALLENGES, queryParams)
             return Gson().fromJson(lResponse, ChallengeList::class.java).currentChallenges
 
         }
         return null
+    }
+
+    fun getAuthorizationHeader(): String {
+        val token = lPreferences.get("token", "")
+        val username = lPreferences.get("username", "")
+        return Credentials.basic(username, token)
+    }
+
+    fun logout() {
+        lPreferences.remove("token")
+        lPreferences.remove("username")
+
+        MainToolWindow.createPanel()
+    }
+
+    fun startWebSocket() {
+
+        if (isAuthenticated()) {
+            try {
+                RestClient.getInstance().post(
+                    Constants.API_BASE_URL
+                            + Constants.START_SOCKET, ByteArray(0).toRequestBody(null, 0, 0)
+                )
+                val client = WebSocketClient()
+                client.startWebSocket()
+            } catch (e: Exception) {
+                RestClient.getInstance().post(
+                    Constants.API_BASE_URL
+                            + Constants.START_SOCKET, ByteArray(0).toRequestBody(null, 0, 0)
+                )
+                val client = WebSocketClient()
+                client.startWebSocket()
+            }
+        }
     }
 }

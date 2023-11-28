@@ -33,6 +33,9 @@ object Constants {
     //Statistics
     const val GET_STATISTICS = "/getStatistics"
 
+    // Start service
+    const val START_SOCKET = "/startSocket"
+
     const val HELP = "<h1 class=\"ml-2\">\n" +
             "        Help\n" +
             "    </h1>\n" +

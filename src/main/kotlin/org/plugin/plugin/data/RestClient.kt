@@ -2,13 +2,13 @@ package org.plugin.plugin.data
 
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import org.plugin.plugin.Utility
 import java.io.IOException
 import java.util.prefs.Preferences
 
 class RestClient private constructor() {
 
     private val client = OkHttpClient()
-    private val preferences = Preferences.userRoot().node(PANEL_NODE)
 
     companion object {
         private const val PANEL_NODE = "org.plugin.plugin.panels"
@@ -32,7 +32,7 @@ class RestClient private constructor() {
         val request = urlBuilder?.build()?.let {
             Request.Builder()
                 .url(it)
-                .header("Authorization", getAuthorizationHeader())
+                .header("Authorization", Utility.getAuthorizationHeader())
                 .build()
         }
 
@@ -46,7 +46,7 @@ class RestClient private constructor() {
         val request = Request.Builder()
             .url(url)
             .post(requestBody)
-            .header("Authorization", getAuthorizationHeader())
+            .header("Authorization", Utility.getAuthorizationHeader())
             .build()
 
         return executeRequest(request)
@@ -61,9 +61,5 @@ class RestClient private constructor() {
         }
     }
 
-    private fun getAuthorizationHeader(): String {
-        val token = preferences.get("token", "")
-        val username = preferences.get("username", "")
-        return Credentials.basic(username, token)
-    }
+
 }

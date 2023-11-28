@@ -1,10 +1,11 @@
 package org.plugin.plugin.panels
 
-import com.intellij.ui.JBColor
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.util.maximumHeight
+import com.intellij.util.ui.JBUI
+import org.plugin.plugin.Utility
 import java.awt.*
 import javax.swing.*
-import javax.swing.border.LineBorder
 
 
 class MainPanel: JPanel() {
@@ -13,6 +14,7 @@ class MainPanel: JPanel() {
     private val lCurrentChallengesButton = JButton("Current Quests & Challenges")
     private val lCompletedChallengesButton = JButton("Completed Quests & Challenges")
     private val lHelpButton = JButton("Help")
+    private val lLogoutButton = JButton("Log out")
 
     private val lLeaderboardPanel = LeaderboardPanel()
     private val lCurrentChallengesPanel = CurrentQuestsChallengesPanel()
@@ -25,24 +27,22 @@ class MainPanel: JPanel() {
 
         this.layout = GridBagLayout()
         contentPanel.layout = GridBagLayout()
+        this.maximumSize = Dimension(500, 700)
 
         val buttonsPanel = JPanel()
-        buttonsPanel.layout = BoxLayout(buttonsPanel, BoxLayout.Y_AXIS)
+        buttonsPanel.layout = BoxLayout(buttonsPanel, BoxLayout.X_AXIS)
         buttonsPanel.alignmentX = Component.CENTER_ALIGNMENT
         buttonsPanel.alignmentY = Component.CENTER_ALIGNMENT
         buttonsPanel.add(Box.createRigidArea(Dimension(0, 20)))
 
-        buttonsPanel.add(lLeaderboardButton)
-        buttonsPanel.add(lCurrentChallengesButton)
-        buttonsPanel.add(lCompletedChallengesButton)
-        buttonsPanel.add(lHelpButton)
-
-
+        lLogoutButton.addActionListener {
+            Utility.logout()
+        }
 
         val buttonWidth = 220
         val buttonHeight = 80
 
-        for (button in listOf(lLeaderboardButton, lCurrentChallengesButton, lCompletedChallengesButton, lHelpButton)) {
+        for (button in listOf(lLeaderboardButton, lCurrentChallengesButton, lCompletedChallengesButton, lHelpButton, lLogoutButton)) {
             button.alignmentX = Component.CENTER_ALIGNMENT
             button.maximumSize = Dimension(buttonWidth, Int.MAX_VALUE);
             button.maximumHeight = buttonHeight
@@ -58,17 +58,29 @@ class MainPanel: JPanel() {
 
         switchToPanel(lCurrentChallengesPanel)
 
-        val gbc = GridBagConstraints()
-        gbc.gridx = 0
-        gbc.gridy = 0
-        gbc.weightx = 0.1
-        gbc.weighty = 1.0
-        gbc.fill = GridBagConstraints.BOTH
-        this.add(buttonsPanel, gbc)
-        gbc.gridx = 1
-        gbc.weightx = 0.9
+        val contentPanelConstraints = GridBagConstraints()
+        contentPanelConstraints.gridx = 0
+        contentPanelConstraints.weightx = 1.0
+        contentPanelConstraints.weighty = 1.0
+        contentPanelConstraints.fill = GridBagConstraints.BOTH
 
-        this.add(contentPanel, gbc)
+        val lScrollPane = JBScrollPane(contentPanel)
+        this.add(lScrollPane, contentPanelConstraints)
+
+        val bottomPanel = JPanel()
+        bottomPanel.layout = BorderLayout()
+
+        bottomPanel.add(buttonsPanel, BorderLayout.CENTER)
+
+        val bottomPanelConstraints = GridBagConstraints()
+        bottomPanelConstraints.insets = JBUI.insets(5)
+        bottomPanelConstraints.gridx = 0
+        bottomPanelConstraints.weightx = 1.0
+        bottomPanelConstraints.anchor = GridBagConstraints.PAGE_END
+        bottomPanelConstraints.fill = GridBagConstraints.HORIZONTAL
+
+        this.add(bottomPanel, bottomPanelConstraints)
+
     }
 
     private fun switchToPanel(panel: JComponent) {

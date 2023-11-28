@@ -49,7 +49,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
         aInJPanel.layout = BorderLayout(10,10)
 
-        val lDescriptionLabel = JLabel("Rejected Challenges")
+        val lDescriptionLabel = JLabel("Completed Challenges")
         lDescriptionLabel.font = Font("SansSerif", Font.BOLD, 18)
         lDescriptionLabel.horizontalAlignment = SwingConstants.CENTER
         lDescriptionLabel.verticalAlignment = SwingConstants.CENTER
@@ -69,9 +69,9 @@ class AcceptedRejectedChallengesPanel : JPanel() {
             try {
 
                 val response = RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_COMPLETED_CHALLENGES, queryParams)
-                val lRejectedChallengeList = Gson().fromJson(response, CompletedChallengeList::class.java).completedChallenges
+                val lCompletedChallengeList = Gson().fromJson(response, CompletedChallengeList::class.java).completedChallenges
 
-                for (index in lRejectedChallengeList.indices) {
+                for (index in lCompletedChallengeList.indices) {
 
                     val challengePanel = JPanel(GridBagLayout())
                     challengePanel.border = LineBorder(JBColor.GRAY, 1)
@@ -80,13 +80,13 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                     val padding = 4
                     val lHtmlContent =
                         (("<HTML><div style='padding: " + padding + "px; WIDTH: " + (challengePanel.width - 2 * padding)) + "px;'>" +
-                                lRejectedChallengeList[index].generalReason) +
+                                lCompletedChallengeList[index].generalReason) +
                                 "</div></HTML>"
                     val lChallengeTitleLabelText = JEditorPane("text/html", lHtmlContent)
                     lChallengeTitleLabelText.isEditable = false
 
 
-                    val challengeTitleName = JLabel(lRejectedChallengeList[index].name)
+                    val challengeTitleName = JLabel(lCompletedChallengeList[index].name)
                     challengeTitleName.setFont(Font("Arial", Font.BOLD, 14))
                     challengeTitleName.setForeground(JBColor.YELLOW)
                     challengeTitleName.horizontalAlignment = SwingConstants.CENTER
@@ -101,7 +101,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
                     lUndoButton.addActionListener {
                         Utility.restoreChallenge(
-                            lRejectedChallengeList[index].generalReason?.replace(Regex("<[^>]++>"), "")
+                            lCompletedChallengeList[index].generalReason?.replace(Regex("<[^>]++>"), "")
                         ) { success, errorMessage ->
                             if (success) {
                                 Utility.showMessageDialog("Restore successful!")
@@ -173,6 +173,10 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                 val lRejectedChallengeList = Gson().fromJson(response, RejectedChallengeList::class.java).rejectedChallenges
 
                 for (index in lRejectedChallengeList.indices) {
+
+                    if (lRejectedChallengeList.get(index).first.name != "Class Coverage") {
+                        continue;
+                    }
 
                     val challengePanel = JPanel(GridBagLayout())
                     challengePanel.border = LineBorder(JBColor.GRAY, 1)

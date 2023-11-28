@@ -1,11 +1,15 @@
 package org.plugin.plugin.panels
 
 import com.cdancy.jenkins.rest.JenkinsClient
+import com.cdancy.jenkins.rest.domain.job.Job
+import com.cdancy.jenkins.rest.domain.job.JobInfo
 import org.plugin.plugin.Utility
 import java.awt.Dimension
 import java.awt.GridLayout
+import java.util.Objects
 import java.util.prefs.Preferences
 import javax.swing.*
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 
 class AuthenticationPanel() : JPanel() {
@@ -15,7 +19,7 @@ class AuthenticationPanel() : JPanel() {
     private var authenticationListener: AuthenticationListener? = null
     init {
         createAndShowGUI()
-        size = Dimension(600, 500)
+        size = Dimension(800, 600)
     }
 
     private fun createAndShowGUI() {
@@ -23,18 +27,15 @@ class AuthenticationPanel() : JPanel() {
             return
         }
 
-        val panel = JPanel(GridLayout(6, 2, 10,5))
+        val panel = JPanel(GridLayout(5, 2, 15,5))
         val usernameField = JTextField()
         val passwordField = JPasswordField()
-        val confirmPasswordField = JPasswordField()
         val URLField = JTextField()
         val projectField = JTextField()
         panel.add(JLabel("Username:"))
         panel.add(usernameField)
         panel.add(JLabel("Password:"))
         panel.add(passwordField)
-        panel.add(JLabel("Confirm Password:"))
-        panel.add(confirmPasswordField)
         panel.add(JLabel("URL:"))
         panel.add(URLField)
         panel.add(JLabel("Project:"))
@@ -42,28 +43,22 @@ class AuthenticationPanel() : JPanel() {
 
 
         val okButton = JButton("Login")
-        val cancelButton = JButton("Cancel")
         okButton.addActionListener {
             val username = usernameField.getText()
             val password = String(passwordField.getPassword())
-            val confirmPassword = String(confirmPasswordField.getPassword())
             val URL = URLField.getText()
             val project = projectField.getText()
 
-            if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || URL.isEmpty() || project.isEmpty()) {
+
+            if (username.isEmpty() || password.isEmpty()  || URL.isEmpty() || project.isEmpty()) {
                 JOptionPane.showMessageDialog(
                     this@AuthenticationPanel,
                     "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE
                 )
             } else {
-                val token = authenticateUser(username, password, URL, project)
-                if (password != confirmPassword) {
-                    JOptionPane.showMessageDialog(
-                        this@AuthenticationPanel,
-                        "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE
-                    )
-                } else if (token != null) {
-                    Utility.saveToken(token)
+                val lJobInfo = authenticateUser(username, password, URL, project)
+
+                 if (lJobInfo != null) {
                     onLogin()
                 } else {
                     JOptionPane.showMessageDialog(
@@ -83,7 +78,7 @@ class AuthenticationPanel() : JPanel() {
         password: String,
         URL: String,
         project: String
-    ): String? {
+    ): JobInfo? {
 
         return try {
             val client = JenkinsClient.builder()
@@ -91,13 +86,12 @@ class AuthenticationPanel() : JPanel() {
                 .credentials("${username}:${password}")
                 .build()
 
-            client.api().jobsApi().jobInfo(null, project)
 
             val lToken = client.api().userApi().generateNewToken("token").data().tokenValue()
             preferences.put("username", username)
             preferences.put("token", lToken)
 
-            client.authValue();
+            client.api().jobsApi().jobInfo(null, project)
 
 
         } catch (e: Exception) {

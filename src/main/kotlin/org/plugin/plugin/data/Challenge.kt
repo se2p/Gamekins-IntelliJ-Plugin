@@ -1,5 +1,6 @@
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
+import java.io.File
 
 @Serializable
 data class ChallengeParameter(
@@ -19,6 +20,21 @@ data class ChallengeParameter(
   @SerializedName("currentChallengesCount") val currentChallengesCount: Int,
   @SerializedName("pitConfiguration") val pitConfiguration: String,
   @SerializedName("projectName") val projectName: String
+)
+
+@Serializable
+data class Details(
+  val coverage: Double,
+  //val charset: Any?,
+  val fileName: String,
+  val test: Boolean,
+  val filePath: String,
+  //val clientObject: Any? = null,
+  val path: String,
+  //val file: File,
+  val fileExtension: String,
+  val packageName: String,
+  val parameters: ChallengeParameter,
 )
 
 @Serializable
@@ -47,6 +63,9 @@ data class Challenge(
   val parameters: ChallengeParameter? = null,
   @SerializedName("toolTipText") val toolTipText: String? = null,
   val generalReason: String? = null,
+  @SerializedName("details")
+  val details: Details,
+
   )
 
 data class RejectedChallenge(val first: Challenge, val second: String)

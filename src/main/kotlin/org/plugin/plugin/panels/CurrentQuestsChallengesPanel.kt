@@ -3,15 +3,25 @@ package org.plugin.plugin.panels
 
 import StoredChallengeList
 import com.google.gson.Gson
+import com.intellij.openapi.editor.ScrollType
+import com.intellij.openapi.editor.markup.HighlighterLayer
+import com.intellij.openapi.editor.markup.HighlighterTargetArea
+import com.intellij.openapi.editor.markup.TextAttributes
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
+import org.jsoup.Jsoup
 import org.plugin.plugin.Constants
 import org.plugin.plugin.Utility
 import org.plugin.plugin.data.QuestTask
 import org.plugin.plugin.data.QuestsListTasks
 import org.plugin.plugin.data.RestClient
 import java.awt.BorderLayout
+import java.awt.Button
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Font
@@ -41,7 +51,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
         gbc.gridx = 0
         gbc.weightx = 1.0
         gbc.fill = GridBagConstraints.HORIZONTAL
-        gbc.insets = JBUI.insets(15)
+        gbc.insets = JBUI.insets(5)
 
         val row1 = JPanel()
         val row2 = JPanel()
@@ -163,7 +173,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
     private fun configureMainPanel(mainPanel: JPanel, questsPanel: JPanel) {
         mainPanel.apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
-            preferredSize = Dimension(300, preferredSize.height)
+            preferredSize = Dimension(300, 250)
             add(JBScrollPane(questsPanel).apply {
                 verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
             })
@@ -184,6 +194,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
             if (lChallengeList != null) {
                 for (index in lChallengeList.indices) {
 
+                    val challenge = lChallengeList.getOrNull(index) ?: return
                     val challengePanel = JPanel()
                     challengePanel.setLayout(BorderLayout())
                     challengePanel.border = LineBorder(JBColor.GRAY, 1)
@@ -215,20 +226,20 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     lLeftPanel.add(lChallengeTitleLabel)
                     lChallengeHeader.add(lLeftPanel, gbc)
 
-                    val scoreString = if (lChallengeList[index].score!! > 1) "points" else "point"
-                    val lChallengeTitleScore = JLabel(lChallengeList[index].score.toString() + " " + scoreString)
+                    val scoreString = if (challenge.score!! > 1) "points" else "point"
+                    val lChallengeTitleScore = JLabel(challenge.score.toString() + " " + scoreString)
                     lChallengeTitleScore.setFont(Font("Arial", Font.BOLD, 13))
                     lChallengeTitleScore.setForeground(JBColor.GREEN)
                     lChallengeTitleScore.horizontalAlignment = SwingConstants.CENTER
                     lChallengeTitleScore.verticalAlignment = SwingConstants.CENTER
 
-                    val lChallengeTitleName = JLabel(lChallengeList[index].name)
+                    val lChallengeTitleName = JLabel(challenge.name)
                     val lExpandButton = JButton("Expand")
                     lExpandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
 
                     val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
 
-                    if (lChallengeList[index].score!! > 0)
+                    if (challenge.score > 0)
                         rightPanel.add(lChallengeTitleScore)
 
                     lChallengeTitleName.setFont(Font("Arial", Font.BOLD, 13))
@@ -256,21 +267,78 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     lExtraContentPanel.isVisible = false
 
                     val lChallengeSnippetLabel: JLabel
-                    val lChallengeHighlightedFileContentLabel: JLabel
 
-
-                    if (lChallengeList[index].snippet != "") {
+                    if (challenge.snippet != "") {
                         lChallengeSnippetLabel =
-                            JLabel("<HTML><div WIDTH=80>" + lChallengeList[index].snippet.toString() + "</div></HTML>")
+                            JLabel("<HTML><div WIDTH=80>" + challenge.snippet.toString() + "</div></HTML>")
                         lExtraContentPanel.add(lChallengeSnippetLabel, BorderLayout.PAGE_START)
                     }
 
-                    if (lChallengeList[index].highlightedFileContent != "") {
-                        lChallengeHighlightedFileContentLabel =
-                            JLabel("<HTML><div WIDTH=80>" + lChallengeList[index].highlightedFileContent.toString() + "</div></HTML>")
+                    if (challenge.highlightedFileContent != "") {
                         val separator = JSeparator(JSeparator.HORIZONTAL)
                         lExtraContentPanel.add(separator, BorderLayout.CENTER)
-                        lExtraContentPanel.add(lChallengeHighlightedFileContentLabel, BorderLayout.PAGE_END)
+
+                        val lViewSourceButton = Button("View source")
+
+                        lViewSourceButton.preferredSize = Dimension(40,40)
+
+                        lViewSourceButton.addActionListener{
+                            val details = challenge.details
+
+                            val projectManager = ProjectManager.getInstance()
+                            val projects = projectManager.openProjects
+                            val fileSystem = LocalFileSystem.getInstance()
+
+                            val lFilePath = projects.getOrNull(0)?.basePath + details.filePath
+                            val file = fileSystem.findFileByPath(lFilePath)
+
+                            file?.let { foundFile ->
+                                val fileEditorManager = projects.getOrNull(0)
+                                    ?.let { it1 -> FileEditorManager.getInstance(it1) }
+                                val openFileDescriptor =
+                                    projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
+                                val editor =
+                                    openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
+
+                                editor?.let { e ->
+                                    val document = challenge.snippet?.let { it1 -> Jsoup.parse(it1) }
+                                    val codeTagContent = document?.select("code")?.text()
+
+                                    val startOffset = codeTagContent?.let { it1 -> e.document.text.indexOf(it1) }
+                                    val endOffset = startOffset?.plus(codeTagContent.length)
+
+                                    e.markupModel.let { markup ->
+                                        val highlighter = startOffset?.let { it1 ->
+                                            if (endOffset != null) {
+                                                markup.addRangeHighlighter(
+                                                    it1,
+                                                    endOffset,
+                                                    HighlighterLayer.SELECTION,
+                                                    TextAttributes(),
+                                                    HighlighterTargetArea.EXACT_RANGE
+                                                )
+                                            }
+                                        }
+
+                                        if (startOffset != null) {
+                                            e.caretModel.moveToOffset(startOffset)
+                                        }
+                                        if (endOffset != null) {
+                                            e.caretModel.moveToOffset(endOffset)
+                                        }
+                                        if (startOffset != null) {
+                                            if (endOffset != null) {
+                                                e.caretModel.currentCaret.setSelection(startOffset, endOffset)
+                                            }
+                                        }
+
+                                        e.scrollingModel.scrollToCaret(ScrollType.CENTER)
+                                    }
+                                }
+                            }
+
+                        }
+                        lExtraContentPanel.add(lViewSourceButton)
                     }
 
                     lExpandButton.addActionListener {
@@ -281,7 +349,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
                     lStoreButton.addActionListener {
                         Utility.storeChallenge(
-                            lChallengeList[index].generalReason?.replace(Regex("<[^>]++>"), "")
+                            challenge.generalReason?.replace(Regex("<[^>]++>"), "")
                         ) { success, errorMessage ->
                             if (success) {
                                 Utility.showMessageDialog("Store successful!")
@@ -294,7 +362,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
                     lRejectButton.addActionListener {
                         Utility.createRejectModal(
-                            lChallengeList[index].generalReason?.replace(Regex("<[^>]++>"), "")
+                            challenge.generalReason?.replace(Regex("<[^>]++>"), "")
                         )
                     }
 
@@ -323,7 +391,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
         scrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
 
         aInMainPanel.add(scrollPane)
-        aInMainPanel.add(Box.createVerticalGlue())
+        /*aInMainPanel.add(Box.createVerticalGlue())*/
     }
 
     private fun createStoredButton(mainPanel: JPanel) {
@@ -338,7 +406,6 @@ class CurrentQuestsChallengesPanel : JPanel() {
             val storedChallengesLimit = 2
             val storedChallengesCount = challengeList.size
 
-            if (storedChallengesCount > 0) {
                 val storedChallengesButton = JButton("Stored Challenges ($storedChallengesCount/$storedChallengesLimit)")
                 storedChallengesButton.setFont(Font("Arial", Font.PLAIN, 14))
                 storedChallengesButton.addActionListener { e: ActionEvent? ->
@@ -347,7 +414,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     )
                 }
                 mainPanel.add(storedChallengesButton, BorderLayout.CENTER)
-            }
+
         }
     }
 

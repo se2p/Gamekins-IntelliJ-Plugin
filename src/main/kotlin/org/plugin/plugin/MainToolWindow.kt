@@ -20,18 +20,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
-import com.intellij.ui.dsl.builder.*
 import org.plugin.plugin.panels.AuthenticationPanel
 import org.plugin.plugin.panels.MainPanel
-import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.border.LineBorder
+import javax.swing.ScrollPaneConstants
 
 class MainToolWindow  : ToolWindowFactory {
 
@@ -70,7 +67,8 @@ class MainToolWindow  : ToolWindowFactory {
                     fill = GridBagConstraints.BOTH
                 })
             }
-            return JBScrollPane(main)
+
+            return main
         }
     }
 
