@@ -90,6 +90,7 @@ class AuthenticationPanel() : JPanel() {
             val lToken = client.api().userApi().generateNewToken("token").data().tokenValue()
             preferences.put("username", username)
             preferences.put("token", lToken)
+            preferences.put("projectName", project)
 
             client.api().jobsApi().jobInfo(null, project)
 
