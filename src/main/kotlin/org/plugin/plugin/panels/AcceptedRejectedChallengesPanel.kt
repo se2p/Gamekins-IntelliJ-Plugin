@@ -3,37 +3,43 @@ package org.plugin.plugin.panels
 import CompletedChallengeList
 import RejectedChallengeList
 import com.google.gson.Gson
+import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.util.minimumHeight
 import com.intellij.util.ui.JBUI
 import org.plugin.plugin.Constants
 import org.plugin.plugin.Utility
 import org.plugin.plugin.data.RestClient
 import java.awt.*
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
 import javax.swing.*
 import javax.swing.border.LineBorder
 
 
 class AcceptedRejectedChallengesPanel : JPanel() {
     init {
+        this.setBackground(mainBackgroundColor)
         performInitialization()
     }
 
     private fun performInitialization() {
 
         Utility.setAcceptedRejectedChallengesPanel(this)
-        setLayout(GridLayout(1, 2, 10, 10))
+        background = mainBackgroundColor
+        setLayout(GridLayout(1, 2, 10, 0))
 
         // Completed Challenges Table
         val completedChallengesPanel = JPanel()
-
+        completedChallengesPanel.background = mainBackgroundColor
         createCompletedChallengesTable(completedChallengesPanel)
         add(completedChallengesPanel)
 
         // Rejected Challenges Table
         val rejectedChallengesPanel = JPanel()
+        rejectedChallengesPanel.background = mainBackgroundColor
         createRejectedChallengesTable(rejectedChallengesPanel)
-
         add(rejectedChallengesPanel)
     }
 
@@ -46,8 +52,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
     private fun createCompletedChallengesTable(aInJPanel: JPanel) {
 
-
-        aInJPanel.layout = BorderLayout(10,10)
+        aInJPanel.layout = BorderLayout(5,5)
 
         val lDescriptionLabel = JLabel("Completed Challenges")
         lDescriptionLabel.font = Font("SansSerif", Font.BOLD, 18)
@@ -56,9 +61,9 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
         aInJPanel.add(lDescriptionLabel, BorderLayout.PAGE_START)
 
-        val challengesPanel = JPanel()
-        challengesPanel.setLayout(BoxLayout(challengesPanel, BoxLayout.Y_AXIS))
-        challengesPanel.border = LineBorder(JBColor.GRAY, 2)
+        val lChallengesPanel = JPanel()
+        lChallengesPanel.background = mainBackgroundColor
+        lChallengesPanel.setLayout(BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS))
 
         val lProjectName = Utility.lPreferences.get("projectName", "")
         if (lProjectName != "") {
@@ -68,77 +73,83 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
             try {
 
-                val response = RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_COMPLETED_CHALLENGES, queryParams)
+                val response = RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_COMPLETED_CHALLENGES, queryParams)
                 val lCompletedChallengeList = Gson().fromJson(response, CompletedChallengeList::class.java).completedChallenges
 
                 for (index in lCompletedChallengeList.indices) {
 
-                    val challengePanel = JPanel(GridBagLayout())
-                    challengePanel.border = LineBorder(JBColor.GRAY, 1)
-                    challengePanel.maximumSize = Dimension(Int.MAX_VALUE, 90)
+                    val lChallenge = lCompletedChallengeList[index]
+                    val lChallengePanel = JPanel(GridBagLayout())
+                    lChallengePanel.background = mainBackgroundColor
+                    lChallengePanel.border = LineBorder(JBColor.GRAY, 1)
+                    val lUpperPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+                    lUpperPanel.background = mainBackgroundColor
+                    lUpperPanel.preferredSize = Dimension(Int.MAX_VALUE, 70)
 
-                    val padding = 4
-                    val lHtmlContent =
-                        (("<HTML><div style='padding: " + padding + "px; WIDTH: " + (challengePanel.width - 2 * padding)) + "px;'>" +
-                                lCompletedChallengeList[index].generalReason) +
-                                "</div></HTML>"
-                    val lChallengeTitleLabelText = JEditorPane("text/html", lHtmlContent)
-                    lChallengeTitleLabelText.isEditable = false
+                    val lChallengeTitleLabelText = JLabel()
+                    lChallengeTitleLabelText.alignmentX = JLabel.CENTER_ALIGNMENT
 
-
-                    val challengeTitleName = JLabel(lCompletedChallengeList[index].name)
-                    challengeTitleName.setFont(Font("Arial", Font.BOLD, 14))
-                    challengeTitleName.setForeground(JBColor.YELLOW)
-                    challengeTitleName.horizontalAlignment = SwingConstants.CENTER
-                    challengeTitleName.verticalAlignment = SwingConstants.CENTER
-                    challengeTitleName.preferredSize = Dimension(150, 30)
-
-
-                    val lUndoButton = JButton("Undo")
-                    lUndoButton.setForeground(JBColor.white)
-
-                    lUndoButton.preferredSize = Dimension(50, 26)
-
-                    lUndoButton.addActionListener {
-                        Utility.restoreChallenge(
-                            lCompletedChallengeList[index].generalReason?.replace(Regex("<[^>]++>"), "")
-                        ) { success, errorMessage ->
-                            if (success) {
-                                Utility.showMessageDialog("Restore successful!")
-                                Utility.lCurrentQuestsChallengesPanel?.update()
-                                update()
-                            } else {
-                                Utility.showErrorDialog("Restore failed: $errorMessage")
-                            }
+                    lUpperPanel.addComponentListener(object : ComponentAdapter() {
+                        override fun componentResized(evt: ComponentEvent) {
+                            lChallengeTitleLabelText.setText(
+                                "<HTML><p style='PADDING:0;MARGIN:0;WIDTH: " + lUpperPanel.width  +
+                                        "'>" + lChallenge.generalReason + "</p></HTML>"
+                            )
                         }
+                    })
+
+                    val lChallengeTitleName = JLabel(lChallenge.name)
+                    lChallengeTitleName.setFont(Font("Arial", Font.BOLD, 14))
+                    lChallengeTitleName.setForeground(JBColor.BLUE)
+                    lChallengeTitleName.horizontalAlignment = SwingConstants.CENTER
+                    lChallengeTitleName.verticalAlignment = SwingConstants.CENTER
+                    lChallengeTitleName.preferredSize = Dimension(130, 30)
+
+                    val lScoreString = if (lChallenge.score!! > 1) "points" else "point"
+
+                    val lChallengeTitleScore = JLabel("${lChallenge.score} $lScoreString").apply {
+                        font = Font("Arial", Font.BOLD, 14)
+                        foreground = JBColor.GREEN
+                        preferredSize = Dimension(60, 30)
+                        horizontalAlignment = SwingConstants.CENTER
+                        verticalAlignment = SwingConstants.CENTER
                     }
 
-                    val gbc = GridBagConstraints()
-                    gbc.gridx = 0
-                    gbc.gridy = 0
-                    gbc.weightx = 1.0
-                    gbc.weighty = 1.0
-                    gbc.gridwidth = GridBagConstraints.REMAINDER
-                    gbc.insets = JBUI.insets(1)
-                    gbc.fill = GridBagConstraints.BOTH
-                    challengePanel.add(lChallengeTitleLabelText, gbc)
-                    gbc.gridy = 1
+                    val lGbc = GridBagConstraints()
+                    lGbc.gridx = 0
+                    lGbc.gridy = 0
+                    lGbc.weightx = 1.0
+                    lGbc.fill = GridBagConstraints.BOTH
 
-                    val lInnerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 10, 0))
-                    lInnerPanel.minimumSize = Dimension(150, 30)
-                    lInnerPanel.add(lUndoButton)
-                    lInnerPanel.add(challengeTitleName)
+                    lUpperPanel.add(lChallengeTitleLabelText)
+                    lChallengePanel.add(lUpperPanel, lGbc)
+                    lGbc.gridy = 1
 
-                    gbc.fill = GridBagConstraints.HORIZONTAL
-                    challengePanel.add(lInnerPanel, gbc)
-                    challengesPanel.add(challengePanel, BorderLayout.NORTH)
+                    val lLowerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 0, 0))
+                    lLowerPanel.background = mainBackgroundColor
+                    lLowerPanel.minimumHeight  = 35
+
+                    lChallengeTitleLabelText.addComponentListener(object : ComponentAdapter() {
+                        override fun componentResized(evt: ComponentEvent) {
+                            lChallengePanel.maximumSize = Dimension(Int.MAX_VALUE, lChallengeTitleLabelText.height + 60)
+                            lChallengePanel.revalidate()
+                        }
+                    })
+
+
+                    lLowerPanel.add(lChallengeTitleName)
+                    lLowerPanel.add(lChallengeTitleScore)
+                    lChallengePanel.add(lLowerPanel, lGbc)
+                    lChallengesPanel.add(lChallengePanel)
                 }
 
-                val scrollPane = JBScrollPane(challengesPanel)
-                scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                scrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+                val lScrollPane = JBScrollPane(lChallengesPanel)
+                lScrollPane.background = mainBackgroundColor
+                lScrollPane.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
+                lScrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+                lScrollPane.preferredSize = Dimension(200, 400)
 
-                aInJPanel.add(scrollPane)
+                aInJPanel.add(lScrollPane, BorderLayout.CENTER)
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -148,7 +159,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
     private fun createRejectedChallengesTable(aInJPanel: JPanel) {
 
-        aInJPanel.layout = BorderLayout(10,10)
+        aInJPanel.layout = BorderLayout(5,5)
 
         val lDescriptionLabel = JLabel("Rejected Challenges")
         lDescriptionLabel.font = Font("SansSerif", Font.BOLD, 18)
@@ -157,10 +168,9 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
         aInJPanel.add(lDescriptionLabel, BorderLayout.PAGE_START)
 
-        val challengesPanel = JPanel()
-        challengesPanel.setLayout(BoxLayout(challengesPanel, BoxLayout.Y_AXIS))
-        challengesPanel.border = LineBorder(JBColor.GRAY, 2)
-
+        val lChallengesPanel = JPanel()
+        lChallengesPanel.setLayout(BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS))
+        lChallengesPanel.background = mainBackgroundColor
         val lProjectName = Utility.lPreferences.get("projectName", "")
         if (lProjectName != "") {
             val queryParams = mapOf(
@@ -169,39 +179,43 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
             try {
 
-                val response = RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_REJECTED_CHALLENGES, queryParams)
+                val response = RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_REJECTED_CHALLENGES, queryParams)
                 val lRejectedChallengeList = Gson().fromJson(response, RejectedChallengeList::class.java).rejectedChallenges
 
                 for (index in lRejectedChallengeList.indices) {
-
-                    if (lRejectedChallengeList.get(index).first.name != "Class Coverage") {
-                        continue;
-                    }
-
-                    val challengePanel = JPanel(GridBagLayout())
-                    challengePanel.border = LineBorder(JBColor.GRAY, 1)
-                    challengePanel.maximumSize = Dimension(Int.MAX_VALUE, 90)
-
-                    val padding = 4
-                    val lHtmlContent =
-                        (("<HTML><div style='padding: " + padding + "px; WIDTH: " + (challengePanel.width - 2 * padding)) + "px;'>" +
-                                lRejectedChallengeList[index].first.generalReason) +
-                                "</div></HTML>"
-                    val lChallengeTitleLabelText = JEditorPane("text/html", lHtmlContent)
-                    lChallengeTitleLabelText.isEditable = false
+                    val lChallenge = lRejectedChallengeList[index]
+                    val lChallengePanel = JPanel(GridBagLayout())
+                    lChallengePanel.maximumSize = Dimension(Int.MAX_VALUE, 120)
+                    lChallengePanel.background = mainBackgroundColor
+                    lChallengePanel.border = LineBorder(JBColor.GRAY, 1)
 
 
-                    val challengeTitleName = JLabel(lRejectedChallengeList[index].first.name)
+                    val lUpperPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+                    lUpperPanel.preferredSize = Dimension(Int.MAX_VALUE, 70)
+                    lUpperPanel.background = mainBackgroundColor
+                    val lChallengeTitleLabelText = JLabel()
+                    lChallengeTitleLabelText.alignmentX = JLabel.CENTER_ALIGNMENT
+
+                    lUpperPanel.addComponentListener(object : ComponentAdapter() {
+                        override fun componentResized(evt: ComponentEvent) {
+                            lChallengeTitleLabelText.setText(
+                                "<HTML><p style='PADDING:0;MARGIN:0;WIDTH: " + lUpperPanel.width  +
+                                        "'>" + lChallenge.first.generalReason + "</p></HTML>"
+                            )
+                        }
+                    })
+
+                    val challengeTitleName = JLabel(lChallenge.first.name)
                     challengeTitleName.setFont(Font("Arial", Font.BOLD, 14))
-                    challengeTitleName.setForeground(JBColor.YELLOW)
+                    challengeTitleName.setForeground(JBColor.BLUE)
                     challengeTitleName.horizontalAlignment = SwingConstants.CENTER
                     challengeTitleName.verticalAlignment = SwingConstants.CENTER
                     challengeTitleName.preferredSize = Dimension(150, 30)
 
 
                     val lUndoButton = JButton("Undo")
-                    lUndoButton.setForeground(JBColor.white)
-
+                    lUndoButton.setForeground(mainBackgroundColor)
+                    lUndoButton.background = mainBackgroundColor
                     lUndoButton.preferredSize = Dimension(50, 26)
 
                     lUndoButton.addActionListener {
@@ -218,32 +232,46 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                         }
                     }
 
-                    val gbc = GridBagConstraints()
-                    gbc.gridx = 0
-                    gbc.gridy = 0
-                    gbc.weightx = 1.0
-                    gbc.weighty = 1.0
-                    gbc.gridwidth = GridBagConstraints.REMAINDER
-                    gbc.insets = JBUI.insets(1)
-                    gbc.fill = GridBagConstraints.BOTH
-                    challengePanel.add(lChallengeTitleLabelText, gbc)
-                    gbc.gridy = 1
+                    lUndoButton.isEnabled = lChallenge.first.name == "Class Coverage"
 
-                    val lInnerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 10, 0))
-                    lInnerPanel.minimumSize = Dimension(150, 30)
-                    lInnerPanel.add(lUndoButton)
-                    lInnerPanel.add(challengeTitleName)
+                    val lGbc = GridBagConstraints()
+                    lGbc.insets = JBUI.emptyInsets()
+                    lGbc.gridx = 0
+                    lGbc.gridy = 0
+                    lGbc.weighty = 1.0
+                    lGbc.weightx = 1.0
+                    lGbc.fill = GridBagConstraints.BOTH
 
-                    gbc.fill = GridBagConstraints.HORIZONTAL
-                    challengePanel.add(lInnerPanel, gbc)
-                    challengesPanel.add(challengePanel, BorderLayout.NORTH)
+                    lUpperPanel.add(lChallengeTitleLabelText)
+                    lChallengePanel.add(lUpperPanel, lGbc)
+                    lGbc.gridy = 1
+
+                    val lLowerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 10, 0))
+                    lLowerPanel.background = mainBackgroundColor
+
+                    lLowerPanel.minimumHeight  = 35
+                    lChallengeTitleLabelText.addComponentListener(object : ComponentAdapter() {
+                        override fun componentResized(evt: ComponentEvent) {
+                            lChallengePanel.maximumSize = Dimension(Int.MAX_VALUE, lChallengeTitleLabelText.height + 60)
+                            lChallengePanel.revalidate()
+                        }
+                    })
+
+                    lLowerPanel.add(lUndoButton)
+                    lLowerPanel.add(challengeTitleName)
+                    lChallengePanel.add(lLowerPanel, lGbc)
+                    lChallengesPanel.add(lChallengePanel)
                 }
 
-                val scrollPane = JBScrollPane(challengesPanel)
-                scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                scrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+                lChallengesPanel.background = mainBackgroundColor
 
-                aInJPanel.add(scrollPane)
+                val scrollPane = JBScrollPane(lChallengesPanel)
+                scrollPane.background = mainBackgroundColor
+                scrollPane.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
+                scrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+                scrollPane.preferredSize = Dimension(200, 400)
+
+                aInJPanel.add(scrollPane, BorderLayout.CENTER)
 
             } catch (e: Exception) {
                 e.printStackTrace()

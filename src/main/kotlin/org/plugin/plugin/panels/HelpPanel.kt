@@ -1,9 +1,9 @@
 package org.plugin.plugin.panels
 
+import com.intellij.util.ui.JBUI
 import org.plugin.plugin.Constants
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
-import javax.swing.BorderFactory
 import javax.swing.JPanel
 import javax.swing.JTextPane
 import javax.swing.text.html.HTMLEditorKit
@@ -19,13 +19,14 @@ class HelpPanel : JPanel() {
         }
 
         layout = GridBagLayout()
-        border = BorderFactory.createEmptyBorder(20, 20, 10, 10)
 
         val gbc = GridBagConstraints().apply {
             gridx = 0
             gridy = 0
             gridwidth = 1
         }
+
+        gbc.insets = JBUI.insets(10)
 
         add(textPane, gbc)
     }

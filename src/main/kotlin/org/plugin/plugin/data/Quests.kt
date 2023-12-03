@@ -11,3 +11,7 @@ data class QuestsList(val currentQuests: List<Quest>)
 
 data class QuestsListTasks(val currentQuestTasks: List<QuestTask>)
 
+data class CompletedQuestsListTasks(val completedQuestTasks: List<QuestTask>)
+
+data class UNUSEDQuestsListTasks(val currentQuestTasks: List<QuestTask>)
+

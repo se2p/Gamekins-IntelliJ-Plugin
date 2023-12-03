@@ -18,8 +18,9 @@ class IconCellRenderer : DefaultTableCellRenderer() {
         if (value is ImageIcon) {
             (label as JLabel).icon = value
             (label as JLabel).text = null
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setVerticalAlignment(SwingConstants.CENTER);
         }
-        label.setSize(20,20)
         return label
     }
 }

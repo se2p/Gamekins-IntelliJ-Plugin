@@ -1,6 +1,8 @@
 package org.plugin.plugin.panels
 
 import com.google.gson.Gson
+import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
@@ -10,23 +12,56 @@ import org.plugin.plugin.components.IconCellRenderer
 import org.plugin.plugin.data.RestClient
 import org.plugin.plugin.data.TeamList
 import org.plugin.plugin.data.UserList
+import java.awt.Component
 import java.awt.Font
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.util.*
 import java.util.prefs.Preferences
-import javax.swing.*
+import javax.swing.BorderFactory
+import javax.swing.ImageIcon
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JTable
+import javax.swing.SwingConstants
 import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.DefaultTableModel
 
 
 class LeaderboardPanel : JPanel() {
 
-    val lPreferences = Preferences.userRoot().node("org.plugin.plugin.panels")
+    private val lCenterRenderer = object : DefaultTableCellRenderer() {
+        init {
+            horizontalAlignment = SwingConstants.CENTER
+        }
+
+        override fun getTableCellRendererComponent(
+            table: JTable?,
+            value: Any?,
+            isSelected: Boolean,
+            hasFocus: Boolean,
+            row: Int,
+            column: Int
+        ): Component {
+            val cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
+
+            if (cellComponent is JComponent) {
+                // Set border for cells
+                cellComponent.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
+            }
+
+            return cellComponent
+        }
+    }
 
     init {
+        this.setBackground(mainBackgroundColor)
         this.layout = GridBagLayout()
-        val lHeader = JLabel("<html><h1>Leaderboard</h1></html>")
+        val lHeader = JLabel("Leaderboard")
+        lHeader.setFont(Font("Arial", Font.BOLD, 18))
+
+
         lHeader.alignmentX = JLabel.CENTER_ALIGNMENT
         lHeader.alignmentY = JLabel.CENTER_ALIGNMENT
 
@@ -36,7 +71,6 @@ class LeaderboardPanel : JPanel() {
         gbc.weightx = 1.0
         gbc.weighty = 0.1
         gbc.fill = GridBagConstraints.BOTH
-
         gbc.gridwidth = GridBagConstraints.REMAINDER;
 
         lHeader.setHorizontalAlignment(SwingConstants.CENTER);
@@ -49,13 +83,13 @@ class LeaderboardPanel : JPanel() {
 
     private fun userTablePanel(mainPanel: JPanel) {
 
-        val lProjectName = lPreferences.get("projectName", "")
+        val lProjectName = Utility.lPreferences.get("projectName", "")
         if (lProjectName != "") {
             val queryParams = mapOf(
                 "job" to lProjectName
             )
 
-            val response = RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_USERS, queryParams)
+            val response = RestClient.getInstance().get(Utility.getBaseUrl()+ Constants.GET_USERS, queryParams)
             val userList = Gson().fromJson(response, UserList::class.java).users
 
             val columnNames = arrayOf(
@@ -73,19 +107,24 @@ class LeaderboardPanel : JPanel() {
                 columns.add(columnName)
             }
 
-            val tableModel = DefaultTableModel(columns, 0)
+            val tableModel = object : DefaultTableModel(columns, 0) {
+                override fun isCellEditable(row: Int, column: Int): Boolean {
+                    return false
+                }
+            }
 
             val table = JBTable(tableModel)
-            table.rowHeight = 100
+            table.background = mainBackgroundColor
+            table.tableHeader.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
+
+            table.rowHeight = 70
 
             table.columnModel.getColumn(1).cellRenderer = IconCellRenderer()
-
 
             for ((index, userDetails) in userList.withIndex()) {
                 val imageUrl = "/avatars/${userDetails.image}"
                 val icon = ImageIcon(this::class.java.getResource(imageUrl))
-
-                val resizedIcon = Utility.resizeImageIcon(icon, 60, 60)
+                val resizedIcon = Utility.resizeImageIcon(icon, 50, 50)
 
                 tableModel.addRow(
                     arrayOf(
@@ -101,16 +140,15 @@ class LeaderboardPanel : JPanel() {
                 )
             }
 
-            val centerRenderer = DefaultTableCellRenderer()
-            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER)
 
-            table.setDefaultRenderer(Any::class.java, centerRenderer)
+            table.setDefaultRenderer(Any::class.java, lCenterRenderer)
             val tableHeader = table.tableHeader
-            tableHeader.defaultRenderer = centerRenderer
+            tableHeader.defaultRenderer = lCenterRenderer
             table.tableHeader.setFont(Font("SansSerif", Font.BOLD, 12))
             val scrollPane = JBScrollPane(table)
 
             val gbc = GridBagConstraints()
+            gbc.insets = JBUI.insets(10)
             gbc.gridx = 0
             gbc.gridy = 1
             gbc.weightx = 1.0
@@ -127,16 +165,24 @@ class LeaderboardPanel : JPanel() {
         val columnNames = arrayOf("#", "Team", "Completed Challenges", "Completed Quests", "Completed Achievements", "Score")
         val columns: Vector<String> = Vector(columnNames.asList())
 
-        val tableModel = DefaultTableModel(columns, 0)
+        val tableModel = object : DefaultTableModel(columns, 0) {
+            override fun isCellEditable(row: Int, column: Int): Boolean {
+                return false
+            }
+        }
+
         val table = JBTable(tableModel)
-        table.rowHeight = 100
+        table.background = mainBackgroundColor
+        table.tableHeader.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
+        table.rowHeight = 70
 
         val projectName = Utility.lPreferences.get("projectName", "")
+
         if (projectName.isNotEmpty()) {
             val queryParams = mapOf("job" to projectName)
 
             try {
-                val response = RestClient.getInstance().get("${Constants.API_BASE_URL}${Constants.GET_TEAMS}", queryParams)
+                val response = RestClient.getInstance().get("${Utility.getBaseUrl()}${Constants.GET_TEAMS}", queryParams)
                 val teamList = Gson().fromJson(response, TeamList::class.java).teams
 
                 teamList.forEachIndexed { index, team ->
@@ -152,18 +198,14 @@ class LeaderboardPanel : JPanel() {
                     )
                 }
 
-                val centerRenderer = DefaultTableCellRenderer().apply {
-                    horizontalAlignment = SwingConstants.CENTER
-                }
-
-                table.setDefaultRenderer(Any::class.java, centerRenderer)
                 table.tableHeader.font = Font("SansSerif", Font.BOLD, 12)
-                table.font = Font("SansSerif", Font.BOLD, 14)
-                table.tableHeader.defaultRenderer = centerRenderer
+               // table.font = Font("SansSerif", Font.BOLD, 12)
+                table.tableHeader.defaultRenderer = lCenterRenderer
+                table.setDefaultRenderer(Any::class.java, lCenterRenderer)
 
                 val scrollPane = JBScrollPane(table)
                 val gbc = GridBagConstraints().apply {
-                    insets = JBUI.insets(5, 0)
+                    insets = JBUI.insets(10)
                     gridx = 0
                     gridy = 2
                     weightx = 1.0

@@ -1,20 +1,24 @@
 package org.plugin.plugin.panels
 
+import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.util.maximumHeight
 import com.intellij.util.ui.JBUI
 import org.plugin.plugin.Utility
-import java.awt.*
+import java.awt.Font
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.GridLayout
 import javax.swing.*
 
 
 class MainPanel: JPanel() {
 
     private val lLeaderboardButton = JButton("Leaderboard")
-    private val lCurrentChallengesButton = JButton("Current Quests & Challenges")
-    private val lCompletedChallengesButton = JButton("Completed Quests & Challenges")
+    private val lCurrentChallengesButton = JButton("Current")
+    private val lCompletedChallengesButton = JButton("Completed")
     private val lHelpButton = JButton("Help")
-    private val lLogoutButton = JButton("Log out")
+    private val lLogoutButton = JButton("Logout")
 
     private val lLeaderboardPanel = LeaderboardPanel()
     private val lCurrentChallengesPanel = CurrentQuestsChallengesPanel()
@@ -26,29 +30,30 @@ class MainPanel: JPanel() {
     init {
 
         this.layout = GridBagLayout()
+        this.setBackground(mainBackgroundColor)
         contentPanel.layout = GridBagLayout()
-        this.maximumSize = Dimension(500, 700)
+        contentPanel.setBackground(mainBackgroundColor)
 
         val buttonsPanel = JPanel()
+        buttonsPanel.border = null
         buttonsPanel.layout = BoxLayout(buttonsPanel, BoxLayout.X_AXIS)
-        buttonsPanel.alignmentX = Component.CENTER_ALIGNMENT
-        buttonsPanel.alignmentY = Component.CENTER_ALIGNMENT
-        buttonsPanel.add(Box.createRigidArea(Dimension(0, 20)))
+
+
+        val centerPanel = JPanel(GridLayout(1, 0, 10, 0))
+        centerPanel.background = mainBackgroundColor
+        centerPanel.border = null
+
+        centerPanel.setAlignmentX(CENTER_ALIGNMENT)
+        centerPanel.setAlignmentY(CENTER_ALIGNMENT)
 
         lLogoutButton.addActionListener {
             Utility.logout()
         }
 
-        val buttonWidth = 220
-        val buttonHeight = 80
-
         for (button in listOf(lLeaderboardButton, lCurrentChallengesButton, lCompletedChallengesButton, lHelpButton, lLogoutButton)) {
-            button.alignmentX = Component.CENTER_ALIGNMENT
-            button.maximumSize = Dimension(buttonWidth, Int.MAX_VALUE);
-            button.maximumHeight = buttonHeight
-            buttonsPanel.add(button)
-            buttonsPanel.add(Box.createVerticalStrut(10))
+            centerPanel.add(button)
             button.setFont(Font("SansSerif", Font.BOLD, 12))
+            button.background = mainBackgroundColor
         }
 
         lLeaderboardButton.addActionListener { switchToPanel(lLeaderboardPanel) }
@@ -61,25 +66,30 @@ class MainPanel: JPanel() {
         val contentPanelConstraints = GridBagConstraints()
         contentPanelConstraints.gridx = 0
         contentPanelConstraints.weightx = 1.0
-        contentPanelConstraints.weighty = 1.0
+        contentPanelConstraints.weighty = 0.95
         contentPanelConstraints.fill = GridBagConstraints.BOTH
 
         val lScrollPane = JBScrollPane(contentPanel)
         this.add(lScrollPane, contentPanelConstraints)
 
-        val bottomPanel = JPanel()
-        bottomPanel.layout = BorderLayout()
 
-        bottomPanel.add(buttonsPanel, BorderLayout.CENTER)
+        buttonsPanel.add(Box.createVerticalGlue())
+        buttonsPanel.add(centerPanel)
+        buttonsPanel.add(Box.createVerticalGlue())
+
+
+        val lScrollPanel = JBScrollPane(buttonsPanel)
+        lScrollPanel.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER
+        lScrollPanel.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
 
         val bottomPanelConstraints = GridBagConstraints()
-        bottomPanelConstraints.insets = JBUI.insets(5)
         bottomPanelConstraints.gridx = 0
         bottomPanelConstraints.weightx = 1.0
+        bottomPanelConstraints.weighty = 0.05
         bottomPanelConstraints.anchor = GridBagConstraints.PAGE_END
-        bottomPanelConstraints.fill = GridBagConstraints.HORIZONTAL
+        bottomPanelConstraints.fill = GridBagConstraints.BOTH
 
-        this.add(bottomPanel, bottomPanelConstraints)
+        this.add(lScrollPanel, bottomPanelConstraints)
 
     }
 
@@ -92,7 +102,7 @@ class MainPanel: JPanel() {
         gbc.fill = GridBagConstraints.BOTH
 
         contentPanel.removeAll()
-        contentPanel.add(panel, gbc, )
+        contentPanel.add(panel, gbc)
         contentPanel.revalidate()
         contentPanel.repaint()
     }

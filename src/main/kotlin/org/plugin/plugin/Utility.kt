@@ -3,16 +3,14 @@ package org.plugin.plugin
 import Challenge
 import ChallengeList
 import com.google.gson.Gson
+import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
 import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.plugin.plugin.data.Message
-import org.plugin.plugin.data.QuestTask
-import org.plugin.plugin.data.QuestsListTasks
 import org.plugin.plugin.data.RestClient
 import org.plugin.plugin.panels.AcceptedRejectedChallengesPanel
 import org.plugin.plugin.panels.CurrentQuestsChallengesPanel
@@ -31,13 +29,16 @@ import javax.swing.border.LineBorder
 
 object Utility {
 
-    val lPreferences = Preferences.userRoot().node("org.plugin.plugin.panels")
+    val lPreferences: Preferences = Preferences.userRoot().node("org.plugin.plugin.panels")
 
     var lCurrentQuestsChallengesPanel: CurrentQuestsChallengesPanel? = null
 
     private var lAcceptedRejectedChallengesPanel: AcceptedRejectedChallengesPanel? = null
 
-    private val gson = Gson()
+    private val lGson = Gson()
+
+    val lPaddingSize = 5
+    val lEmptyBorder = BorderFactory.createEmptyBorder(lPaddingSize, lPaddingSize, 0, lPaddingSize)
 
     fun setCurrentQuestsChallengesPanel(parent: CurrentQuestsChallengesPanel) {
         this.lCurrentQuestsChallengesPanel = parent
@@ -49,21 +50,6 @@ object Utility {
 
     init {
         println("Utility initialized")
-    }
-
-    fun createChallengePanel(mainPanel: JPanel) {
-
-        val gbc = GridBagConstraints()
-        gbc.insets = JBUI.insets(5, 0)
-        gbc.weightx = 1.0
-        gbc.weighty = 0.45
-        gbc.gridx = 0
-        gbc.gridy = 2
-
-        gbc.fill = GridBagConstraints.BOTH
-        gbc.gridwidth = 1
-
-        mainPanel.add(AcceptedRejectedChallengesPanel(), gbc)
     }
 
     fun createRejectModal(challenge: String?) {
@@ -127,8 +113,9 @@ object Utility {
 
     fun openStoredChallengesDialog(aInStoredChallenges: List<Challenge>) {
 
-        val challengesPanel = JPanel()
-        challengesPanel.setLayout(BoxLayout(challengesPanel, BoxLayout.Y_AXIS))
+        val lChallengesPanel = JPanel()
+        lChallengesPanel.background = mainBackgroundColor
+        lChallengesPanel.setLayout(BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS))
         val lPaddingBorder = JBUI.Borders.empty(5)
 
         val storedChallengesModal = JDialog()
@@ -147,7 +134,7 @@ object Utility {
 
         val modalBody = JPanel()
         modalBody.setLayout(BorderLayout())
-        challengesPanel.border = lPaddingBorder
+        lChallengesPanel.border = lPaddingBorder
 
         for (index in aInStoredChallenges.indices) {
 
@@ -188,9 +175,7 @@ object Utility {
             lExpandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
 
             val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
-
-            lChallengeTitleName.background = JBColor.yellow
-            lChallengeTitleName.isOpaque = true
+            lChallengeTitleName.foreground = JBColor.yellow
             rightPanel.add(lChallengeTitleName)
 
             val lButtonsPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
@@ -201,7 +186,7 @@ object Utility {
 
             lChallengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)
             lChallengePanel.add(lButtonsPanel, BorderLayout.PAGE_END)
-            challengesPanel.add(lChallengePanel)
+            lChallengesPanel.add(lChallengePanel)
             val unshelveButton = JButton("Unshelve")
             lButtonsPanel.add(unshelveButton)
 
@@ -224,8 +209,8 @@ object Utility {
 
             lChallengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)
             lChallengePanel.add(lButtonsPanel, BorderLayout.CENTER)
-            challengesPanel.add(lChallengePanel)
-            modalBody.add(challengesPanel)
+            lChallengesPanel.add(lChallengePanel)
+            modalBody.add(lChallengesPanel)
         }
 
         val modalFooter = JPanel()
@@ -246,79 +231,6 @@ object Utility {
         storedChallengesModal.isVisible = true
     }
 
-    fun createAndShowCompletedQuestsTable(mainPanel: JPanel) {
-
-        val lProjectName = lPreferences.get("projectName", "")
-        if (lProjectName != "") {
-
-            val queryParams = mapOf(
-                "job" to lProjectName
-            )
-
-            val response =
-                RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_CURRENT_QUESTS_TASKS, queryParams)
-            val questsTasksList = Gson().fromJson(response, QuestsListTasks::class.java).currentQuestTasks
-
-            val lQuestsPanel = JPanel()
-            lQuestsPanel.setLayout(BoxLayout(lQuestsPanel, BoxLayout.Y_AXIS))
-            lQuestsPanel.border = LineBorder(JBColor.GRAY, 2)
-
-            for (index in questsTasksList.indices) {
-
-                val lQuestPanel = JPanel(GridLayout(2, 1, 0, 5))
-
-                lQuestPanel.border = BorderFactory.createCompoundBorder(
-                    LineBorder(JBColor.GRAY, 0),
-                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
-                )
-                lQuestPanel.maximumSize = Dimension(Int.MAX_VALUE, 70)
-
-                val task: QuestTask = questsTasksList[0]
-                val questLabel = JLabel(task.title)
-                val headerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0))
-
-                val spacerLabel = JLabel("")
-                spacerLabel.preferredSize = Dimension(10, 0)
-
-                val scoreString = if (task.score > 1) "points" else "point"
-
-                val challengeTitleScore = JLabel(task.score.toString() + "" + scoreString)
-                challengeTitleScore.setForeground(JBColor.GREEN)
-
-                val lIndex = index + 1
-                val progressBarLabel = JLabel(task.completedPercentage.toString()).apply {
-                    foreground = JBColor.BLUE
-                    text = "$lIndex. "
-                }
-                headerPanel.add(progressBarLabel)
-
-                val progressBar = JProgressBar(0, 100)
-                progressBar.setValue(task.completedPercentage)
-                progressBar.setStringPainted(true)
-
-                headerPanel.add(questLabel)
-                headerPanel.add(spacerLabel)
-                headerPanel.add(challengeTitleScore)
-                lQuestPanel.add(headerPanel)
-                lQuestPanel.add(progressBar)
-                lQuestsPanel.add(lQuestPanel)
-            }
-
-            val scrollPane = JBScrollPane(lQuestsPanel)
-            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS)
-
-            val gbc = GridBagConstraints()
-            gbc.weightx = 1.0
-            gbc.weighty = 0.45
-            gbc.gridx = 0
-            gbc.gridy = 1
-            gbc.fill = GridBagConstraints.BOTH
-            gbc.gridwidth = GridBagConstraints.REMAINDER
-
-            mainPanel.add(scrollPane, gbc)
-        }
-    }
-
     fun resizeImageIcon(icon: ImageIcon, width: Int, height: Int): ImageIcon {
         val img = icon.image
         val resizedImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH)
@@ -334,7 +246,7 @@ object Utility {
             val requestBody = json.toRequestBody(mediaType)
 
             val lResponse =
-                RestClient.getInstance().post(Constants.API_BASE_URL + Constants.STORE_CHALLENGE, requestBody)
+                RestClient.getInstance().post(getBaseUrl() + Constants.STORE_CHALLENGE, requestBody)
 
             val gson = Gson()
             val message = gson.fromJson(lResponse, Message::class.java)
@@ -357,10 +269,9 @@ object Utility {
             val mediaType = "application/json; charset=utf-8".toMediaType()
             val requestBody = json.toRequestBody(mediaType)
             val lResponse =
-                RestClient.getInstance().post(Constants.API_BASE_URL + Constants.RESTORE_CHALLENGE, requestBody)
+                RestClient.getInstance().post(getBaseUrl() + Constants.RESTORE_CHALLENGE, requestBody)
 
-
-            val kindValue = gson.fromJson(lResponse, Message::class.java).message.kind
+            val kindValue = lGson.fromJson(lResponse, Message::class.java).message.kind
 
             if (kindValue == "OK") {
                 aInCallback(true, "success")
@@ -380,9 +291,9 @@ object Utility {
             val requestBody = json.toRequestBody(mediaType)
 
             val lResponse =
-                RestClient.getInstance().post(Constants.API_BASE_URL + Constants.UNSHELVE_CHALLENGE, requestBody)
+                RestClient.getInstance().post(getBaseUrl()+ Constants.UNSHELVE_CHALLENGE, requestBody)
 
-            val kindValue = gson.fromJson(lResponse, Message::class.java).message.kind
+            val kindValue = lGson.fromJson(lResponse, Message::class.java).message.kind
 
             if (kindValue == "OK") {
                 aInCallback(true, "success")
@@ -404,9 +315,9 @@ object Utility {
             val requestBody = json.toRequestBody(mediaType)
 
             val lResponse =
-                RestClient.getInstance().post(Constants.API_BASE_URL + Constants.REJECT_CHALLENGE, requestBody)
+                RestClient.getInstance().post(getBaseUrl() + Constants.REJECT_CHALLENGE, requestBody)
 
-            val kindValue = gson.fromJson(lResponse, Message::class.java).message.kind
+            val kindValue = lGson.fromJson(lResponse, Message::class.java).message.kind
 
             if (kindValue == "OK") {
                 aInCallback(true, "success")
@@ -458,11 +369,16 @@ object Utility {
                 "job" to lProjectName
             )
             val lResponse =
-                RestClient.getInstance().get(Constants.API_BASE_URL + Constants.GET_CURRENT_CHALLENGES, queryParams)
+                RestClient.getInstance().get(getBaseUrl() + Constants.GET_CURRENT_CHALLENGES, queryParams)
             return Gson().fromJson(lResponse, ChallengeList::class.java).currentChallenges
 
         }
         return null
+    }
+
+    fun getBaseUrl(): String {
+        val lURL = lPreferences.get("url", "http://localhost:8080/jenkins")
+        return "$lURL/gamekins";
     }
 
     fun getAuthorizationHeader(): String {
@@ -474,23 +390,20 @@ object Utility {
     fun logout() {
         lPreferences.remove("token")
         lPreferences.remove("username")
-
-        MainToolWindow.createPanel()
     }
 
     fun startWebSocket() {
-
         if (isAuthenticated()) {
             try {
                 RestClient.getInstance().post(
-                    Constants.API_BASE_URL
+                    getBaseUrl()
                             + Constants.START_SOCKET, ByteArray(0).toRequestBody(null, 0, 0)
                 )
                 val client = WebSocketClient()
                 client.startWebSocket()
             } catch (e: Exception) {
                 RestClient.getInstance().post(
-                    Constants.API_BASE_URL
+                    getBaseUrl()
                             + Constants.START_SOCKET, ByteArray(0).toRequestBody(null, 0, 0)
                 )
                 val client = WebSocketClient()

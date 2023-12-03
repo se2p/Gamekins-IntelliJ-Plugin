@@ -7,7 +7,7 @@ object Constants {
 
 
     const val API_BASE_URL = "http://localhost:8080/jenkins/gamekins"
-     const val TOKEN_FILE_PATH = "./auth_token.txt"
+    const val TOKEN_FILE_PATH = "./auth_token.txt"
 
 
 
@@ -24,6 +24,7 @@ object Constants {
 
     // QUESTS
     const val GET_CURRENT_QUESTS_TASKS = "/getCurrentQuestTasks"
+    const val GET_COMPLETED_QUESTS_TASKS = "/getCompletedQuestTasks"
     const val GET_CURRENT_QUESTS = "/getCurrentQuests"
 
     //LEADERBOARD
