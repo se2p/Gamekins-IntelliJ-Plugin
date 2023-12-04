@@ -275,7 +275,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     val lStoreButton = JButton("Store")
                     val lRejectButton = JButton("Reject")
                     lStoreButton.background = mainBackgroundColor
-                    lStoreButton.background = mainBackgroundColor
+                    lRejectButton.background = mainBackgroundColor
 
                     val gbc2 = GridBagConstraints()
                     gbc2.gridx = 1
@@ -304,11 +304,11 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     val separator = JSeparator(JSeparator.HORIZONTAL)
                     lExtraContentPanel.add(separator, BorderLayout.CENTER)
 
-                    val lViewSourceButton = Button("Goto source")
+                    val lViewSourceButton = JButton("Go to source")
                     lViewSourceButton.preferredSize = Dimension(100, 30)
                    // lViewSourceButton.maximumSize = Dimension(50, 30)
 
-                    if ((challenge.name?.trim().equals("Smell"))) {
+                    if ((challenge.name?.trim()?.contains("Smell") == true)) {
 
                         lButtonsPanel.add(lExpandButton)
                         lExtraContentPanel.add(lViewSourceButton)
