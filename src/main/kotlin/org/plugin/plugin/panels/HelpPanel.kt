@@ -1,5 +1,6 @@
 package org.plugin.plugin.panels
 
+import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.util.ui.JBUI
 import org.plugin.plugin.Constants
 import java.awt.GridBagConstraints
@@ -16,8 +17,9 @@ class HelpPanel : JPanel() {
             contentType = "text/html"
             editorKit = HTMLEditorKit()
             text = "<html><body>${Constants.HELP}</body></html>"
+            background = mainBackgroundColor
         }
-
+        background = mainBackgroundColor
         layout = GridBagLayout()
 
         val gbc = GridBagConstraints().apply {

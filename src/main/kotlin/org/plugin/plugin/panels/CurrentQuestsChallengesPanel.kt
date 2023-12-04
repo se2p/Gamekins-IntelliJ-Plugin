@@ -14,7 +14,6 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
-import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
 import org.jsoup.Jsoup
@@ -67,9 +66,10 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
         row3.layout = BoxLayout(row3, BoxLayout.Y_AXIS)
 
-        val label = JLabel("Current Quests & Challenges")
+        val label = JLabel("Quests & Challenges")
         label.setFont(Font("Arial", Font.BOLD, 18))
-        label.horizontalAlignment = SwingConstants.CENTER
+        label.foreground = Color.BLACK
+        label.horizontalAlignment = SwingConstants.LEFT
         label.verticalAlignment = SwingConstants.CENTER
 
         row1.add(label, BorderLayout.CENTER)
@@ -110,6 +110,8 @@ class CurrentQuestsChallengesPanel : JPanel() {
             val lQuestsPanel = createQuestsPanel(questsTasksList)
             configureMainPanel(mainPanel, lQuestsPanel)
 
+            mainPanel.border = LineBorder(Color.GRAY, 1)
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -131,6 +133,11 @@ class CurrentQuestsChallengesPanel : JPanel() {
             val lQuestPanel = createSingleQuestPanel(task, index)
             lQuestPanel.background = mainBackgroundColor
             lQuestsPanel.add(lQuestPanel)
+            if (index != (questsTasksList.size - 1)) {
+                val separator = JSeparator(JSeparator.HORIZONTAL)
+                lQuestsPanel.add(separator, BorderLayout.CENTER)
+            }
+
         }
         lQuestsPanel.background = mainBackgroundColor
         return lQuestsPanel
@@ -138,10 +145,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
     private fun createSingleQuestPanel(task: QuestTask, index: Int): JPanel {
         val lQuestPanel = JPanel(GridLayout(2, 1, 0, 5)).apply {
-            border = BorderFactory.createCompoundBorder(
-                LineBorder(JBColor.GRAY, 0),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-            )
+            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             maximumSize = Dimension(Int.MAX_VALUE, 70)
         }
         lQuestPanel.background = mainBackgroundColor
@@ -154,10 +158,13 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
         val lScoreString = if (task.score > 1) "points" else "point"
         val lChallengeTitleScore = JLabel("${task.score} $lScoreString").apply {
-            font = Font("Arial", Font.BOLD, 13)
-            foreground = JBColor.GREEN
-            horizontalAlignment = SwingConstants.CENTER
-            verticalAlignment = SwingConstants.CENTER
+            setOpaque(true)
+            setBackground(Color.decode("#28a745"))
+            setForeground(Color.WHITE)
+            setFont(font.deriveFont(Font.BOLD, 10f))
+            setHorizontalAlignment(SwingConstants.CENTER)
+            setVerticalAlignment(SwingConstants.CENTER)
+            preferredSize = Dimension(60, 20)
         }
 
         val lIndex = index + 1
@@ -185,6 +192,22 @@ class CurrentQuestsChallengesPanel : JPanel() {
             background = mainBackgroundColor
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
             preferredSize = Dimension(300, 200)
+
+            add(JPanel().apply {
+
+                layout = BorderLayout()
+                val label = JLabel("Current Quests")
+                label.setFont(Font("Arial", Font.BOLD, 16))
+                label.horizontalAlignment = SwingConstants.LEADING
+                label.verticalAlignment = SwingConstants.CENTER
+                label.foreground = Color.WHITE
+                label.border = BorderFactory.createEmptyBorder(0, 10, 0, 0)
+                background = Color.BLACK
+                foreground = Color.WHITE
+                preferredSize = Dimension(300, 40)
+                add(label, BorderLayout.CENTER)
+            })
+
             add(JBScrollPane(questsPanel).apply {
                 verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
             })
@@ -193,10 +216,25 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
     private fun createChallenges(aInMainPanel: JPanel) {
 
-        val challengesPanel = JPanel()
-        val scrollPane = JBScrollPane(challengesPanel)
-        challengesPanel.setLayout(BoxLayout(challengesPanel, BoxLayout.Y_AXIS))
-        challengesPanel.background = mainBackgroundColor
+        val lChallengesPanel = JPanel()
+        val lScrollPane = JBScrollPane(lChallengesPanel)
+        lChallengesPanel.border = LineBorder(Color.GRAY, 1)
+        lChallengesPanel.setLayout(BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS))
+        lChallengesPanel.background = mainBackgroundColor
+
+        aInMainPanel.add(JPanel().apply {
+            layout = BorderLayout()
+            val label = JLabel("Current Challenges")
+            label.setFont(Font("Arial", Font.BOLD, 16))
+            label.horizontalAlignment = SwingConstants.LEADING
+            label.verticalAlignment = SwingConstants.CENTER
+            label.foreground = Color.WHITE
+            label.border = BorderFactory.createEmptyBorder(0, 10, 0, 0)
+            background = Color.BLACK
+            foreground = Color.WHITE
+            preferredSize = Dimension(300, 40)
+            add(label, BorderLayout.CENTER)
+        })
 
         try {
 
@@ -205,25 +243,26 @@ class CurrentQuestsChallengesPanel : JPanel() {
             if (lChallengeList != null) {
                 for (index in lChallengeList.indices) {
 
-                    val challenge = lChallengeList.getOrNull(index) ?: return
-                    val challengePanel = JPanel()
-                    challengePanel.setLayout(BorderLayout())
-                    challengePanel.border = LineBorder(JBColor.GRAY, 1)
-                    challengePanel.background = mainBackgroundColor
+                    val lChallenge = lChallengeList.getOrNull(index) ?: return
+                    val lChallengePanel = JPanel()
+                    lChallengePanel.setLayout(BorderLayout())
+                    lChallengePanel.background = mainBackgroundColor
+                    val lRowNum = index + 1
 
                     val lLeftPanel = JPanel(FlowLayout(FlowLayout.LEFT))
                     val lChallengeHeader = JPanel(GridBagLayout())
                     val lChallengeTitleLabel = JLabel(
-                        "<HTML><div WIDTH=" + lLeftPanel.width + ">" +
-                                lChallengeList[index].generalReason + "</div></HTML>"
+                        "<HTML><p WIDTH=" + lLeftPanel.width + ">" +
+                                "$lRowNum. " +
+                                lChallengeList[index].generalReason + "</p></HTML>"
                     )
                     lChallengeTitleLabel.alignmentX = JLabel.CENTER_ALIGNMENT
 
                     lLeftPanel.addComponentListener(object : ComponentAdapter() {
                         override fun componentResized(evt: ComponentEvent) {
                             lChallengeTitleLabel.setText(
-                                "<HTML><div WIDTH=" + lLeftPanel.width + ">" +
-                                        lChallengeList[index].generalReason + "</div></HTML>"
+                                "<HTML><p style='margin: 0' WIDTH=" + lLeftPanel.width + ">" +
+                                        "$lRowNum. " + lChallengeList[index].generalReason + "</p></HTML>"
                             )
                         }
                     })
@@ -232,7 +271,6 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     gbc.gridx = 0
                     gbc.gridy = 0
                     gbc.weightx = 0.8
-
                     gbc.fill = GridBagConstraints.BOTH
 
                     lLeftPanel.add(lChallengeTitleLabel)
@@ -240,53 +278,67 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     lChallengeHeader.background = mainBackgroundColor
                     lLeftPanel.background = mainBackgroundColor
 
-                    val scoreString = if (challenge.score!! > 1) "points" else "point"
-                    val lChallengeTitleScore = JLabel(challenge.score.toString() + " " + scoreString)
-                    lChallengeTitleScore.setFont(Font("Arial", Font.BOLD, 13))
-                    lChallengeTitleScore.setForeground(JBColor.GREEN)
-                    lChallengeTitleScore.horizontalAlignment = SwingConstants.CENTER
-                    lChallengeTitleScore.verticalAlignment = SwingConstants.CENTER
+                    val scoreString = if (lChallenge.score!! > 1) "points" else "point"
+                    val lChallengeTitleScore = JLabel("<html><div style='padding: 3px;'>${lChallenge.score.toString() + "&nbsp;" + scoreString}</div></html>").apply {
+                        setOpaque(true)
+                        setBackground(Color.decode("#28a745"))
+                        setForeground(Color.WHITE)
+                        setFont(font.deriveFont(Font.BOLD, 12f))
+                        setHorizontalAlignment(SwingConstants.CENTER)
+                        setVerticalAlignment(SwingConstants.CENTER)
+                    }
 
-                    val lChallengeTitleName = JLabel(challenge.name)
+                    val lChallengeTitleName = JLabel("<html><div style='padding: 3px;'>${lChallenge.name}</div></html>").apply {
+                        setOpaque(true)
+                        setBackground(Color.decode("#ffc107"))
+                        setForeground(Color.decode("#212529"))
+                        setFont(font.deriveFont(Font.BOLD, 12f))
+                        setHorizontalAlignment(SwingConstants.CENTER)
+                        setVerticalAlignment(SwingConstants.CENTER)
+                    }
                     val lExpandButton = JButton("Expand")
                     lExpandButton.background = mainBackgroundColor
                     lExpandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
 
-                    val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
-                    rightPanel.background = mainBackgroundColor
-                    if (challenge.score > 0)
-                        rightPanel.add(lChallengeTitleScore)
-
-                    lChallengeTitleName.setFont(Font("Arial", Font.BOLD, 13))
-                    lChallengeTitleName.setForeground(JBColor.BLUE)
-                    lChallengeTitleName.horizontalAlignment = SwingConstants.CENTER
-                    lChallengeTitleName.verticalAlignment = SwingConstants.CENTER
-
-                    rightPanel.add(lChallengeTitleName)
-
-                    val spacerLabel = JLabel("")
-                    spacerLabel.preferredSize = Dimension(10, 0)
-
-                    rightPanel.add(spacerLabel)
+                    val lRightPanel = JPanel().apply {
+                        border = BorderFactory.createEmptyBorder(10, 0, 0, 20)
+                        layout = BoxLayout(this, BoxLayout.X_AXIS)
+                        background = mainBackgroundColor
+                        add(lChallengeTitleScore)
+                        add(Box.createHorizontalStrut(10))
+                        add(lChallengeTitleName)
+                    }
 
                     val lButtonsPanel = JPanel()
                     lButtonsPanel.background = mainBackgroundColor
                     lButtonsPanel.setLayout(FlowLayout(FlowLayout.RIGHT))
                     val lStoreButton = JButton("Store")
                     val lRejectButton = JButton("Reject")
-                    lStoreButton.background = mainBackgroundColor
-                    lRejectButton.background = mainBackgroundColor
+                    lRejectButton.background = Color.RED
+                    lRejectButton.foreground = Color.WHITE
+                    lRejectButton.border = null
+                    lRejectButton.setContentAreaFilled(false)
+                    lRejectButton.setOpaque(true)
 
-                    val gbc2 = GridBagConstraints()
-                    gbc2.gridx = 1
-                    gbc2.gridy = 0
-                    gbc2.weightx = 0.2
+                    lStoreButton.background = Color.GRAY
+                    lStoreButton.foreground = Color.WHITE
+                    lStoreButton.border = null
+                    lStoreButton.setContentAreaFilled(false)
+                    lStoreButton.setOpaque(true)
 
+                    lExpandButton.background = Color.GRAY
+                    lExpandButton.foreground = Color.WHITE
+                    lExpandButton.border = null
+                    lExpandButton.setContentAreaFilled(false)
+                    lExpandButton.setOpaque(true)
 
-                    gbc2.fill = GridBagConstraints.BOTH
-                    lChallengeHeader.add(rightPanel, gbc2)
+                    gbc.gridx = 1
+                    gbc.gridy = 0
+                    gbc.weightx = 0.4
 
-                    challengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)
+                    lChallengeHeader.add(lRightPanel, gbc)
+
+                    lChallengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)
 
                     val lExtraContentPanel = JPanel()
                     lExtraContentPanel.background = mainBackgroundColor
@@ -295,34 +347,38 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
                     val lChallengeSnippetLabel: JLabel
 
-                    if (challenge.snippet != "") {
+                    if (lChallenge.snippet != "") {
                         lChallengeSnippetLabel =
-                            JLabel("<HTML><p WIDTH=80>" + challenge.snippet.toString() + "</p></HTML>")
+                            JLabel("<HTML><p WIDTH=80>" + lChallenge.snippet.toString() + "</p></HTML>")
                         lExtraContentPanel.add(lChallengeSnippetLabel, BorderLayout.PAGE_START)
                     }
 
                     val separator = JSeparator(JSeparator.HORIZONTAL)
                     lExtraContentPanel.add(separator, BorderLayout.CENTER)
 
-                    val lViewSourceButton = JButton("Go to source")
-                    lViewSourceButton.preferredSize = Dimension(100, 30)
-                   // lViewSourceButton.maximumSize = Dimension(50, 30)
+                    val lViewSourceButton = JButton("Goto source")
 
-                    if ((challenge.name?.trim()?.contains("Smell") == true)) {
+                    lViewSourceButton.background = Color.GRAY
+                    lViewSourceButton.foreground = Color.WHITE
+                    lViewSourceButton.border = null
+                    lViewSourceButton.setContentAreaFilled(false)
+                    lViewSourceButton.setOpaque(true)
 
-                        lButtonsPanel.add(lExpandButton)
-                        lExtraContentPanel.add(lViewSourceButton)
-                        challengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
-
-                    } else if ((challenge.name?.trim().equals("Mutation"))) {
+                    if ((lChallenge.name?.trim()?.contains("Smell") == true)) {
 
                         lButtonsPanel.add(lExpandButton)
                         lExtraContentPanel.add(lViewSourceButton)
-                        challengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
+                        lChallengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
+
+                    } else if ((lChallenge.name?.trim().equals("Mutation"))) {
+
+                        lButtonsPanel.add(lExpandButton)
+                        lExtraContentPanel.add(lViewSourceButton)
+                        lChallengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
 
                         lViewSourceButton.addActionListener {
 
-                            val details = challenge.details
+                            val details = lChallenge.details
                             val projectManager = ProjectManager.getInstance()
                             val projects = projectManager.openProjects
                             val fileSystem = LocalFileSystem.getInstance()
@@ -330,64 +386,64 @@ class CurrentQuestsChallengesPanel : JPanel() {
                             val lFilePath = projects.getOrNull(0)?.basePath + details.filePath
                             val file = fileSystem.findFileByPath(lFilePath)
                             file?.let { foundFile ->
-                                    val fileEditorManager = projects.getOrNull(0)
-                                        ?.let { it1 -> FileEditorManager.getInstance(it1) }
-                                    val openFileDescriptor =
-                                        projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
-                                    val editor =
-                                        openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
+                                val fileEditorManager = projects.getOrNull(0)
+                                    ?.let { it1 -> FileEditorManager.getInstance(it1) }
+                                val openFileDescriptor =
+                                    projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
+                                val editor =
+                                    openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
 
-                                    editor?.let { e ->
-                                        val document = challenge.snippet!!.let { it1 -> Jsoup.parse(it1) }
-                                        val codeTagContent = document.select("code").first()!!.text()
+                                editor?.let { e ->
+                                    val document = lChallenge.snippet!!.let { it1 -> Jsoup.parse(it1) }
+                                    val codeTagContent = document.select("code").first()!!.text()
 
-                                        val document1 = challenge.generalReason!!.let { it1 -> Jsoup.parse(it1) }
+                                    val document1 = lChallenge.generalReason!!.let { it1 -> Jsoup.parse(it1) }
 
-                                        val lineNumberElement = document1.select("b").first() // Select the first <b> element
+                                    val lineNumberElement =
+                                        document1.select("b").first() // Select the first <b> element
 
-                                        val lineNumberText = lineNumberElement?.text()
+                                    val lineNumberText = lineNumberElement?.text()
 
-                                        if (lineNumberText != null) {
-                                           // highlightLineByNumber(lineNumberText.toInt(), e.document, e.markupModel)
+                                    if (lineNumberText != null) {
+                                        // highlightLineByNumber(lineNumberText.toInt(), e.document, e.markupModel)
+                                    }
+
+                                    val documentLines = e.document.text.split("\n")
+                                    val lineNumberToHighlight = lineNumberText!!.toInt() - 1
+
+
+                                    val lineToHighlight = documentLines[lineNumberToHighlight]
+                                    val lineStartOffset = e.document.text.indexOf(lineToHighlight)
+                                    val lineEndOffset = lineStartOffset + lineToHighlight.length
+
+                                    val startOffset = codeTagContent.let { it1 -> e.document.text.indexOf(it1) }
+                                    val endOffset = startOffset.plus(codeTagContent.length)
+
+                                    e.markupModel.let { markup ->
+                                        val highlighter = startOffset.let { it1 ->
+                                            markup.addRangeHighlighter(
+                                                it1,
+                                                lineEndOffset,
+                                                HighlighterLayer.SELECTION,
+                                                TextAttributes(),
+                                                HighlighterTargetArea.EXACT_RANGE
+                                            )
                                         }
 
-                                        val documentLines = e.document.text.split("\n")
-                                        val lineNumberToHighlight = lineNumberText!!.toInt() - 1
-
-
-                                            val lineToHighlight = documentLines[lineNumberToHighlight]
-                                            val lineStartOffset = e.document.text.indexOf(lineToHighlight)
-                                            val lineEndOffset = lineStartOffset + lineToHighlight.length
-
-                                        val startOffset = codeTagContent.let { it1 -> e.document.text.indexOf(it1) }
-                                        val endOffset = startOffset.plus(codeTagContent.length)
-
-                                        e.markupModel.let { markup ->
-                                            val highlighter = startOffset.let { it1 ->
-                                                markup.addRangeHighlighter(
-                                                    it1,
-                                                    lineEndOffset,
-                                                    HighlighterLayer.SELECTION,
-                                                    TextAttributes(),
-                                                    HighlighterTargetArea.EXACT_RANGE
-                                                )
-                                            }
-
-                                            e.caretModel.moveToOffset(lineStartOffset)
-                                            e.caretModel.moveToOffset(lineEndOffset)
-                                            e.caretModel.currentCaret.setSelection(lineStartOffset, lineStartOffset)
-                                            e.scrollingModel.scrollToCaret(ScrollType.CENTER)
-                                        }
+                                        e.caretModel.moveToOffset(lineStartOffset)
+                                        e.caretModel.moveToOffset(lineEndOffset)
+                                        e.caretModel.currentCaret.setSelection(lineStartOffset, lineStartOffset)
+                                        e.scrollingModel.scrollToCaret(ScrollType.CENTER)
                                     }
                                 }
+                            }
                         }
 
-                    } else
-                    {
+                    } else {
                         lButtonsPanel.add(lViewSourceButton)
                         lViewSourceButton.addActionListener {
 
-                            val details = challenge.details
+                            val details = lChallenge.details
 
                             val projectManager = ProjectManager.getInstance()
                             val projects = projectManager.openProjects
@@ -396,8 +452,8 @@ class CurrentQuestsChallengesPanel : JPanel() {
                             val lFilePath = projects.getOrNull(0)?.basePath + details.filePath
                             val file = fileSystem.findFileByPath(lFilePath)
 
-                            if ((challenge.name?.trim()
-                                    .equals("Line Coverage") || challenge.name.equals("Branch Coverage"))
+                            if ((lChallenge.name?.trim()
+                                    .equals("Line Coverage") || lChallenge.name.equals("Branch Coverage"))
                             ) {
                                 file?.let { foundFile ->
                                     val fileEditorManager = projects.getOrNull(0)
@@ -408,7 +464,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
                                         openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
 
                                     editor?.let { e ->
-                                        val document = challenge.toolTipText!!.substringAfter("Line content:")
+                                        val document = lChallenge.toolTipText!!.substringAfter("Line content:")
                                             .let { it1 -> Jsoup.parse(it1) }
                                         val codeTagContent = document.select("body").text()
 
@@ -433,8 +489,8 @@ class CurrentQuestsChallengesPanel : JPanel() {
                                         }
                                     }
                                 }
-                            } else if ((challenge.name?.trim()
-                                    .equals("Method Coverage") || challenge.name.equals("Class Coverage"))
+                            } else if ((lChallenge.name?.trim()
+                                    .equals("Method Coverage") || lChallenge.name.equals("Class Coverage"))
                             ) {
                                 file?.let { foundFile ->
                                     val fileEditorManager = projects.getOrNull(0)
@@ -445,7 +501,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
                                         openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
 
                                     editor?.let { e ->
-                                        val document = challenge.snippet.let { it1 -> Jsoup.parse(it1) }
+                                        val document = lChallenge.snippet.let { it1 -> Jsoup.parse(it1) }
                                         val codeTagContent = document.select("code").text()
 
 
@@ -491,12 +547,12 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
                     lExpandButton.addActionListener {
                         lExtraContentPanel.isVisible = !lExtraContentPanel.isVisible
-                        challengePanel.revalidate()
-                        challengePanel.repaint()
+                        lChallengePanel.revalidate()
+                        lChallengePanel.repaint()
                     }
                     lStoreButton.addActionListener {
                         Utility.storeChallenge(
-                            challenge.generalReason?.replace(Regex("<[^>]++>"), "")
+                            lChallenge.generalReason?.replace(Regex("<[^>]++>"), "")
                         ) { success, errorMessage ->
                             if (success) {
                                 Utility.showMessageDialog("Store successful!")
@@ -508,12 +564,16 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     }
                     lRejectButton.addActionListener {
                         Utility.createRejectModal(
-                            challenge.generalReason?.replace(Regex("<[^>]++>"), "")
+                            lChallenge.generalReason?.replace(Regex("<[^>]++>"), "")
                         )
                     }
 
-                    challengePanel.add(lButtonsPanel, BorderLayout.PAGE_END)
-                    challengesPanel.add(challengePanel)
+                    lChallengePanel.add(lButtonsPanel, BorderLayout.PAGE_END)
+                    lChallengesPanel.add(lChallengePanel)
+
+                    if (index != (lChallengeList.size - 1)) {
+                        lChallengesPanel.add(separator, BorderLayout.CENTER)
+                    }
 
                 }
             }
@@ -522,10 +582,10 @@ class CurrentQuestsChallengesPanel : JPanel() {
             e.printStackTrace()
         }
 
-        scrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
-        scrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        lScrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
+        lScrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
 
-        aInMainPanel.add(scrollPane)
+        aInMainPanel.add(lScrollPane)
     }
 
     private fun createStoredButton(mainPanel: JPanel) {

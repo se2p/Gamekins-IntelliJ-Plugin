@@ -12,19 +12,8 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.ui.JBColor
-import org.jsoup.Jsoup
 import javax.swing.SwingUtilities
-
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
-import com.intellij.psi.PsiDocumentManager
-import java.awt.Color
-import javax.swing.UIDefaults
-import javax.swing.UIManager
 
 
 @Service(Service.Level.PROJECT)

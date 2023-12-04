@@ -2,7 +2,6 @@ package org.plugin.plugin.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
-import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
@@ -12,10 +11,7 @@ import org.plugin.plugin.components.IconCellRenderer
 import org.plugin.plugin.data.RestClient
 import org.plugin.plugin.data.TeamList
 import org.plugin.plugin.data.UserList
-import java.awt.Component
-import java.awt.Font
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
+import java.awt.*
 import java.util.*
 import java.util.prefs.Preferences
 import javax.swing.BorderFactory
@@ -45,10 +41,18 @@ class LeaderboardPanel : JPanel() {
             column: Int
         ): Component {
             val cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
+            val isHeader = row == -1
+            if (isHeader) {
+                cellComponent.background = Color.BLACK
+                cellComponent.foreground = Color.WHITE
+            } else
+            {
+                cellComponent.background = Color.WHITE
+                cellComponent.foreground = Color.BLACK
+            }
 
             if (cellComponent is JComponent) {
-                // Set border for cells
-                cellComponent.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
+                cellComponent.border = BorderFactory.createLineBorder(Color.GRAY, 1)
             }
 
             return cellComponent
@@ -61,11 +65,11 @@ class LeaderboardPanel : JPanel() {
         val lHeader = JLabel("Leaderboard")
         lHeader.setFont(Font("Arial", Font.BOLD, 18))
 
-
         lHeader.alignmentX = JLabel.CENTER_ALIGNMENT
         lHeader.alignmentY = JLabel.CENTER_ALIGNMENT
 
         val gbc = GridBagConstraints()
+        gbc.insets = JBUI.insets(15, 15, 0, 15)
         gbc.gridx = 0
         gbc.gridy = 0
         gbc.weightx = 1.0
@@ -73,7 +77,7 @@ class LeaderboardPanel : JPanel() {
         gbc.fill = GridBagConstraints.BOTH
         gbc.gridwidth = GridBagConstraints.REMAINDER;
 
-        lHeader.setHorizontalAlignment(SwingConstants.CENTER);
+        lHeader.setHorizontalAlignment(SwingConstants.LEFT);
 
         this.add(lHeader, gbc)
 
@@ -115,7 +119,8 @@ class LeaderboardPanel : JPanel() {
 
             val table = JBTable(tableModel)
             table.background = mainBackgroundColor
-            table.tableHeader.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
+            /*table.tableHeader.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
+            table.tableHeader.background = JBColor.black*/
 
             table.rowHeight = 70
 
@@ -173,7 +178,7 @@ class LeaderboardPanel : JPanel() {
 
         val table = JBTable(tableModel)
         table.background = mainBackgroundColor
-        table.tableHeader.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
+        table.tableHeader.border = BorderFactory.createLineBorder(Color.GRAY, 1)
         table.rowHeight = 70
 
         val projectName = Utility.lPreferences.get("projectName", "")

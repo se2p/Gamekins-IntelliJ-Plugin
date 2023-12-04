@@ -3,13 +3,11 @@ package org.plugin.plugin.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
-import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
 import org.plugin.plugin.Constants
 import org.plugin.plugin.Utility
 import org.plugin.plugin.data.*
-import org.plugin.plugin.data.QuestsList
 import java.awt.*
 import javax.swing.*
 import javax.swing.border.LineBorder
@@ -21,83 +19,115 @@ class CompletedQuestsChallengesPanel : JPanel() {
         this.layout = GridBagLayout()
         val gbc = GridBagConstraints()
         background = mainBackgroundColor
-        gbc.insets = JBUI.insets(5,5,0,5)
+        gbc.insets = JBUI.insets(15, 15, 0, 15)
         gbc.weightx = 1.0
         gbc.weighty = 0.1
         gbc.gridx = 0
         gbc.gridy = 0
         gbc.fill = GridBagConstraints.HORIZONTAL
 
+        val row1 = JPanel(BorderLayout())
+
         val lHeader = JLabel("Completed Quests & Challenges")
         lHeader.setFont(Font("Arial", Font.BOLD, 18))
-        lHeader.setHorizontalAlignment(SwingConstants.CENTER);
+        lHeader.setHorizontalAlignment(SwingConstants.LEFT);
         lHeader.setVerticalAlignment(SwingConstants.CENTER);
 
-        this.add(lHeader, gbc)
+        row1.add(lHeader, BorderLayout.CENTER)
+        row1.background = mainBackgroundColor
+        this.add(row1, gbc)
         createAndShowCompletedQuestsTable(this)
         createChallengePanel(this)
         
     }
 
-    private fun createAndShowCompletedQuestsTable(mainPanel: JPanel) {
+    private fun createAndShowCompletedQuestsTable(aInMainPanel: JPanel) {
 
         val lProjectName = Utility.lPreferences.get("projectName", "")
         if (lProjectName != "") {
 
-            val queryParams = mapOf(
+            val lQueryParams = mapOf(
                 "job" to lProjectName
             )
 
-            val response =
-                RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_COMPLETED_QUESTS_TASKS, queryParams)
-            val questsTasksList = Gson().fromJson(response, CompletedQuestsListTasks::class.java).completedQuestTasks
+            val lResponse =
+                RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_COMPLETED_QUESTS_TASKS, lQueryParams)
+            val lQuestsTasksList = Gson().fromJson(lResponse, CompletedQuestsListTasks::class.java).completedQuestTasks
 
             val lQuestsPanel = JPanel()
             lQuestsPanel.setLayout(BoxLayout(lQuestsPanel, BoxLayout.Y_AXIS))
-            lQuestsPanel.background = mainBackgroundColor
+            lQuestsPanel.background = Color.decode("#dbffe0")
 
-            for (index in questsTasksList.indices) {
+
+            lQuestsPanel.add(JPanel().apply {
+                layout = BorderLayout()
+                val label = JLabel("Completed Quests")
+                label.setFont(Font("Arial", Font.BOLD, 16))
+                label.horizontalAlignment = SwingConstants.LEADING
+                label.verticalAlignment = SwingConstants.CENTER
+                label.foreground = Color.WHITE
+                label.border = BorderFactory.createEmptyBorder(0, 10, 0, 0)
+                background = Color.BLACK
+                foreground = Color.WHITE
+                preferredSize = Dimension(300, 40)
+                add(label, BorderLayout.CENTER)
+            })
+            for (lIndex in lQuestsTasksList.indices) {
 
                 val lQuestPanel = JPanel(GridLayout(2, 1, 0, 5))
-                lQuestPanel.background = mainBackgroundColor
+                lQuestPanel.background = Color.decode("#dbffe0")
 
                 lQuestPanel.border = BorderFactory.createCompoundBorder(
-                    LineBorder(JBColor.GRAY, 0),
+                    LineBorder(Color.GRAY, 0),
                     BorderFactory.createEmptyBorder(10, 10, 10, 10)
                 )
                 lQuestPanel.maximumSize = Dimension(Int.MAX_VALUE, 70)
 
-                val task: QuestTask = questsTasksList[index]
-                val questLabel = JLabel(task.title)
-                val headerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0))
-                headerPanel.background = mainBackgroundColor
+                val lQuestTask: QuestTask = lQuestsTasksList[lIndex]
+                val lQuestLabel = JLabel(lQuestTask.title)
+                lQuestLabel.foreground = Color.black
+                val lHeaderPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0))
+                lHeaderPanel.background = Color.decode("#dbffe0")
+
 
                 val spacerLabel = JLabel("")
                 spacerLabel.preferredSize = Dimension(10, 0)
 
-                val scoreString = if (task.score > 1) "points" else "point"
+                val lScoreString = if (lQuestTask.score > 1) "points" else "point"
+                val lChallengeTitleScore = JLabel("<html><div style='padding: 3px;'>${lQuestTask.score.toString() + "&nbsp;" + lScoreString}</div></html>").apply {
+                    setOpaque(true)
+                    setBackground(Color.decode("#28a745"))
+                    setForeground(Color.white)
+                    setFont(font.deriveFont(Font.BOLD, 12f))
+                    setHorizontalAlignment(SwingConstants.CENTER)
+                    setVerticalAlignment(SwingConstants.CENTER)
+                }
 
-                val challengeTitleScore = JLabel(task.score.toString() + "" + scoreString)
-                challengeTitleScore.setForeground(JBColor.GREEN)
 
-                val lIndex = index + 1
-                val progressBarLabel = JLabel(task.completedPercentage.toString()).apply {
+                val lIndex = lIndex + 1
+                val progressBarLabel = JLabel(lQuestTask.completedPercentage.toString()).apply {
                     text = "$lIndex. "
                 }
-                headerPanel.add(progressBarLabel)
+                progressBarLabel.foreground = Color.black
+                lHeaderPanel.add(progressBarLabel)
 
                 val progressBar = JProgressBar(0, 100).apply {
-                    value = task.completedPercentage
+                    value = lQuestTask.completedPercentage
                     isStringPainted = true
                     foreground = Color.blue
                 }
 
-                headerPanel.add(questLabel)
-                headerPanel.add(spacerLabel)
-                headerPanel.add(challengeTitleScore)
-                lQuestPanel.add(headerPanel)
+                lHeaderPanel.add(lQuestLabel)
+                lHeaderPanel.add(spacerLabel)
+                lHeaderPanel.add(lChallengeTitleScore)
+                lQuestPanel.add(lHeaderPanel)
                 lQuestPanel.add(progressBar)
                 lQuestsPanel.add(lQuestPanel)
+
+                val separator = JSeparator(JSeparator.HORIZONTAL)
+                if (lIndex != (lQuestsTasksList.size)) {
+                    lQuestsPanel.add(separator)
+                }
             }
 
             val scrollPane = JBScrollPane(lQuestsPanel)
@@ -112,7 +142,7 @@ class CompletedQuestsChallengesPanel : JPanel() {
             gbc.fill = GridBagConstraints.BOTH
             gbc.gridwidth = GridBagConstraints.REMAINDER
 
-            mainPanel.add(scrollPane, gbc)
+            aInMainPanel.add(scrollPane, gbc)
         }
     }
 
