@@ -1,26 +1,20 @@
 package org.plugin.plugin.panels
 
-
 import StoredChallengeList
 import com.google.gson.Gson
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.ScrollType
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
-import com.intellij.openapi.editor.markup.MarkupModel
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
-import com.intellij.ui.components.JBScrollPane
-import com.intellij.util.ui.JBUI
+import com.intellij.ui.JBColor
 import org.jsoup.Jsoup
 import org.plugin.plugin.Constants
 import org.plugin.plugin.Utility
-import org.plugin.plugin.data.QuestTask
-import org.plugin.plugin.data.QuestsListTasks
 import org.plugin.plugin.data.RestClient
 import java.awt.*
 import java.awt.event.ActionEvent
@@ -30,208 +24,31 @@ import java.util.prefs.Preferences
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.swing.*
-import javax.swing.border.LineBorder
 
-
-class CurrentQuestsChallengesPanel : JPanel() {
+class ChallengesPanel: JPanel() {
 
     val lPreferences = Preferences.userRoot().node("org.plugin.plugin.panels")
 
     init {
-        this.setBackground(mainBackgroundColor)
-        performInitialization()
+        this.background = mainBackgroundColor
+        initializePanel()
     }
 
-    private fun performInitialization() {
-
-        this.setLayout(GridBagLayout())
-        val gbc = GridBagConstraints()
-        gbc.gridx = 0
-        gbc.weightx = 1.0
-        gbc.weighty = 1.0
-        gbc.fill = GridBagConstraints.BOTH
-        gbc.insets = JBUI.insets(15, 15, 0, 15)
-        val row1 = JPanel(BorderLayout())
-        row1.background = mainBackgroundColor
-        val row2 = JPanel()
-        val row3 = JPanel()
-        val row4 = JPanel(BorderLayout())
-        row2.background = mainBackgroundColor
-        row3.background = mainBackgroundColor
-        row4.background = mainBackgroundColor
-
-
-        row3.preferredSize = Dimension(400, 200)
-        row4.preferredSize = Dimension(400, 40)
-
-        row3.layout = BoxLayout(row3, BoxLayout.Y_AXIS)
-
-        val label = JLabel("Quests & Challenges")
-        label.setFont(Font("Arial", Font.BOLD, 18))
-        label.foreground = Color.BLACK
-        label.horizontalAlignment = SwingConstants.LEFT
-        label.verticalAlignment = SwingConstants.CENTER
-
-        row1.add(label, BorderLayout.CENTER)
-
-        gbc.gridy = 0
-        this.add(row1, gbc)
-
-        gbc.gridy = 1
-        this.add(row2, gbc)
-
-        gbc.gridy = 2
-        this.add(row3, gbc)
-
-        gbc.gridy = 3
-        gbc.weighty = 0.1
-        this.add(row4, gbc)
-
-        Utility.setCurrentQuestsChallengesPanel(this)
-        createQuests(row2)
-        createChallenges(row3)
-        createStoredButton(row4)
-    }
-
-    fun update() {
-        removeAll()
-        revalidate()
-        repaint()
-        performInitialization()
-    }
-
-    private fun createQuests(mainPanel: JPanel) {
-
-        mainPanel.background = mainBackgroundColor
+    fun initializePanel() {
         val lProjectName = lPreferences.get("projectName", "") ?: return
 
-        try {
-            val questsTasksList = fetchQuestsTasks(lProjectName)
-            val lQuestsPanel = createQuestsPanel(questsTasksList)
-            configureMainPanel(mainPanel, lQuestsPanel)
+        this.layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
-            mainPanel.border = LineBorder(Color.GRAY, 1)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun fetchQuestsTasks(projectName: String): List<QuestTask> {
-        val queryParams = mapOf("job" to projectName)
-        val response =
-            RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_CURRENT_QUESTS_TASKS, queryParams)
-        return Gson().fromJson(response, QuestsListTasks::class.java).currentQuestTasks
-    }
-
-    private fun createQuestsPanel(questsTasksList: List<QuestTask>): JPanel {
-        val lQuestsPanel = JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        }
-
-        questsTasksList.forEachIndexed { index, task ->
-            val lQuestPanel = createSingleQuestPanel(task, index)
-            lQuestPanel.background = mainBackgroundColor
-            lQuestsPanel.add(lQuestPanel)
-            if (index != (questsTasksList.size - 1)) {
-                val separator = JSeparator(JSeparator.HORIZONTAL)
-                lQuestsPanel.add(separator, BorderLayout.CENTER)
-            }
-
-        }
-        lQuestsPanel.background = mainBackgroundColor
-        return lQuestsPanel
-    }
-
-    private fun createSingleQuestPanel(task: QuestTask, index: Int): JPanel {
-        val lQuestPanel = JPanel(GridLayout(2, 1, 0, 5)).apply {
-            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-            maximumSize = Dimension(Int.MAX_VALUE, 70)
-        }
-        lQuestPanel.background = mainBackgroundColor
-        val questLabel = JLabel(task.title)
-        val headerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0))
-        headerPanel.background = mainBackgroundColor
-
-        val spacerLabel = JLabel("")
-        spacerLabel.preferredSize = Dimension(0, 0)
-
-        val lScoreString = if (task.score > 1) "points" else "point"
-        val lChallengeTitleScore = JLabel("${task.score} $lScoreString").apply {
-            setOpaque(true)
-            setBackground(Color.decode("#28a745"))
-            setForeground(Color.WHITE)
-            setFont(font.deriveFont(Font.BOLD, 10f))
-            setHorizontalAlignment(SwingConstants.CENTER)
-            setVerticalAlignment(SwingConstants.CENTER)
-            preferredSize = Dimension(60, 20)
-        }
-
-        val lIndex = index + 1
-        val progressBarLabel = JLabel(task.completedPercentage.toString()).apply {
-            text = "$lIndex. "
-        }
-        headerPanel.add(progressBarLabel)
-        val progressBar = JProgressBar(0, 100).apply {
-            value = task.completedPercentage
-            isStringPainted = true
-        }
-
-        headerPanel.add(questLabel)
-        headerPanel.add(spacerLabel)
-        headerPanel.add(lChallengeTitleScore)
-        lQuestPanel.add(headerPanel)
-        lQuestPanel.add(progressBar)
-
-        return lQuestPanel
-    }
-
-    private fun configureMainPanel(mainPanel: JPanel, questsPanel: JPanel) {
-        mainPanel.background = mainBackgroundColor
-        mainPanel.apply {
-            background = mainBackgroundColor
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-            preferredSize = Dimension(300, 200)
-
-            add(JPanel().apply {
-
-                layout = BorderLayout()
-                val label = JLabel("Current Quests")
-                label.setFont(Font("Arial", Font.BOLD, 16))
-                label.horizontalAlignment = SwingConstants.LEADING
-                label.verticalAlignment = SwingConstants.CENTER
-                label.foreground = Color.WHITE
-                label.border = BorderFactory.createEmptyBorder(0, 10, 0, 0)
-                background = Color.BLACK
-                foreground = Color.WHITE
-                preferredSize = Dimension(300, 40)
-                add(label, BorderLayout.CENTER)
-            })
-
-            add(JBScrollPane(questsPanel).apply {
-                verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
-            })
-        }
-    }
-
-    private fun createChallenges(aInMainPanel: JPanel) {
-
-        val lChallengesPanel = JPanel()
-        val lScrollPane = JBScrollPane(lChallengesPanel)
-        lChallengesPanel.border = LineBorder(Color.GRAY, 1)
-        lChallengesPanel.setLayout(BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS))
-        lChallengesPanel.background = mainBackgroundColor
-
-        aInMainPanel.add(JPanel().apply {
+        this.add(JPanel().apply {
             layout = BorderLayout()
             val label = JLabel("Current Challenges")
-            label.setFont(Font("Arial", Font.BOLD, 16))
+            label.font = Font("Arial", Font.BOLD, 16)
             label.horizontalAlignment = SwingConstants.LEADING
             label.verticalAlignment = SwingConstants.CENTER
-            label.foreground = Color.WHITE
+            label.foreground = JBColor.WHITE
             label.border = BorderFactory.createEmptyBorder(0, 10, 0, 0)
-            background = Color.BLACK
-            foreground = Color.WHITE
+            background = JBColor.BLACK
+            foreground = JBColor.WHITE
             preferredSize = Dimension(300, 40)
             add(label, BorderLayout.CENTER)
         })
@@ -252,20 +69,11 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     val lLeftPanel = JPanel(FlowLayout(FlowLayout.LEFT))
                     val lChallengeHeader = JPanel(GridBagLayout())
                     val lChallengeTitleLabel = JLabel(
-                        "<HTML><p WIDTH=" + lLeftPanel.width + ">" +
+                        "<HTML><div WIDTH=550" + ">" +
                                 "$lRowNum. " +
-                                lChallengeList[index].generalReason + "</p></HTML>"
+                                lChallengeList[index].generalReason + "</div></HTML>"
                     )
                     lChallengeTitleLabel.alignmentX = JLabel.CENTER_ALIGNMENT
-
-                    lLeftPanel.addComponentListener(object : ComponentAdapter() {
-                        override fun componentResized(evt: ComponentEvent) {
-                            lChallengeTitleLabel.setText(
-                                "<HTML><p style='margin: 0' WIDTH=" + lLeftPanel.width + ">" +
-                                        "$lRowNum. " + lChallengeList[index].generalReason + "</p></HTML>"
-                            )
-                        }
-                    })
 
                     val gbc = GridBagConstraints()
                     gbc.gridx = 0
@@ -280,25 +88,22 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
                     val scoreString = if (lChallenge.score!! > 1) "points" else "point"
                     val lChallengeTitleScore = JLabel("<html><div style='padding: 3px;'>${lChallenge.score.toString() + "&nbsp;" + scoreString}</div></html>").apply {
-                        setOpaque(true)
-                        setBackground(Color.decode("#28a745"))
-                        setForeground(Color.WHITE)
-                        setFont(font.deriveFont(Font.BOLD, 12f))
-                        setHorizontalAlignment(SwingConstants.CENTER)
-                        setVerticalAlignment(SwingConstants.CENTER)
+                        isOpaque = true
+                        background = Color.decode("#28a745")
+                        foreground = JBColor.WHITE
+                        font = font.deriveFont(Font.BOLD, 12f)
+                        horizontalAlignment = SwingConstants.CENTER
+                        verticalAlignment = SwingConstants.CENTER
                     }
 
                     val lChallengeTitleName = JLabel("<html><div style='padding: 3px;'>${lChallenge.name}</div></html>").apply {
-                        setOpaque(true)
-                        setBackground(Color.decode("#ffc107"))
-                        setForeground(Color.decode("#212529"))
-                        setFont(font.deriveFont(Font.BOLD, 12f))
-                        setHorizontalAlignment(SwingConstants.CENTER)
-                        setVerticalAlignment(SwingConstants.CENTER)
+                        isOpaque = true
+                        background = Color.decode("#ffc107")
+                        foreground = Color.decode("#212529")
+                        font = font.deriveFont(Font.BOLD, 12f)
+                        horizontalAlignment = SwingConstants.CENTER
+                        verticalAlignment = SwingConstants.CENTER
                     }
-                    val lExpandButton = JButton("Expand")
-                    lExpandButton.background = mainBackgroundColor
-                    lExpandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
 
                     val lRightPanel = JPanel().apply {
                         border = BorderFactory.createEmptyBorder(10, 0, 0, 20)
@@ -311,26 +116,28 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
                     val lButtonsPanel = JPanel()
                     lButtonsPanel.background = mainBackgroundColor
-                    lButtonsPanel.setLayout(FlowLayout(FlowLayout.RIGHT))
+                    lButtonsPanel.layout = FlowLayout(FlowLayout.RIGHT)
                     val lStoreButton = JButton("Store")
                     val lRejectButton = JButton("Reject")
-                    lRejectButton.background = Color.RED
-                    lRejectButton.foreground = Color.WHITE
+                    lRejectButton.background = JBColor.RED
+                    lRejectButton.foreground = JBColor.WHITE
                     lRejectButton.border = null
-                    lRejectButton.setContentAreaFilled(false)
-                    lRejectButton.setOpaque(true)
+                    lRejectButton.isContentAreaFilled = false
+                    lRejectButton.isOpaque = true
 
-                    lStoreButton.background = Color.GRAY
-                    lStoreButton.foreground = Color.WHITE
+                    lStoreButton.background = JBColor.GRAY
+                    lStoreButton.foreground = JBColor.WHITE
                     lStoreButton.border = null
-                    lStoreButton.setContentAreaFilled(false)
-                    lStoreButton.setOpaque(true)
+                    lStoreButton.isContentAreaFilled = false
+                    lStoreButton.isOpaque = true
 
-                    lExpandButton.background = Color.GRAY
-                    lExpandButton.foreground = Color.WHITE
+                    val lExpandButton = JButton("Expand")
+                    lExpandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
+                    lExpandButton.background = JBColor.GRAY
+                    lExpandButton.foreground = JBColor.WHITE
                     lExpandButton.border = null
-                    lExpandButton.setContentAreaFilled(false)
-                    lExpandButton.setOpaque(true)
+                    lExpandButton.isContentAreaFilled = false
+                    lExpandButton.isOpaque = true
 
                     gbc.gridx = 1
                     gbc.gridy = 0
@@ -342,7 +149,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
                     val lExtraContentPanel = JPanel()
                     lExtraContentPanel.background = mainBackgroundColor
-                    lExtraContentPanel.setLayout(BorderLayout())
+                    lExtraContentPanel.layout = BorderLayout()
                     lExtraContentPanel.isVisible = false
 
                     val lChallengeSnippetLabel: JLabel
@@ -356,13 +163,13 @@ class CurrentQuestsChallengesPanel : JPanel() {
                     val separator = JSeparator(JSeparator.HORIZONTAL)
                     lExtraContentPanel.add(separator, BorderLayout.CENTER)
 
-                    val lViewSourceButton = JButton("Goto source")
+                    val lViewSourceButton = JButton("Go to source")
 
-                    lViewSourceButton.background = Color.GRAY
-                    lViewSourceButton.foreground = Color.WHITE
+                    lViewSourceButton.background = JBColor.GRAY
+                    lViewSourceButton.foreground = JBColor.WHITE
                     lViewSourceButton.border = null
-                    lViewSourceButton.setContentAreaFilled(false)
-                    lViewSourceButton.setOpaque(true)
+                    lViewSourceButton.isContentAreaFilled = false
+                    lViewSourceButton.isOpaque = true
 
                     if ((lChallenge.name?.trim()?.contains("Smell") == true)) {
 
@@ -420,7 +227,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
                                     val endOffset = startOffset.plus(codeTagContent.length)
 
                                     e.markupModel.let { markup ->
-                                        val highlighter = startOffset.let { it1 ->
+                                        startOffset.let { it1 ->
                                             markup.addRangeHighlighter(
                                                 it1,
                                                 lineEndOffset,
@@ -472,7 +279,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
                                         val endOffset = startOffset.plus(codeTagContent.length)
 
                                         e.markupModel.let { markup ->
-                                            val highlighter = startOffset.let { it1 ->
+                                            startOffset.let { it1 ->
                                                 markup.addRangeHighlighter(
                                                     it1,
                                                     endOffset,
@@ -505,7 +312,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
                                         val codeTagContent = document.select("code").text()
 
 
-                                        var methodName: String? = null
+                                        val methodName: String?
                                         val pattern: Pattern =
                                             Pattern.compile("(?<=\\bpublic\\s|private\\s|protected\\s)\\w+\\s+(\\w+)")
                                         val matcher: Matcher = pattern.matcher(codeTagContent)
@@ -516,7 +323,7 @@ class CurrentQuestsChallengesPanel : JPanel() {
                                             val endOffset = startOffset.plus(methodName.length)
 
                                             e.markupModel.let { markup ->
-                                                val highlighter = startOffset.let { it1 ->
+                                                startOffset.let { it1 ->
                                                     markup.addRangeHighlighter(
                                                         it1,
                                                         endOffset,
@@ -556,23 +363,23 @@ class CurrentQuestsChallengesPanel : JPanel() {
                         ) { success, errorMessage ->
                             if (success) {
                                 Utility.showMessageDialog("Store successful!")
-                                update()
+                                removeAll()
+                                initializePanel()
                             } else {
                                 Utility.showErrorDialog("Store failed: $errorMessage")
                             }
                         }
                     }
                     lRejectButton.addActionListener {
-                        //Utility.createRejectModal(lChallenge.generalReason?.replace(Regex("<[^>]++>"), ""))
+                        Utility.createRejectModal(
+                            lChallenge.generalReason?.replace(Regex("<[^>]++>"), ""), this
+                        )
                     }
 
                     lChallengePanel.add(lButtonsPanel, BorderLayout.PAGE_END)
-                    lChallengesPanel.add(lChallengePanel)
+                    this.add(lChallengePanel)
 
-                    if (index != (lChallengeList.size - 1)) {
-                        lChallengesPanel.add(separator, BorderLayout.CENTER)
-                    }
-
+                    this.add(separator, BorderLayout.CENTER)
                 }
             }
 
@@ -580,10 +387,15 @@ class CurrentQuestsChallengesPanel : JPanel() {
             e.printStackTrace()
         }
 
-        lScrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
-        lScrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        this.add(Box.createRigidArea(Dimension(0, 10)))
 
-        aInMainPanel.add(lScrollPane)
+        createStoredButton(this)
+
+        this.add(Box.createRigidArea(Dimension(0, 10)))
+
+        this.add(AcceptedRejectedChallengesPanel())
+
+        Utility.challengesPanel = this
     }
 
     private fun createStoredButton(mainPanel: JPanel) {
@@ -600,9 +412,11 @@ class CurrentQuestsChallengesPanel : JPanel() {
             val storedChallengesCount = challengeList.size
 
             val lStoredChallengesButton = JButton("Stored Challenges ($storedChallengesCount/$storedChallengesLimit)")
-            lStoredChallengesButton.setFont(Font("Arial", Font.PLAIN, 14))
-            lStoredChallengesButton.addActionListener { e: ActionEvent? ->
-                //Utility.openStoredChallengesDialog(challengeList, mainPanel)
+            lStoredChallengesButton.font = Font("Arial", Font.PLAIN, 14)
+            lStoredChallengesButton.addActionListener { _: ActionEvent? ->
+                Utility.openStoredChallengesDialog(
+                    challengeList, this
+                )
             }
             lStoredChallengesButton.setSize(80, 40)
             lStoredChallengesButton.background = mainBackgroundColor
@@ -615,28 +429,4 @@ class CurrentQuestsChallengesPanel : JPanel() {
 
         }
     }
-
-    fun highlightLineByNumber(lineNumber: Int, document: Document, markupModel: MarkupModel) {
-        val documentLines = document.text.split("\n")
-        val lineNumberToHighlight = lineNumber - 1 // Adjust for zero-based indexing
-
-        if (lineNumberToHighlight >= 0 && lineNumberToHighlight < documentLines.size) {
-            val lineToHighlight = documentLines[lineNumberToHighlight]
-            val lineStartOffset = document.text.indexOf(lineToHighlight)
-            val lineEndOffset = lineStartOffset + lineToHighlight.length
-
-            if (lineStartOffset >= 0) {
-                val highlighter = markupModel.addRangeHighlighter(
-                    lineStartOffset,
-                    lineEndOffset,
-                    HighlighterLayer.SELECTION,
-                    TextAttributes(),
-                    HighlighterTargetArea.EXACT_RANGE
-                )
-                // Additional settings for the highlighter if needed
-            }
-        }
-    }
-
 }
-

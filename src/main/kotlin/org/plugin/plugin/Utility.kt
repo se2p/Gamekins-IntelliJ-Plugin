@@ -12,6 +12,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.plugin.plugin.data.Message
 import org.plugin.plugin.data.RestClient
 import org.plugin.plugin.panels.AcceptedRejectedChallengesPanel
+import org.plugin.plugin.panels.ChallengesPanel
 import org.plugin.plugin.panels.CurrentQuestsChallengesPanel
 import java.awt.*
 import java.awt.event.ComponentAdapter
@@ -32,6 +33,8 @@ object Utility {
 
     var lCurrentQuestsChallengesPanel: CurrentQuestsChallengesPanel? = null
 
+    var challengesPanel: ChallengesPanel? = null
+
     private var lAcceptedRejectedChallengesPanel: AcceptedRejectedChallengesPanel? = null
 
     private val lGson = Gson()
@@ -51,7 +54,7 @@ object Utility {
         println("Utility initialized")
     }
 
-    fun createRejectModal(challenge: String?) {
+    fun createRejectModal(challenge: String?, challengesPanel: ChallengesPanel) {
 
         val rejectModal = JDialog()
         rejectModal.setTitle("Reject Challenge")
@@ -92,8 +95,8 @@ object Utility {
                 if (success) {
                     rejectModal.dispose()
                     showMessageDialog("Reject successful!")
-                    lCurrentQuestsChallengesPanel?.update()
-                    lAcceptedRejectedChallengesPanel?.update()
+                    challengesPanel.removeAll()
+                    challengesPanel.initializePanel()
 
                 } else {
                     rejectModal.dispose()
@@ -110,7 +113,7 @@ object Utility {
 
     }
 
-    fun openStoredChallengesDialog(aInStoredChallenges: List<Challenge>) {
+    fun openStoredChallengesDialog(aInStoredChallenges: List<Challenge>, challengesPanel: ChallengesPanel) {
 
         val lChallengesPanel = JPanel()
         lChallengesPanel.background = mainBackgroundColor
@@ -196,7 +199,8 @@ object Utility {
                     if (success) {
                         storedChallengesModal.dispose()
                         showMessageDialog("Unshelve successful!")
-                        lCurrentQuestsChallengesPanel?.update()
+                        challengesPanel.removeAll()
+                        challengesPanel.initializePanel()
                     } else {
                         storedChallengesModal.dispose()
                         showErrorDialog("Unshelve failed: $errorMessage")

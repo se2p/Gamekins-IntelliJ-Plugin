@@ -4,6 +4,7 @@ import CompletedChallengeList
 import RejectedChallengeList
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.util.minimumHeight
 import com.intellij.util.ui.JBUI
@@ -219,21 +220,20 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                     })
 
                     val lChallengeTitleName = JLabel("<html><div style='padding: 3px;'>${lChallenge.first.name}</div></html>").apply {
-                        setOpaque(true)
-                        setBackground(Color.decode("#ffc107"))
-                        setForeground(Color.decode("#212529"))
-                        setFont(font.deriveFont(Font.BOLD, 12f))
-                        setHorizontalAlignment(SwingConstants.CENTER)
-                        setVerticalAlignment(SwingConstants.CENTER)
+                        isOpaque = true
+                        background = Color.decode("#ffc107")
+                        foreground = Color.decode("#212529")
+                        font = font.deriveFont(Font.BOLD, 12f)
+                        horizontalAlignment = SwingConstants.CENTER
+                        verticalAlignment = SwingConstants.CENTER
                     }
 
 
                     val lUndoButton = JButton("Undo")
                     lUndoButton.isOpaque = true
-                    lUndoButton.background = Color.decode("#dc3545")
-                    lUndoButton.border = LineBorder(Color.decode("#dc3545"), 1, true)
                     lUndoButton.preferredSize = Dimension(80, 30)
-                    lUndoButton.foreground = Color.WHITE
+                    lUndoButton.foreground = JBColor.RED
+                    lUndoButton.font = Font("Arial", Font.BOLD, 13)
 
                     lUndoButton.addActionListener {
                         Utility.restoreChallenge(
@@ -241,15 +241,13 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                         ) { success, errorMessage ->
                             if (success) {
                                 Utility.showMessageDialog("Restore successful!")
-                                Utility.lCurrentQuestsChallengesPanel?.update()
-                                update()
+                                Utility.challengesPanel?.removeAll()
+                                Utility.challengesPanel?.initializePanel()
                             } else {
                                 Utility.showErrorDialog("Restore failed: $errorMessage")
                             }
                         }
                     }
-
-                    lUndoButton.isEnabled = lChallenge.first.name == "Class Coverage"
 
                     val lGbc = GridBagConstraints()
                     lGbc.insets = JBUI.emptyInsets()
@@ -274,7 +272,9 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                         }
                     })
 
-                    lLowerPanel.add(lUndoButton)
+                    if (lChallenge.first.name == "Class Coverage") {
+                        lLowerPanel.add(lUndoButton)
+                    }
                     lLowerPanel.add(lChallengeTitleName)
                     lChallengePanel.add(lLowerPanel, lGbc)
                     lChallengesPanel.add(lChallengePanel)
