@@ -1,5 +1,6 @@
 package org.plugin.plugin.components
 
+import java.awt.Color
 import javax.swing.*
 import javax.swing.table.DefaultTableCellRenderer
 import java.awt.Component
@@ -21,6 +22,11 @@ class IconCellRenderer : DefaultTableCellRenderer() {
             label.setHorizontalAlignment(SwingConstants.CENTER);
             label.setVerticalAlignment(SwingConstants.CENTER);
         }
+
+        if (label is JComponent) {
+            label.border = BorderFactory.createLineBorder(Color.GRAY, 1)
+        }
+
         return label
     }
 }

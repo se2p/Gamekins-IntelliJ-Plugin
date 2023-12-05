@@ -2,6 +2,7 @@ package org.plugin.plugin.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
@@ -98,7 +99,7 @@ class LeaderboardPanel : JPanel() {
 
             val columnNames = arrayOf(
                 "#",
-                "icon",
+                "",
                 "Participant",
                 "Team",
                 "Completed Challenges",
