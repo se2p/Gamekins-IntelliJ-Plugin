@@ -31,6 +31,10 @@ object Constants {
     const val GET_USERS = "/getUsers"
     const val GET_TEAMS = "/getTeams"
 
+    //Achievements
+    const val GET_COMPLETED_ACHIEVEMENTS = "/getCompletedAchievements"
+    const val GET_UNSOLVED_ACHIEVEMENTS = "/getUnsolvedAchievements"
+
     //Statistics
     const val GET_STATISTICS = "/getStatistics"
 

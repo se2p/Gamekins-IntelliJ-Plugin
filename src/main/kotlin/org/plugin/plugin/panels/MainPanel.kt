@@ -17,12 +17,14 @@ class MainPanel: JPanel() {
     private val lLeaderboardButton = JButton("Leaderboard")
     private val lCurrentChallengesButton = JButton("Current")
     private val lCompletedChallengesButton = JButton("Completed")
+    private val lAchievementsButton = JButton("Achievements")
     private val lHelpButton = JButton("Help")
     private val lLogoutButton = JButton("Logout")
 
     private val lLeaderboardPanel = LeaderboardPanel()
     private val lCurrentChallengesPanel = CurrentQuestsChallengesPanel()
     private val lCompletedChallengesPanel = CompletedQuestsChallengesPanel()
+    private val lAchievementsPanel = AchievementsPanel()
     private val lHelpPanel = HelpPanel()
 
     private val contentPanel = JPanel()
@@ -50,7 +52,7 @@ class MainPanel: JPanel() {
             Utility.logout()
         }
 
-        for (button in listOf(lLeaderboardButton, lCurrentChallengesButton, lCompletedChallengesButton, lHelpButton, lLogoutButton)) {
+        for (button in listOf(lLeaderboardButton, lCurrentChallengesButton, lCompletedChallengesButton, lAchievementsButton, lHelpButton, lLogoutButton)) {
             centerPanel.add(button)
             button.setFont(Font("SansSerif", Font.BOLD, 12))
             button.background = mainBackgroundColor
@@ -59,6 +61,7 @@ class MainPanel: JPanel() {
         lLeaderboardButton.addActionListener { switchToPanel(lLeaderboardPanel) }
         lCurrentChallengesButton.addActionListener { switchToPanel(lCurrentChallengesPanel) }
         lCompletedChallengesButton.addActionListener { switchToPanel(lCompletedChallengesPanel) }
+        lAchievementsButton.addActionListener { switchToPanel(lAchievementsPanel) }
         lHelpButton.addActionListener { switchToPanel(lHelpPanel) }
 
         switchToPanel(lCurrentChallengesPanel)
