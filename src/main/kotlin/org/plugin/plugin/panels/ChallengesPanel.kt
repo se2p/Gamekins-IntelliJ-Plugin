@@ -115,25 +115,25 @@ class ChallengesPanel: JPanel() {
                     lButtonsPanel.layout = FlowLayout(FlowLayout.RIGHT)
                     val lStoreButton = JButton("Store")
                     val lRejectButton = JButton("Reject")
-                    lRejectButton.background = JBColor.RED
-                    lRejectButton.foreground = JBColor.WHITE
-                    lRejectButton.border = null
+                    lRejectButton.background = mainBackgroundColor
+                    lRejectButton.foreground = JBColor.RED
                     lRejectButton.isContentAreaFilled = false
                     lRejectButton.isOpaque = true
+                    lRejectButton.font = Font("Arial", Font.BOLD, 13)
 
-                    lStoreButton.background = JBColor.GRAY
-                    lStoreButton.foreground = JBColor.WHITE
-                    lStoreButton.border = null
+                    lStoreButton.background = mainBackgroundColor
+                    lStoreButton.foreground = JBColor.DARK_GRAY
                     lStoreButton.isContentAreaFilled = false
                     lStoreButton.isOpaque = true
+                    lStoreButton.font = Font("Arial", Font.BOLD, 13)
 
                     val lExpandButton = JButton("Expand")
                     lExpandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
-                    lExpandButton.background = JBColor.GRAY
-                    lExpandButton.foreground = JBColor.WHITE
-                    lExpandButton.border = null
+                    lExpandButton.background = mainBackgroundColor
+                    lExpandButton.foreground = JBColor.DARK_GRAY
                     lExpandButton.isContentAreaFilled = false
                     lExpandButton.isOpaque = true
+                    lExpandButton.font = Font("Arial", Font.BOLD, 13)
 
                     gbc.gridx = 1
                     gbc.gridy = 0
@@ -161,22 +161,22 @@ class ChallengesPanel: JPanel() {
 
                     val lViewSourceButton = JButton("Go to source")
 
-                    lViewSourceButton.background = JBColor.GRAY
-                    lViewSourceButton.foreground = JBColor.WHITE
-                    lViewSourceButton.border = null
+                    lViewSourceButton.background = mainBackgroundColor
+                    lViewSourceButton.foreground = JBColor.DARK_GRAY
                     lViewSourceButton.isContentAreaFilled = false
                     lViewSourceButton.isOpaque = true
+                    lViewSourceButton.font = Font("Arial", Font.BOLD, 13)
 
-                    if ((lChallenge.name?.trim()?.contains("Smell") == true)) {
+                    if (lChallenge.name?.trim()?.contains("Smell") == true) {
 
                         lButtonsPanel.add(lExpandButton)
-                        lExtraContentPanel.add(lViewSourceButton)
+                        lButtonsPanel.add(lViewSourceButton)
                         lChallengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
 
-                    } else if ((lChallenge.name?.trim().equals("Mutation"))) {
+                    } else if (lChallenge.name?.trim().equals("Mutation")) {
 
                         lButtonsPanel.add(lExpandButton)
-                        lExtraContentPanel.add(lViewSourceButton)
+                        lButtonsPanel.add(lViewSourceButton)
                         lChallengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
 
                         lViewSourceButton.addActionListener {
@@ -242,7 +242,7 @@ class ChallengesPanel: JPanel() {
                             }
                         }
 
-                    } else {
+                    } else if (lChallenge.name?.trim()?.contains("Coverage") == true) {
                         lButtonsPanel.add(lViewSourceButton)
                         lViewSourceButton.addActionListener {
 
@@ -350,6 +350,11 @@ class ChallengesPanel: JPanel() {
 
                     lExpandButton.addActionListener {
                         lExtraContentPanel.isVisible = !lExtraContentPanel.isVisible
+                        if (lExpandButton.text == "Expand") {
+                            lExpandButton.text = "Reduce"
+                        } else {
+                            lExpandButton.text = "Expand"
+                        }
                         lChallengePanel.revalidate()
                         lChallengePanel.repaint()
                     }
