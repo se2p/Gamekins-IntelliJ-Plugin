@@ -4,6 +4,7 @@ import Challenge
 import ChallengeList
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
 import okhttp3.Credentials
@@ -135,7 +136,7 @@ object Utility {
 
             val lChallengePanel = JPanel()
             lChallengePanel.setLayout(BorderLayout())
-            val lineBorder = LineBorder(Color.GRAY, 1)
+            val lineBorder = LineBorder(JBColor.GRAY, 1)
             lChallengePanel.border = CompoundBorder(lineBorder, lPaddingBorder)
             lChallengePanel.maximumSize = Dimension(Int.MAX_VALUE, 110)
 
@@ -170,7 +171,7 @@ object Utility {
             lExpandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
 
             val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
-            lChallengeTitleName.foreground = Color.yellow
+            lChallengeTitleName.foreground = JBColor.YELLOW
             rightPanel.add(lChallengeTitleName)
 
             val lButtonsPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
@@ -285,7 +286,7 @@ object Utility {
             val requestBody = json.toRequestBody(mediaType)
 
             val lResponse =
-                RestClient.getInstance().post(getBaseUrl()+ Constants.UNSHELVE_CHALLENGE, requestBody)
+                RestClient.getInstance().post(getBaseUrl() + Constants.UNSHELVE_CHALLENGE, requestBody)
 
             val kindValue = lGson.fromJson(lResponse, Message::class.java).message.kind
 
@@ -355,24 +356,24 @@ object Utility {
     }
 
     fun getCurrentChallenges(): List<Challenge>? {
+        if (isAuthenticated()) {
+            val lProjectName = lPreferences.get("projectName", "")
+            if (lProjectName != "") {
 
-        val lProjectName = lPreferences.get("projectName", "")
-        if (lProjectName != "") {
-
-            val queryParams = mapOf(
-                "job" to lProjectName
-            )
-            val lResponse =
-                RestClient.getInstance().get(getBaseUrl() + Constants.GET_CURRENT_CHALLENGES, queryParams)
-            return Gson().fromJson(lResponse, ChallengeList::class.java).currentChallenges
-
+                val queryParams = mapOf(
+                    "job" to lProjectName
+                )
+                val lResponse =
+                    RestClient.getInstance().get(getBaseUrl() + Constants.GET_CURRENT_CHALLENGES, queryParams)
+                return Gson().fromJson(lResponse, ChallengeList::class.java).currentChallenges
+            }
         }
         return null
     }
 
     fun getBaseUrl(): String {
         val lURL = lPreferences.get("url", "http://localhost:8080/jenkins")
-        return "$lURL/gamekins";
+        return "$lURL/gamekins"
     }
 
     fun getAuthorizationHeader(): String {

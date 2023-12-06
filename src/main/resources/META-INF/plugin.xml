@@ -58,11 +58,20 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
-
+        <localInspection implementationClass="org.plugin.plugin.CustomInspection"
+                         displayName="Gamekins"
+                         groupName="Gamekins"
+                         groupKey="GroupName"
+                         level="WARNING"
+                         key="key"
+                         groupPath="Java"
+                         language="JAVA"
+        />
         <!-- Change the id to something else (e.g. Personal ID) for the control group and change the group MyBundle.properties -->
         <toolWindow factoryClass="org.plugin.plugin.MainToolWindow" id="Gamekins"/>
         <postStartupActivity implementation="org.plugin.plugin.ProjectActivity" />
 
     </extensions>
 
+    <resource-bundle>messages.MyBundle</resource-bundle>
 </idea-plugin>
