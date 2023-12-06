@@ -13,7 +13,6 @@ import org.plugin.plugin.data.Message
 import org.plugin.plugin.data.RestClient
 import org.plugin.plugin.panels.AcceptedRejectedChallengesPanel
 import org.plugin.plugin.panels.ChallengesPanel
-import org.plugin.plugin.panels.CurrentQuestsChallengesPanel
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -31,8 +30,6 @@ object Utility {
 
     val lPreferences: Preferences = Preferences.userRoot().node("org.plugin.plugin.panels")
 
-    var lCurrentQuestsChallengesPanel: CurrentQuestsChallengesPanel? = null
-
     var challengesPanel: ChallengesPanel? = null
 
     private var lAcceptedRejectedChallengesPanel: AcceptedRejectedChallengesPanel? = null
@@ -41,10 +38,6 @@ object Utility {
 
     val lPaddingSize = 5
     val lEmptyBorder = BorderFactory.createEmptyBorder(lPaddingSize, lPaddingSize, 0, lPaddingSize)
-
-    fun setCurrentQuestsChallengesPanel(parent: CurrentQuestsChallengesPanel) {
-        this.lCurrentQuestsChallengesPanel = parent
-    }
 
     fun setAcceptedRejectedChallengesPanel(parent: AcceptedRejectedChallengesPanel) {
         this.lAcceptedRejectedChallengesPanel = parent
@@ -206,8 +199,6 @@ object Utility {
                         showErrorDialog("Unshelve failed: $errorMessage")
                     }
                 }
-
-                lCurrentQuestsChallengesPanel?.update()
             }
 
             lChallengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)

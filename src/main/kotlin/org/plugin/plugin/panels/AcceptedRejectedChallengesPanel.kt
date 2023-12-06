@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.util.maximumHeight
 import com.intellij.ui.util.minimumHeight
 import com.intellij.util.ui.JBUI
 import org.plugin.plugin.Constants
@@ -56,11 +57,12 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
         val lDescriptionLabel = JLabel("<html><div style='padding: 5px;'>Completed Challenges</div></html>")
         lDescriptionLabel.isOpaque = true
-        lDescriptionLabel.font = Font("SansSerif", Font.BOLD, 18)
+        lDescriptionLabel.font = Font("Arial", Font.BOLD, 16)
         lDescriptionLabel.horizontalAlignment = SwingConstants.LEFT
         lDescriptionLabel.verticalAlignment = SwingConstants.CENTER
-        lDescriptionLabel.background = Color.black
-        lDescriptionLabel.foreground = Color.white
+        lDescriptionLabel.background = JBColor.BLACK
+        lDescriptionLabel.foreground = JBColor.WHITE
+        lDescriptionLabel.maximumHeight = 40
 
         aInJPanel.add(lDescriptionLabel, BorderLayout.PAGE_START)
 
@@ -171,11 +173,12 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
         val lDescriptionLabel = JLabel("<html><div style='padding: 5px;'>Rejected Challenges</div></html>")
         lDescriptionLabel.isOpaque = true
-        lDescriptionLabel.font = Font("SansSerif", Font.BOLD, 18)
+        lDescriptionLabel.font = Font("Arial", Font.BOLD, 16)
         lDescriptionLabel.horizontalAlignment = SwingConstants.LEFT
         lDescriptionLabel.verticalAlignment = SwingConstants.CENTER
-        lDescriptionLabel.background = Color.black
-        lDescriptionLabel.foreground = Color.white
+        lDescriptionLabel.background = JBColor.BLACK
+        lDescriptionLabel.foreground = JBColor.WHITE
+        lDescriptionLabel.maximumHeight = 40
 
         aInJPanel.add(lDescriptionLabel, BorderLayout.PAGE_START)
 

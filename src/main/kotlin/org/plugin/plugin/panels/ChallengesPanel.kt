@@ -12,13 +12,13 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
+import com.intellij.ui.util.maximumHeight
 import org.jsoup.Jsoup
 import org.plugin.plugin.Constants
 import org.plugin.plugin.Utility
 import org.plugin.plugin.data.RestClient
 import java.awt.*
 import java.awt.event.ActionEvent
-import java.util.prefs.Preferences
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.swing.*
@@ -44,6 +44,7 @@ class ChallengesPanel: JPanel() {
             background = JBColor.BLACK
             foreground = JBColor.WHITE
             preferredSize = Dimension(300, 40)
+            maximumHeight = 40
             add(label, BorderLayout.CENTER)
         })
 
@@ -58,6 +59,7 @@ class ChallengesPanel: JPanel() {
                     val lChallengePanel = JPanel()
                     lChallengePanel.setLayout(BorderLayout())
                     lChallengePanel.background = mainBackgroundColor
+                    lChallengePanel.maximumHeight = 70
                     val lRowNum = index + 1
 
                     val lLeftPanel = JPanel(FlowLayout(FlowLayout.LEFT))

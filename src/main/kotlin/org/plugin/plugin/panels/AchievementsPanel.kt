@@ -3,6 +3,8 @@ package org.plugin.plugin.panels
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
+import com.intellij.ui.util.maximumHeight
+import com.intellij.ui.util.maximumWidth
 import org.plugin.plugin.Constants
 import org.plugin.plugin.Utility
 import org.plugin.plugin.data.Achievement
@@ -81,6 +83,8 @@ class AchievementsPanel : JPanel() {
         panel.background = mainBackgroundColor
         panel.layout = gbl
         panel.border = BorderFactory.createLineBorder(JBColor.BLACK)
+        panel.maximumHeight = 70
+        panel.maximumWidth = 650
 
         gbc.gridx = 0
         gbc.gridy = 0
@@ -103,14 +107,16 @@ class AchievementsPanel : JPanel() {
         gbc.gridx = 2
         gbc.gridy = 0
         gbc.gridheight = 1
-        val title = JLabel("<HTML><div WIDTH=305 style=\"text-align: left\">${achievement.title}</div></HTML>", SwingConstants.LEFT)
+        gbc.weightx = 1.0
+        val title = JLabel("<HTML><div WIDTH=350 style=\"text-align: left\">${achievement.title}</div></HTML>", SwingConstants.LEFT)
         title.font = Font("Arial", Font.BOLD, 13)
         panel.add(title, gbc)
 
         gbc.gridx = 2
         gbc.gridy = 1
         gbc.gridheight = 1
-        panel.add(JLabel("<HTML><div WIDTH=350>${achievement.description}</div></HTML>"), gbc)
+        gbc.weightx = 1.0
+        panel.add(JLabel("<HTML><div WIDTH=350 style=\"text-align: left\">${achievement.description}</div></HTML>"), gbc)
 
         gbc.gridx = 3
         gbc.gridy = 0
