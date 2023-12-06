@@ -18,8 +18,6 @@ import org.plugin.plugin.Utility
 import org.plugin.plugin.data.RestClient
 import java.awt.*
 import java.awt.event.ActionEvent
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
 import java.util.prefs.Preferences
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -27,16 +25,12 @@ import javax.swing.*
 
 class ChallengesPanel: JPanel() {
 
-    val lPreferences = Preferences.userRoot().node("org.plugin.plugin.panels")
-
     init {
         this.background = mainBackgroundColor
         initializePanel()
     }
 
     fun initializePanel() {
-        val lProjectName = lPreferences.get("projectName", "") ?: return
-
         this.layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
         this.add(JPanel().apply {
