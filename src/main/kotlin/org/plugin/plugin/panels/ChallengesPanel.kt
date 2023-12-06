@@ -2,6 +2,7 @@ package org.plugin.plugin.panels
 
 import StoredChallengeList
 import com.google.gson.Gson
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ScrollType
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
@@ -167,177 +168,116 @@ class ChallengesPanel: JPanel() {
                     lViewSourceButton.isOpaque = true
                     lViewSourceButton.font = Font("Arial", Font.BOLD, 13)
 
-                    if (lChallenge.name?.trim()?.contains("Smell") == true) {
+                    when {
+                        lChallenge.name?.trim().equals("Mutation")
+                                || lChallenge.name?.trim()?.contains("Smell") == true -> {
 
-                        lButtonsPanel.add(lExpandButton)
-                        lButtonsPanel.add(lViewSourceButton)
-                        lChallengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
+                            lButtonsPanel.add(lExpandButton)
+                            lButtonsPanel.add(lViewSourceButton)
+                            lChallengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
 
-                    } else if (lChallenge.name?.trim().equals("Mutation")) {
+                            lViewSourceButton.addActionListener {
 
-                        lButtonsPanel.add(lExpandButton)
-                        lButtonsPanel.add(lViewSourceButton)
-                        lChallengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
+                                val details = lChallenge.details
+                                val projectManager = ProjectManager.getInstance()
+                                val projects = projectManager.openProjects
+                                val fileSystem = LocalFileSystem.getInstance()
 
-                        lViewSourceButton.addActionListener {
+                                val lFilePath = projects.getOrNull(0)?.basePath + details.filePath
+                                val file = fileSystem.findFileByPath(lFilePath)
+                                file?.let { foundFile ->
+                                    val fileEditorManager = projects.getOrNull(0)
+                                        ?.let { it1 -> FileEditorManager.getInstance(it1) }
+                                    val openFileDescriptor =
+                                        projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
+                                    val editor =
+                                        openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
 
-                            val details = lChallenge.details
-                            val projectManager = ProjectManager.getInstance()
-                            val projects = projectManager.openProjects
-                            val fileSystem = LocalFileSystem.getInstance()
+                                    editor?.let { e ->
+                                        val document = lChallenge.generalReason!!.let { it1 -> Jsoup.parse(it1) }
 
-                            val lFilePath = projects.getOrNull(0)?.basePath + details.filePath
-                            val file = fileSystem.findFileByPath(lFilePath)
-                            file?.let { foundFile ->
-                                val fileEditorManager = projects.getOrNull(0)
-                                    ?.let { it1 -> FileEditorManager.getInstance(it1) }
-                                val openFileDescriptor =
-                                    projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
-                                val editor =
-                                    openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
+                                        val lineNumberElement =
+                                            document.select("b").first() // Select the first <b> element
 
-                                editor?.let { e ->
-                                    val document = lChallenge.snippet!!.let { it1 -> Jsoup.parse(it1) }
-                                    val codeTagContent = document.select("code").first()!!.text()
+                                        val lineNumberText = lineNumberElement?.text()
 
-                                    val document1 = lChallenge.generalReason!!.let { it1 -> Jsoup.parse(it1) }
-
-                                    val lineNumberElement =
-                                        document1.select("b").first() // Select the first <b> element
-
-                                    val lineNumberText = lineNumberElement?.text()
-
-                                    if (lineNumberText != null) {
-                                        // highlightLineByNumber(lineNumberText.toInt(), e.document, e.markupModel)
-                                    }
-
-                                    val documentLines = e.document.text.split("\n")
-                                    val lineNumberToHighlight = lineNumberText!!.toInt() - 1
+                                        val documentLines = e.document.text.split("\n")
+                                        val lineNumberToHighlight = lineNumberText!!.toInt() - 1
 
 
-                                    val lineToHighlight = documentLines[lineNumberToHighlight]
-                                    val lineStartOffset = e.document.text.indexOf(lineToHighlight)
-                                    val lineEndOffset = lineStartOffset + lineToHighlight.length
+                                        val lineToHighlight = documentLines[lineNumberToHighlight].trim()
+                                        val lineStartOffset = e.document.text.indexOf(lineToHighlight)
+                                        val lineEndOffset = lineStartOffset + lineToHighlight.length
 
-                                    val startOffset = codeTagContent.let { it1 -> e.document.text.indexOf(it1) }
-                                    val endOffset = startOffset.plus(codeTagContent.length)
-
-                                    e.markupModel.let { markup ->
-                                        startOffset.let { it1 ->
-                                            markup.addRangeHighlighter(
-                                                it1,
-                                                lineEndOffset,
-                                                HighlighterLayer.SELECTION,
-                                                TextAttributes(),
-                                                HighlighterTargetArea.EXACT_RANGE
-                                            )
-                                        }
-
-                                        e.caretModel.moveToOffset(lineStartOffset)
-                                        e.caretModel.moveToOffset(lineEndOffset)
-                                        e.caretModel.currentCaret.setSelection(lineStartOffset, lineStartOffset)
-                                        e.scrollingModel.scrollToCaret(ScrollType.CENTER)
+                                        highlightCode(e, lineStartOffset, lineEndOffset)
                                     }
                                 }
                             }
+
                         }
+                        lChallenge.name?.trim()?.contains("Coverage") == true -> {
+                            lButtonsPanel.add(lViewSourceButton)
+                            lViewSourceButton.addActionListener {
 
-                    } else if (lChallenge.name?.trim()?.contains("Coverage") == true) {
-                        lButtonsPanel.add(lViewSourceButton)
-                        lViewSourceButton.addActionListener {
+                                val details = lChallenge.details
 
-                            val details = lChallenge.details
+                                val projectManager = ProjectManager.getInstance()
+                                val projects = projectManager.openProjects
+                                val fileSystem = LocalFileSystem.getInstance()
 
-                            val projectManager = ProjectManager.getInstance()
-                            val projects = projectManager.openProjects
-                            val fileSystem = LocalFileSystem.getInstance()
+                                val lFilePath = projects.getOrNull(0)?.basePath + details.filePath
+                                val file = fileSystem.findFileByPath(lFilePath)
 
-                            val lFilePath = projects.getOrNull(0)?.basePath + details.filePath
-                            val file = fileSystem.findFileByPath(lFilePath)
+                                if ((lChallenge.name.trim() == "Line Coverage" || lChallenge.name == "Branch Coverage")
+                                ) {
+                                    file?.let { foundFile ->
+                                        val fileEditorManager = projects.getOrNull(0)
+                                            ?.let { it1 -> FileEditorManager.getInstance(it1) }
+                                        val openFileDescriptor =
+                                            projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
+                                        val editor =
+                                            openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
 
-                            if ((lChallenge.name?.trim()
-                                    .equals("Line Coverage") || lChallenge.name.equals("Branch Coverage"))
-                            ) {
-                                file?.let { foundFile ->
-                                    val fileEditorManager = projects.getOrNull(0)
-                                        ?.let { it1 -> FileEditorManager.getInstance(it1) }
-                                    val openFileDescriptor =
-                                        projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
-                                    val editor =
-                                        openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
+                                        editor?.let { e ->
+                                            val document = lChallenge.toolTipText!!.substringAfter("Line content:")
+                                                .let { it1 -> Jsoup.parse(it1) }
+                                            val codeTagContent = document.select("body").text()
 
-                                    editor?.let { e ->
-                                        val document = lChallenge.toolTipText!!.substringAfter("Line content:")
-                                            .let { it1 -> Jsoup.parse(it1) }
-                                        val codeTagContent = document.select("body").text()
+                                            val startOffset = codeTagContent.let { it1 -> e.document.text.indexOf(it1) }
+                                            val endOffset = startOffset.plus(codeTagContent.length)
 
-                                        val startOffset = codeTagContent.let { it1 -> e.document.text.indexOf(it1) }
-                                        val endOffset = startOffset.plus(codeTagContent.length)
-
-                                        e.markupModel.let { markup ->
-                                            startOffset.let { it1 ->
-                                                markup.addRangeHighlighter(
-                                                    it1,
-                                                    endOffset,
-                                                    HighlighterLayer.SELECTION,
-                                                    TextAttributes(),
-                                                    HighlighterTargetArea.EXACT_RANGE
-                                                )
-                                            }
-
-                                            e.caretModel.moveToOffset(startOffset)
-                                            e.caretModel.moveToOffset(endOffset)
-                                            e.caretModel.currentCaret.setSelection(startOffset, endOffset)
-                                            e.scrollingModel.scrollToCaret(ScrollType.CENTER)
+                                            highlightCode(e, startOffset, endOffset)
                                         }
                                     }
-                                }
-                            } else if ((lChallenge.name?.trim()
-                                    .equals("Method Coverage") || lChallenge.name.equals("Class Coverage"))
-                            ) {
-                                file?.let { foundFile ->
-                                    val fileEditorManager = projects.getOrNull(0)
-                                        ?.let { it1 -> FileEditorManager.getInstance(it1) }
-                                    val openFileDescriptor =
-                                        projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
-                                    val editor =
-                                        openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
+                                } else if ((lChallenge.name.trim() == "Method Coverage" || lChallenge.name == "Class Coverage")
+                                ) {
+                                    file?.let { foundFile ->
+                                        val fileEditorManager = projects.getOrNull(0)
+                                            ?.let { it1 -> FileEditorManager.getInstance(it1) }
+                                        val openFileDescriptor =
+                                            projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
+                                        val editor =
+                                            openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
 
-                                    editor?.let { e ->
-                                        val document = lChallenge.snippet.let { it1 -> Jsoup.parse(it1) }
-                                        val codeTagContent = document.select("code").text()
+                                        editor?.let { e ->
+                                            val document = lChallenge.snippet.let { it1 -> Jsoup.parse(it1) }
+                                            val codeTagContent = document.select("code").text()
 
 
-                                        val methodName: String?
-                                        val pattern: Pattern =
-                                            Pattern.compile("(?<=\\bpublic\\s|private\\s|protected\\s)\\w+\\s+(\\w+)")
-                                        val matcher: Matcher = pattern.matcher(codeTagContent)
+                                            val methodName: String?
+                                            val pattern: Pattern =
+                                                Pattern.compile("(?<=\\bpublic\\s|private\\s|protected\\s)\\w+\\s+(\\w+)")
+                                            val matcher: Matcher = pattern.matcher(codeTagContent)
 
-                                        if (matcher.find()) {
-                                            methodName = matcher.group(1)
-                                            val startOffset = methodName.let { it1 -> e.document.text.indexOf(it1) }
-                                            val endOffset = startOffset.plus(methodName.length)
+                                            if (matcher.find()) {
+                                                methodName = matcher.group(1)
+                                                val startOffset = methodName.let { it1 -> e.document.text.indexOf(it1) }
+                                                val endOffset = startOffset.plus(methodName.length)
 
-                                            e.markupModel.let { markup ->
-                                                startOffset.let { it1 ->
-                                                    markup.addRangeHighlighter(
-                                                        it1,
-                                                        endOffset,
-                                                        HighlighterLayer.SELECTION,
-                                                        TextAttributes(),
-                                                        HighlighterTargetArea.EXACT_RANGE
-                                                    )
-                                                }
+                                                highlightCode(e, startOffset, endOffset)
 
-                                                e.caretModel.moveToOffset(startOffset)
-                                                e.caretModel.moveToOffset(endOffset)
-                                                e.caretModel.currentCaret.setSelection(startOffset, endOffset)
-                                                e.scrollingModel.scrollToCaret(ScrollType.CENTER)
                                             }
-
                                         }
-
-
                                     }
                                 }
                             }
@@ -429,5 +369,19 @@ class ChallengesPanel: JPanel() {
             mainPanel.add(lJPanel, BorderLayout.CENTER)
 
         }
+    }
+
+    private fun highlightCode(editor: Editor, startOffset: Int, endOffset: Int) {
+        editor.markupModel.addRangeHighlighter(
+            startOffset,
+            endOffset,
+            HighlighterLayer.SELECTION,
+            TextAttributes(),
+            HighlighterTargetArea.EXACT_RANGE
+        )
+        editor.caretModel.moveToOffset(startOffset)
+        editor.caretModel.moveToOffset(endOffset)
+        editor.caretModel.currentCaret.setSelection(startOffset, endOffset)
+        editor.scrollingModel.scrollToCaret(ScrollType.CENTER)
     }
 }
