@@ -20,9 +20,13 @@ import org.plugin.plugin.Utility
 import org.plugin.plugin.data.RestClient
 import java.awt.*
 import java.awt.event.ActionEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import java.net.URI
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.swing.*
+
 
 class ChallengesPanel: JPanel() {
 
@@ -52,6 +56,7 @@ class ChallengesPanel: JPanel() {
         try {
 
             val lChallengeList = Utility.getCurrentChallenges()
+            val separator = JSeparator(JSeparator.HORIZONTAL)
 
             if (lChallengeList != null) {
                 for (index in lChallengeList.indices) {
@@ -84,23 +89,25 @@ class ChallengesPanel: JPanel() {
                     lLeftPanel.background = mainBackgroundColor
 
                     val scoreString = if (lChallenge.score!! > 1) "points" else "point"
-                    val lChallengeTitleScore = JLabel("<html><div style='padding: 3px;'>${lChallenge.score.toString() + "&nbsp;" + scoreString}</div></html>").apply {
-                        isOpaque = true
-                        background = Color.decode("#28a745")
-                        foreground = JBColor.WHITE
-                        font = font.deriveFont(Font.BOLD, 12f)
-                        horizontalAlignment = SwingConstants.CENTER
-                        verticalAlignment = SwingConstants.CENTER
-                    }
+                    val lChallengeTitleScore =
+                        JLabel("<html><div style='padding: 3px;'>${lChallenge.score.toString() + "&nbsp;" + scoreString}</div></html>").apply {
+                            isOpaque = true
+                            background = Color.decode("#28a745")
+                            foreground = JBColor.WHITE
+                            font = font.deriveFont(Font.BOLD, 12f)
+                            horizontalAlignment = SwingConstants.CENTER
+                            verticalAlignment = SwingConstants.CENTER
+                        }
 
-                    val lChallengeTitleName = JLabel("<html><div style='padding: 3px;'>${lChallenge.name}</div></html>").apply {
-                        isOpaque = true
-                        background = Color.decode("#ffc107")
-                        foreground = Color.decode("#212529")
-                        font = font.deriveFont(Font.BOLD, 12f)
-                        horizontalAlignment = SwingConstants.CENTER
-                        verticalAlignment = SwingConstants.CENTER
-                    }
+                    val lChallengeTitleName =
+                        JLabel("<html><div style='padding: 3px;'>${lChallenge.name}</div></html>").apply {
+                            isOpaque = true
+                            background = Color.decode("#ffc107")
+                            foreground = Color.decode("#212529")
+                            font = font.deriveFont(Font.BOLD, 12f)
+                            horizontalAlignment = SwingConstants.CENTER
+                            verticalAlignment = SwingConstants.CENTER
+                        }
 
                     val lRightPanel = JPanel().apply {
                         border = BorderFactory.createEmptyBorder(10, 0, 0, 20)
@@ -146,19 +153,30 @@ class ChallengesPanel: JPanel() {
 
                     val lExtraContentPanel = JPanel()
                     lExtraContentPanel.background = mainBackgroundColor
+                    lExtraContentPanel.border = BorderFactory.createEmptyBorder(10,10,10,10)
                     lExtraContentPanel.layout = BorderLayout()
                     lExtraContentPanel.isVisible = false
 
-                    val lChallengeSnippetLabel: JLabel
 
                     if (lChallenge.snippet != "") {
-                        lChallengeSnippetLabel =
-                            JLabel("<HTML><p WIDTH=80>" + lChallenge.snippet.toString() + "</p></HTML>")
-                        lExtraContentPanel.add(lChallengeSnippetLabel, BorderLayout.PAGE_START)
-                    }
 
-                    val separator = JSeparator(JSeparator.HORIZONTAL)
-                    lExtraContentPanel.add(separator, BorderLayout.CENTER)
+                        val lHtmlTag = lChallenge.snippet!!.let { it1 -> Jsoup.parse(it1) }
+                        val lCodeBlock = JLabel("<HTML>" + lHtmlTag.select("pre")[1].toString())
+                        lCodeBlock.verticalAlignment = SwingConstants.CENTER
+                        lCodeBlock.horizontalAlignment = SwingConstants.LEFT
+                        lExtraContentPanel.add(lCodeBlock,BorderLayout.PAGE_START)
+
+                        lExtraContentPanel.add(Box.createVerticalStrut(10))
+
+                        val label = JLabel()
+                        label.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                        label.verticalAlignment = SwingConstants.CENTER
+                        label.horizontalAlignment = SwingConstants.LEADING
+                        setLinkLabelContent(label, lHtmlTag.select("a").toString())
+                        lExtraContentPanel.add(separator, BorderLayout.CENTER)
+                        lExtraContentPanel.add(label, BorderLayout.PAGE_END)
+
+                    }
 
                     val lViewSourceButton = JButton("Go to source")
 
@@ -215,6 +233,7 @@ class ChallengesPanel: JPanel() {
                             }
 
                         }
+
                         lChallenge.name?.trim()?.contains("Coverage") == true -> {
                             lButtonsPanel.add(lViewSourceButton)
                             lViewSourceButton.addActionListener {
@@ -236,7 +255,12 @@ class ChallengesPanel: JPanel() {
                                         val openFileDescriptor =
                                             projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
                                         val editor =
-                                            openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
+                                            openFileDescriptor?.let { it1 ->
+                                                fileEditorManager?.openTextEditor(
+                                                    it1,
+                                                    true
+                                                )
+                                            }
 
                                         editor?.let { e ->
                                             val document = lChallenge.toolTipText!!.substringAfter("Line content:")
@@ -257,7 +281,12 @@ class ChallengesPanel: JPanel() {
                                         val openFileDescriptor =
                                             projects.getOrNull(0)?.let { it1 -> OpenFileDescriptor(it1, foundFile) }
                                         val editor =
-                                            openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
+                                            openFileDescriptor?.let { it1 ->
+                                                fileEditorManager?.openTextEditor(
+                                                    it1,
+                                                    true
+                                                )
+                                            }
 
                                         editor?.let { e ->
                                             val document = lChallenge.snippet.let { it1 -> Jsoup.parse(it1) }
@@ -383,5 +412,29 @@ class ChallengesPanel: JPanel() {
         editor.caretModel.moveToOffset(endOffset)
         editor.caretModel.currentCaret.setSelection(startOffset, endOffset)
         editor.scrollingModel.scrollToCaret(ScrollType.CENTER)
+    }
+
+    private fun setLinkLabelContent(label: JLabel, htmlTag: String) {
+        val pattern = Pattern.compile("href=['\"](.*?)['\"]")
+        val matcher = pattern.matcher(htmlTag)
+
+        if (matcher.find()) {
+            val url = matcher.group(1)
+            val displayText = htmlTag.replace("<.*?>".toRegex(), "")
+
+
+            label.text = "<html><a href='$url' style='color: black; text-decoration: underline;'>$displayText</a></html>"
+            label.addMouseListener(object : MouseAdapter() {
+                override fun mouseClicked(e: MouseEvent) {
+                    if (e.button == MouseEvent.BUTTON1) {
+                        try {
+                            Desktop.getDesktop().browse(URI(url))
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                        }
+                    }
+                }
+            })
+        }
     }
 }
