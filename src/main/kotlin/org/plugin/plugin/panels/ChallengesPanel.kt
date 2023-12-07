@@ -161,10 +161,14 @@ class ChallengesPanel: JPanel() {
                     if (lChallenge.snippet != "") {
 
                         val lHtmlTag = lChallenge.snippet!!.let { it1 -> Jsoup.parse(it1) }
-                        val lCodeBlock = JLabel("<HTML>" + lHtmlTag.select("pre")[1].toString())
-                        lCodeBlock.verticalAlignment = SwingConstants.CENTER
-                        lCodeBlock.horizontalAlignment = SwingConstants.LEFT
-                        lExtraContentPanel.add(lCodeBlock,BorderLayout.PAGE_START)
+                        val lCodeBlock = lHtmlTag.select("pre").getOrNull(1)?.let { JLabel("<HTML>${it.toString()}") }
+
+                        if (lCodeBlock != null) {
+                            lCodeBlock.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                            lCodeBlock.verticalAlignment = SwingConstants.CENTER
+                            lCodeBlock.horizontalAlignment = SwingConstants.LEFT
+                            lExtraContentPanel.add(lCodeBlock, BorderLayout.PAGE_START)
+                        }
 
                         lExtraContentPanel.add(Box.createVerticalStrut(10))
 
