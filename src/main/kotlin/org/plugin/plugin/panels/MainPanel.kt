@@ -1,11 +1,10 @@
 package org.plugin.plugin.panels
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.util.minimumHeight
 import org.plugin.plugin.MainToolWindow
 import org.plugin.plugin.Utility
 import java.awt.Font
@@ -35,9 +34,9 @@ class MainPanel: JPanel() {
     init {
 
         this.layout = GridBagLayout()
-        this.setBackground(mainBackgroundColor)
+        this.background = mainBackgroundColor
         contentPanel.layout = GridBagLayout()
-        contentPanel.setBackground(mainBackgroundColor)
+        contentPanel.background = mainBackgroundColor
 
         val buttonsPanel = JPanel()
         buttonsPanel.border = null
@@ -48,8 +47,8 @@ class MainPanel: JPanel() {
         centerPanel.background = mainBackgroundColor
         centerPanel.border = null
 
-        centerPanel.setAlignmentX(CENTER_ALIGNMENT)
-        centerPanel.setAlignmentY(CENTER_ALIGNMENT)
+        centerPanel.alignmentX = CENTER_ALIGNMENT
+        centerPanel.alignmentY = CENTER_ALIGNMENT
 
         lLogoutButton.addActionListener {
             Utility.logout()
@@ -69,8 +68,9 @@ class MainPanel: JPanel() {
 
         for (button in listOf(lLeaderboardButton, lChallengesButton, lQuestsButton, lAchievementsButton, lHelpButton, lLogoutButton)) {
             centerPanel.add(button)
-            button.setFont(Font("SansSerif", Font.BOLD, 12))
+            button.font = Font("SansSerif", Font.BOLD, 12)
             button.background = mainBackgroundColor
+            button.minimumHeight = 30
         }
 
         lLeaderboardButton.addActionListener { switchToPanel(lLeaderboardPanel) }
@@ -108,7 +108,6 @@ class MainPanel: JPanel() {
         bottomPanelConstraints.fill = GridBagConstraints.BOTH
 
         this.add(lScrollPanel, bottomPanelConstraints)
-
     }
 
     private fun switchToPanel(panel: JComponent) {

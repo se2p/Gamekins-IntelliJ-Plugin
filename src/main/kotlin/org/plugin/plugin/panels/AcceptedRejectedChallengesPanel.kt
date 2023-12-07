@@ -11,6 +11,7 @@ import com.intellij.ui.util.minimumHeight
 import com.intellij.util.ui.JBUI
 import org.plugin.plugin.Constants
 import org.plugin.plugin.Utility
+import org.plugin.plugin.WebSocketClient
 import org.plugin.plugin.data.RestClient
 import java.awt.*
 import java.awt.event.ComponentAdapter
@@ -292,6 +293,8 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                 scrollPane.preferredSize = Dimension(200, 400)
 
                 aInJPanel.add(scrollPane, BorderLayout.CENTER)
+
+                //WebSocketClient().showNotification("Congratulations! You solved the challenge:\n${lRejectedChallengeList.last().first.generalReason?.replace("<b>", "")?.replace("</b>", "")}")
 
             } catch (e: Exception) {
                 e.printStackTrace()

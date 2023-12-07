@@ -14,7 +14,6 @@ import org.plugin.plugin.data.TeamList
 import org.plugin.plugin.data.UserList
 import java.awt.*
 import java.util.*
-import java.util.prefs.Preferences
 import javax.swing.BorderFactory
 import javax.swing.ImageIcon
 import javax.swing.JComponent
@@ -44,16 +43,16 @@ class LeaderboardPanel : JPanel() {
             val cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
             val isHeader = row == -1
             if (isHeader) {
-                cellComponent.background = Color.BLACK
-                cellComponent.foreground = Color.WHITE
+                cellComponent.background = JBColor.BLACK
+                cellComponent.foreground = JBColor.WHITE
             } else
             {
-                cellComponent.background = Color.WHITE
-                cellComponent.foreground = Color.BLACK
+                cellComponent.background = JBColor.WHITE
+                cellComponent.foreground = JBColor.BLACK
             }
 
             if (cellComponent is JComponent) {
-                cellComponent.border = BorderFactory.createLineBorder(Color.GRAY, 1)
+                cellComponent.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
             }
 
             return cellComponent
@@ -61,10 +60,10 @@ class LeaderboardPanel : JPanel() {
     }
 
     init {
-        this.setBackground(mainBackgroundColor)
+        this.background = mainBackgroundColor
         this.layout = GridBagLayout()
         val lHeader = JLabel("Leaderboard")
-        lHeader.setFont(Font("Arial", Font.BOLD, 18))
+        lHeader.font = Font("Arial", Font.BOLD, 18)
 
         lHeader.alignmentX = JLabel.CENTER_ALIGNMENT
         lHeader.alignmentY = JLabel.CENTER_ALIGNMENT
@@ -78,7 +77,7 @@ class LeaderboardPanel : JPanel() {
         gbc.fill = GridBagConstraints.BOTH
         gbc.gridwidth = GridBagConstraints.REMAINDER;
 
-        lHeader.setHorizontalAlignment(SwingConstants.LEFT);
+        lHeader.horizontalAlignment = SwingConstants.LEFT;
 
         this.add(lHeader, gbc)
 
@@ -134,7 +133,7 @@ class LeaderboardPanel : JPanel() {
 
                 tableModel.addRow(
                     arrayOf(
-                        index,
+                        index + 1,
                         resizedIcon,
                         userDetails.userName,
                         userDetails.teamName,
@@ -150,7 +149,7 @@ class LeaderboardPanel : JPanel() {
             table.setDefaultRenderer(Any::class.java, lCenterRenderer)
             val tableHeader = table.tableHeader
             tableHeader.defaultRenderer = lCenterRenderer
-            table.tableHeader.setFont(Font("SansSerif", Font.BOLD, 12))
+            table.tableHeader.font = Font("Arial", Font.BOLD, 12)
             val scrollPane = JBScrollPane(table)
 
             val gbc = GridBagConstraints()
@@ -179,7 +178,7 @@ class LeaderboardPanel : JPanel() {
 
         val table = JBTable(tableModel)
         table.background = mainBackgroundColor
-        table.tableHeader.border = BorderFactory.createLineBorder(Color.GRAY, 1)
+        table.tableHeader.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
         table.rowHeight = 70
 
         val projectName = Utility.lPreferences.get("projectName", "")
@@ -194,7 +193,7 @@ class LeaderboardPanel : JPanel() {
                 teamList.forEachIndexed { index, team ->
                     tableModel.addRow(
                         arrayOf(
-                            index,
+                            index + 1,
                             team.teamName,
                             team.completedChallenges,
                             team.completedQuests,

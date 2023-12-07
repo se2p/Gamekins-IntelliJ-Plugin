@@ -118,7 +118,7 @@ class AuthenticationPanel : JPanel() {
         gbc.anchor = GridBagConstraints.CENTER
         panel.add(loginButton, gbc)
 
-        val welcomeLabel = JLabel("<html><h2>Gamekins!</h2></html>")
+        val welcomeLabel = JLabel("<html><h2>Welcome to Gamekins</h2></html>")
 
         mainPanel.add(welcomeLabel)
         mainPanel.add(panel)

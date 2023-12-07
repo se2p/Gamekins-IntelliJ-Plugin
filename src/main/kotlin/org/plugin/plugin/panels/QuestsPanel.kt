@@ -104,24 +104,10 @@ class QuestsPanel: JPanel() {
                 verticalAlignment = SwingConstants.CENTER
             }
 
-
-            val progressBarLabel = JLabel(lQuestTask.completedPercentage.toString()).apply {
-                text = "${lIndex + 1}. "
-            }
-            progressBarLabel.foreground = JBColor.BLACK
-            lHeaderPanel.add(progressBarLabel)
-
-            val progressBar = JProgressBar(0, 100).apply {
-                value = lQuestTask.completedPercentage
-                isStringPainted = true
-                foreground = JBColor.BLUE
-            }
-
             lHeaderPanel.add(lQuestLabel)
             lHeaderPanel.add(spacerLabel)
             lHeaderPanel.add(lChallengeTitleScore)
             lQuestPanel.add(lHeaderPanel)
-            lQuestPanel.add(progressBar)
             this.add(lQuestPanel)
         }
     }
