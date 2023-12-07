@@ -1,7 +1,12 @@
 package org.plugin.plugin.panels
 
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.components.JBScrollPane
+import org.plugin.plugin.MainToolWindow
 import org.plugin.plugin.Utility
 import java.awt.Font
 import java.awt.GridBagConstraints
@@ -48,6 +53,18 @@ class MainPanel: JPanel() {
 
         lLogoutButton.addActionListener {
             Utility.logout()
+
+            val toolWindowManager = Utility.project?.let {
+                it1 -> ToolWindowManager.getInstance(it1)
+            }
+
+            val mainToolWindow = MainToolWindow()
+            val myToolWindow: ToolWindow? = toolWindowManager?.getToolWindow("Gamekins")
+
+            if (myToolWindow != null) {
+                mainToolWindow.rebuildPanel(myToolWindow)
+            }
+
         }
 
         for (button in listOf(lLeaderboardButton, lChallengesButton, lQuestsButton, lAchievementsButton, lHelpButton, lLogoutButton)) {

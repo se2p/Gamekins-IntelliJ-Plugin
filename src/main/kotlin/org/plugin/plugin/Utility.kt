@@ -3,6 +3,7 @@ package org.plugin.plugin
 import Challenge
 import ChallengeList
 import com.google.gson.Gson
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
@@ -37,11 +38,14 @@ object Utility {
 
     private val lGson = Gson()
 
-    val lPaddingSize = 5
-    val lEmptyBorder = BorderFactory.createEmptyBorder(lPaddingSize, lPaddingSize, 0, lPaddingSize)
+    var project: Project? = null
 
     fun setAcceptedRejectedChallengesPanel(parent: AcceptedRejectedChallengesPanel) {
         this.lAcceptedRejectedChallengesPanel = parent
+    }
+
+    fun setCurrentProject(project: Project) {
+        this.project = project
     }
 
     init {

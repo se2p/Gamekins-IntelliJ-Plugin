@@ -72,6 +72,15 @@ class MainToolWindow  : ToolWindowFactory {
         }
     }
 
+    fun rebuildPanel(toolWindow: ToolWindow) {
+
+        val contentManager = toolWindow.contentManager
+        contentManager.removeAllContents(true)
+
+        val newPanel = createPanel()
+        contentManager.addContent(contentFactory.createContent(newPanel, null, false))
+    }
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         toolWindow.contentManager.addContent( contentFactory.createContent(createPanel(), null, false))
     }

@@ -11,6 +11,7 @@ class ProjectService(project: Project) : Disposable {
 
     init {
         Utility.startWebSocket()
+        Utility.setCurrentProject(project)
     }
 
     override fun dispose() = Unit
