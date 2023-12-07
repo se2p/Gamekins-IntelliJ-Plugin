@@ -3,6 +3,8 @@ package org.plugin.plugin
 import Challenge
 import ChallengeList
 import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
@@ -326,19 +328,6 @@ object Utility {
         }
     }
 
-    private fun readToken(): String? {
-        return try {
-            Files.readString(Path.of(Constants.TOKEN_FILE_PATH))
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-    private fun isTokenValid(token: String?): Boolean {
-        return token != null && !token.isEmpty()
-    }
-
     fun isAuthenticated(): Boolean {
         return lPreferences.get("token", "") != ""
     }
@@ -409,5 +398,21 @@ object Utility {
                 client.startWebSocket()
             }
         }
+    }
+
+    fun getStoredChallengesLimit(): Int? {
+
+        val lProjectName = lPreferences.get("projectName", "")
+        if (lProjectName != "") {
+            val queryParams = mapOf(
+                "job" to lProjectName
+            )
+            val lResponse =
+                RestClient.getInstance().get(getBaseUrl() + Constants.STORE_CHALLENGE_LIMIT, queryParams)
+            val jsonObject: JsonObject = JsonParser.parseString(lResponse.toString()).asJsonObject
+
+            return jsonObject.get("limit").asInt
+        }
+        return null;
     }
 }

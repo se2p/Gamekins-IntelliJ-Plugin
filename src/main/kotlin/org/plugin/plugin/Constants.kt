@@ -13,6 +13,7 @@ object Constants {
 
     // CHALLENGES
     const val STORE_CHALLENGE = "/storeChallenge"
+    const val STORE_CHALLENGE_LIMIT = "/getStoredChallengesLimit"
     const val RESTORE_CHALLENGE = "/restoreChallenge"
     const val UNSHELVE_CHALLENGE = "/unshelveChallenge"
     const val REJECT_CHALLENGE = "/rejectChallenge"
