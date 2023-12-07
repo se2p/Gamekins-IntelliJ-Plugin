@@ -7,8 +7,6 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.ui.content.Content
-import com.intellij.ui.content.ContentManager
 import org.jsoup.Jsoup
 
 import com.intellij.psi.*
@@ -21,13 +19,23 @@ class CustomInspection : LocalInspectionTool() {
         return object : PsiElementVisitor() {
             override fun visitFile(file: PsiFile) {
                 super.visitFile(file)
-                val lChallengeList = Utility.getCurrentChallenges() ?: return
+                val lChallengeList = Utility.getCurrentChallenges()?.filter { it.name != "Test" && it.name != "Build" }
+                    ?: return
 
                 for (lChallenge in lChallengeList) {
                     val document = PsiDocumentManager.getInstance(file.project).getDocument(file)
                     val fileNameWithExtension = lChallenge.details.fileName + "." + lChallenge.details.fileExtension
 
                     if (document != null && fileNameWithExtension == file.name) {
+                        val description = when(lChallenge.name) {
+                            "Mutation" -> "Write a test to kill the mutant here"
+                            "Code Smell" -> "Improve your code by removing the smell here"
+                            "Line Coverage" -> "Write a test to cover the line here"
+                            "Method Coverage" -> "Write a test to cover more lines in this method"
+                            "Class Coverage" -> "Write a test to cover more lines in this class"
+                            "Branch Coverage" -> "Write a test to cover more branches in this line"
+                            else -> "Check the challenge here"
+                        }
                         when {
                             lChallenge.name?.trim() == "Mutation" || lChallenge.name?.trim()?.contains("Smell") == true -> {
                                 val fileDocument = Jsoup.parse(lChallenge.generalReason!!)
@@ -39,12 +47,26 @@ class CustomInspection : LocalInspectionTool() {
                                 lineNumberToHighlight?.takeIf { it in documentLines.indices }?.let { line ->
                                     val lineToHighlight = documentLines[line].trim()
                                     val lineStartOffset = file.text.indexOf(lineToHighlight)
-                                    val lineEndOffset = lineStartOffset + lineToHighlight.length
                                     val quickFix = QuickFix()
-                                    file.findElementAt(lineStartOffset)?.let {
+                                    var element = file.findElementAt(lineStartOffset)
+                                    var elementToHighlight = file.findElementAt(lineStartOffset)
+                                    while (element != null) {
+                                        if (element!!.text.length == lineToHighlight.length) {
+                                            elementToHighlight = element
+                                            element = null
+                                        }
+                                        if (element != null && element!!.parent != null && element!!.parent.text.length > lineToHighlight.length) {
+                                            elementToHighlight = element
+                                            element = null
+                                        }
+                                        if (element != null) {
+                                            element = element!!.parent
+                                        }
+                                    }
+                                    elementToHighlight?.let {
                                         holder.registerProblem(
-                                            it.parent,
-                                            "Check the challenge here",
+                                            it,
+                                            description,
                                             quickFix
                                         )
                                     }
@@ -54,12 +76,26 @@ class CustomInspection : LocalInspectionTool() {
                                 val fileDocument = Jsoup.parse(lChallenge.toolTipText!!.substringAfter("Line content:"))
                                 val codeTagContent = fileDocument.select("body").text()
                                 val startOffset = document.text.indexOf(codeTagContent)
-                                val endOffset = startOffset + codeTagContent.length
                                 val quickFix = QuickFix()
-                                file.findElementAt(endOffset)?.let {
+                                var element = file.findElementAt(startOffset)
+                                var elementToHighlight = file.findElementAt(startOffset)
+                                while (element != null) {
+                                    if (element!!.text.length == codeTagContent.length) {
+                                        elementToHighlight = element
+                                        element = null
+                                    }
+                                    if (element != null && element!!.parent != null && element!!.parent.text.length > codeTagContent.length) {
+                                        elementToHighlight = element
+                                        element = null
+                                    }
+                                    if (element != null) {
+                                        element = element!!.parent
+                                    }
+                                }
+                                elementToHighlight?.let {
                                     holder.registerProblem(
-                                        it.parent,
-                                        "Check the challenge here",
+                                        it,
+                                        description,
                                         quickFix
                                     )
                                 }
@@ -77,7 +113,7 @@ class CustomInspection : LocalInspectionTool() {
                                     file.findElementAt(startOffset)?.let {
                                         holder.registerProblem(
                                             it,
-                                            "Check the challenge here",
+                                            description,
                                             quickFix
                                         )
                                     }
@@ -93,7 +129,7 @@ class CustomInspection : LocalInspectionTool() {
 
 class QuickFix : LocalQuickFix {
     override fun getName(): String {
-        return "Goto challenge"
+        return "Go to challenge"
     }
 
     override fun getFamilyName(): String {

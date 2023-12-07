@@ -349,7 +349,7 @@ class ChallengesPanel: JPanel() {
                 RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_STORED_CHALLENGES, queryParams)
             val challengeList = Gson().fromJson(response, StoredChallengeList::class.java).storedChallenges
 
-            val storedChallengesLimit = 20
+            val storedChallengesLimit = 2
             val storedChallengesCount = challengeList.size
 
             val lStoredChallengesButton = JButton("Stored Challenges ($storedChallengesCount/$storedChallengesLimit)")

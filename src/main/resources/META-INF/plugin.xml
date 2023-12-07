@@ -66,6 +66,7 @@
                          key="key"
                          groupPath="Java"
                          language="JAVA"
+                         enabledByDefault="true"
         />
         <!-- Change the id to something else (e.g. Personal ID) for the control group and change the group MyBundle.properties -->
         <toolWindow factoryClass="org.plugin.plugin.MainToolWindow" id="Gamekins"/>

@@ -28,7 +28,7 @@ intellij {
     version.set("2023.2.4")
     type.set("IU") // Target IDE Platform
 
-    plugins.set(listOf(/* Plugin Dependencies */))
+    plugins.set(listOf("com.intellij.java"))
 }
 
 tasks {
