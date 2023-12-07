@@ -20,7 +20,7 @@ class WebSocketClient {
 
         val request =
             Request.Builder()
-            .url("ws://localhost:8443/send")
+            .url("ws://${Utility.getDomain()}:8443/jenkins/send")
             .header("Authorization", Utility.getAuthorizationHeader())
             .build()
 

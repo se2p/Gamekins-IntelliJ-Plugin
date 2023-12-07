@@ -9,7 +9,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.util.ui.JBUI
 import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -18,16 +17,12 @@ import org.plugin.plugin.data.RestClient
 import org.plugin.plugin.panels.AcceptedRejectedChallengesPanel
 import org.plugin.plugin.panels.ChallengesPanel
 import java.awt.*
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.util.prefs.Preferences
 import javax.swing.*
-import javax.swing.border.CompoundBorder
-import javax.swing.border.LineBorder
 
 
 object Utility {
@@ -115,86 +110,83 @@ object Utility {
 
     fun openStoredChallengesDialog(aInStoredChallenges: List<Challenge>, challengesPanel: ChallengesPanel) {
 
-        val lChallengesPanel = JPanel()
-        lChallengesPanel.background = mainBackgroundColor
-        lChallengesPanel.setLayout(BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS))
-        val lPaddingBorder = JBUI.Borders.empty(5)
-
         val storedChallengesModal = JDialog()
 
         storedChallengesModal.setTitle("Stored Challenges")
         storedChallengesModal.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE)
-        storedChallengesModal.setSize(650, 500)
+        storedChallengesModal.setSize(700, 500)
         storedChallengesModal.setModalityType(Dialog.ModalityType.APPLICATION_MODAL)
 
         val modalContent = JPanel()
         modalContent.setLayout(BorderLayout())
 
-        val modalHeader = JPanel()
-        val modalTitle = JLabel("Stored Challenges")
-        modalHeader.add(modalTitle)
-
         val modalBody = JPanel()
-        modalBody.setLayout(BorderLayout())
-        lChallengesPanel.border = lPaddingBorder
+        modalBody.setLayout(BoxLayout(modalBody, BoxLayout.Y_AXIS))
+        modalBody.background = mainBackgroundColor
 
         for (index in aInStoredChallenges.indices) {
 
+            val lChallenge = aInStoredChallenges[index]
             val lChallengePanel = JPanel()
+            lChallengePanel.background = mainBackgroundColor
             lChallengePanel.setLayout(BorderLayout())
-            val lineBorder = LineBorder(JBColor.GRAY, 1)
-            lChallengePanel.border = CompoundBorder(lineBorder, lPaddingBorder)
-            lChallengePanel.maximumSize = Dimension(Int.MAX_VALUE, 110)
+            lChallengePanel.maximumSize = Dimension(Int.MAX_VALUE, 100)
 
-            val leftPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+            val lLeftPanel = JPanel(FlowLayout(FlowLayout.LEFT))
             val lChallengeHeader = JPanel(GridBagLayout())
+            lChallengeHeader.background = mainBackgroundColor
+            lLeftPanel.background = mainBackgroundColor
             val lChallengeTitleLabel = JLabel(
-                "<HTML><div WIDTH=" + leftPanel.width + ">" +
-                        aInStoredChallenges[index].generalReason + "</div></HTML>"
+                "<HTML><div WIDTH=550>" + lChallenge.generalReason + "</div></HTML>"
             )
-            lChallengeTitleLabel.alignmentX = JLabel.CENTER_ALIGNMENT
-
-            leftPanel.addComponentListener(object : ComponentAdapter() {
-                override fun componentResized(evt: ComponentEvent) {
-                    lChallengeTitleLabel.setText(
-                        "<HTML><div WIDTH=" + leftPanel.width + ">" +
-                                aInStoredChallenges[index].generalReason + "</div></HTML>"
-                    )
-                }
-            })
 
             val gbc = GridBagConstraints()
             gbc.gridx = 0
             gbc.gridy = 0
-            gbc.weightx = 0.8
-            gbc.fill = GridBagConstraints.HORIZONTAL
+            gbc.weightx = 0.6
+            gbc.fill = GridBagConstraints.BOTH
 
-            leftPanel.add(lChallengeTitleLabel)
-            lChallengeHeader.add(leftPanel, gbc)
+            lLeftPanel.add(lChallengeTitleLabel)
+            lChallengeHeader.add(lLeftPanel, gbc)
 
-            val lChallengeTitleName = JLabel(aInStoredChallenges[index].name)
+
+            val lChallengeTitleName =
+                JLabel("<html><div style='padding: 3px;'>${lChallenge.name}</div></html>").apply {
+                    isOpaque = true
+                    background = Color.decode("#ffc107")
+                    foreground = Color.decode("#212529")
+                    font = font.deriveFont(Font.BOLD, 12f)
+                    horizontalAlignment = SwingConstants.CENTER
+                    verticalAlignment = SwingConstants.CENTER
+                }
             val lExpandButton = JButton("Expand")
             lExpandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
 
-            val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
-            lChallengeTitleName.foreground = JBColor.YELLOW
-            rightPanel.add(lChallengeTitleName)
+            val lRightPanel = JPanel().apply {
+                border = BorderFactory.createEmptyBorder(10, 0, 0, 10)
+                layout = BoxLayout(this, BoxLayout.X_AXIS)
+                background = mainBackgroundColor
+                add(lChallengeTitleName)
+            }
 
             val lButtonsPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
+            lButtonsPanel.background = mainBackgroundColor
             gbc.gridx = 1
-            gbc.weightx = 0.2
+            gbc.weightx = 0.4
 
-            lChallengeHeader.add(rightPanel, gbc)
+            lChallengeHeader.add(lRightPanel, gbc)
 
-            lChallengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)
-            lChallengePanel.add(lButtonsPanel, BorderLayout.PAGE_END)
-            lChallengesPanel.add(lChallengePanel)
-            val unshelveButton = JButton("Unshelve")
-            lButtonsPanel.add(unshelveButton)
+            val lUnshelveButton = JButton("Unshelve")
+            lUnshelveButton.background = mainBackgroundColor
+            lUnshelveButton.foreground = JBColor.RED
+            lUnshelveButton.isContentAreaFilled = false
+            lUnshelveButton.isOpaque = true
+            lUnshelveButton.font = Font("Arial", Font.BOLD, 13)
+            lButtonsPanel.add(lUnshelveButton)
 
-            unshelveButton.addActionListener {
+            lUnshelveButton.addActionListener {
                 unshelveChallenge(
-                    aInStoredChallenges[index].generalReason?.replace(Regex("<[^>]++>"), "")
+                    lChallenge.generalReason?.replace(Regex("<[^>]++>"), "")
                 ) { success, errorMessage ->
                     if (success) {
                         storedChallengesModal.dispose()
@@ -208,10 +200,10 @@ object Utility {
                 }
             }
 
+
             lChallengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)
-            lChallengePanel.add(lButtonsPanel, BorderLayout.CENTER)
-            lChallengesPanel.add(lChallengePanel)
-            modalBody.add(lChallengesPanel)
+            lChallengePanel.add(lButtonsPanel, BorderLayout.PAGE_END)
+            modalBody.add(lChallengePanel)
         }
 
         val modalFooter = JPanel()
@@ -220,9 +212,8 @@ object Utility {
 
         closeModalButton.addActionListener { storedChallengesModal.dispose() }
 
-        modalContent.add(modalHeader, BorderLayout.NORTH)
         val lScrollPane = JBScrollPane(modalBody)
-        lScrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        lScrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
         lScrollPane.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
         modalContent.add(lScrollPane, BorderLayout.CENTER)
         modalContent.add(modalFooter, BorderLayout.SOUTH)
@@ -369,6 +360,19 @@ object Utility {
         return "$lURL/gamekins"
     }
 
+    fun getDomain(): String {
+
+        val lBaseUrl = getBaseUrl()
+        val startIndex = lBaseUrl.indexOf("//") + 2
+        var endIndex = lBaseUrl.indexOf(':', startIndex)
+
+        if (endIndex == -1) {
+            endIndex = lBaseUrl.indexOf('/', startIndex)
+        }
+
+        return lBaseUrl.substring(startIndex, if (endIndex != -1) endIndex else lBaseUrl.length)
+    }
+
     fun getAuthorizationHeader(): String {
         val token = lPreferences.get("token", "")
         val username = lPreferences.get("username", "")
@@ -413,6 +417,6 @@ object Utility {
 
             return jsonObject.get("limit").asInt
         }
-        return null;
+        return null
     }
 }

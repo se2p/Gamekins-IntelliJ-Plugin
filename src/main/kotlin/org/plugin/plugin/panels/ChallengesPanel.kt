@@ -73,7 +73,7 @@ class ChallengesPanel: JPanel() {
                     val lChallengeTitleLabel = JLabel(
                         "<HTML><div WIDTH=550" + ">" +
                                 "$lRowNum. " +
-                                lChallengeList[index].generalReason + "</div></HTML>"
+                                lChallenge.generalReason + "</div></HTML>"
                     )
                     lChallengeTitleLabel.alignmentX = JLabel.CENTER_ALIGNMENT
 
@@ -124,7 +124,7 @@ class ChallengesPanel: JPanel() {
                     val lStoreButton = JButton("Store")
                     val lRejectButton = JButton("Reject")
                     lRejectButton.background = mainBackgroundColor
-                    lRejectButton.foreground = JBColor.RED
+                    lRejectButton.foreground = Color.decode("#ffc107")
                     lRejectButton.isContentAreaFilled = false
                     lRejectButton.isOpaque = true
                     lRejectButton.font = Font("Arial", Font.BOLD, 13)
