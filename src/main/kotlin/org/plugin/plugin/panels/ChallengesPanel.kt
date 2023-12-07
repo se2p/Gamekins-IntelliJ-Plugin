@@ -152,7 +152,7 @@ class ChallengesPanel: JPanel() {
                     lChallengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)
 
                     val lExtraContentPanel = JPanel()
-                    lExtraContentPanel.background = mainBackgroundColor
+                    lExtraContentPanel.background = Color.decode("#227755")
                     lExtraContentPanel.border = BorderFactory.createEmptyBorder(10,10,10,10)
                     lExtraContentPanel.layout = BorderLayout()
                     lExtraContentPanel.isVisible = false
@@ -161,22 +161,35 @@ class ChallengesPanel: JPanel() {
                     if (lChallenge.snippet != "") {
 
                         val lHtmlTag = lChallenge.snippet!!.let { it1 -> Jsoup.parse(it1) }
-                        val lCodeBlock = lHtmlTag.select("pre").getOrNull(1)?.let { JLabel("<HTML>${it.toString()}") }
-
-                        if (lCodeBlock != null) {
-                            lCodeBlock.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                            lCodeBlock.verticalAlignment = SwingConstants.CENTER
-                            lCodeBlock.horizontalAlignment = SwingConstants.LEFT
-                            lExtraContentPanel.add(lCodeBlock, BorderLayout.PAGE_START)
-                        }
-
-                        lExtraContentPanel.add(Box.createVerticalStrut(10))
 
                         val label = JLabel()
                         label.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                         label.verticalAlignment = SwingConstants.CENTER
                         label.horizontalAlignment = SwingConstants.LEADING
                         setLinkLabelContent(label, lHtmlTag.select("a").toString())
+
+                        if ((lChallenge.name?.trim()?.contains("Smell") == true))
+                        {
+                            val emTag = lHtmlTag.select("em")
+                            emTag.select("a").unwrap().getOrNull(1)
+                            val lTextLabel = JLabel("<HTML>$emTag</HTML>")
+                            lTextLabel.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                            lTextLabel.verticalAlignment = SwingConstants.CENTER
+                            lTextLabel.horizontalAlignment = SwingConstants.LEFT
+                            lExtraContentPanel.add(lTextLabel, BorderLayout.PAGE_START)
+                        } else
+                        {
+                            val lCodeBlock = lHtmlTag.select("pre").getOrNull(1)
+                            if (lCodeBlock != null) {
+                                val lCodeBlockLabel = JLabel("<HTML>${lCodeBlock.toString().trim()}</HTML>")
+                                lCodeBlockLabel.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                                lCodeBlockLabel.verticalAlignment = SwingConstants.CENTER
+                                lCodeBlockLabel.horizontalAlignment = SwingConstants.LEFT
+                                lExtraContentPanel.add(lCodeBlockLabel, BorderLayout.PAGE_START)
+                            }
+                        }
+
+                        lExtraContentPanel.add(Box.createVerticalStrut(10))
                         lExtraContentPanel.add(separator, BorderLayout.CENTER)
                         lExtraContentPanel.add(label, BorderLayout.PAGE_END)
 
