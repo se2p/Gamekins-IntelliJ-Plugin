@@ -3,7 +3,7 @@ package org.plugin.plugin
 // Constants.kt
 object Constants {
 
-    const val CHALLENGE_PANEL_DESCRIPTION = "Click on a challenge to expand and see more details if available"
+    const val CHALLENGE_PANEL_DESCRIPTION = "Expand to see more details"
 
 
     const val API_BASE_URL = "http://localhost:8080/jenkins/gamekins"
@@ -26,7 +26,6 @@ object Constants {
     // QUESTS
     const val GET_CURRENT_QUESTS_TASKS = "/getCurrentQuestTasks"
     const val GET_COMPLETED_QUESTS_TASKS = "/getCompletedQuestTasks"
-    const val GET_CURRENT_QUESTS = "/getCurrentQuests"
 
     //LEADERBOARD
     const val GET_USERS = "/getUsers"
@@ -35,9 +34,8 @@ object Constants {
     //Achievements
     const val GET_COMPLETED_ACHIEVEMENTS = "/getCompletedAchievements"
     const val GET_UNSOLVED_ACHIEVEMENTS = "/getUnsolvedAchievements"
-
-    //Statistics
-    const val GET_STATISTICS = "/getStatistics"
+    const val GET_BADGE_ACHIEVEMENTS = "/getBadgeAchievements"
+    const val GET_PROGRESS_ACHIEVEMENTS = "/getProgressAchievements"
 
     // Start service
     const val START_SOCKET = "/startSocket"

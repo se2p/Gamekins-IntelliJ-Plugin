@@ -124,7 +124,7 @@ class ChallengesPanel: JPanel() {
                     val lStoreButton = JButton("Store")
                     val lRejectButton = JButton("Reject")
                     lRejectButton.background = mainBackgroundColor
-                    lRejectButton.foreground = Color.decode("#ffc107")
+                    lRejectButton.foreground = JBColor.RED
                     lRejectButton.isContentAreaFilled = false
                     lRejectButton.isOpaque = true
                     lRejectButton.font = Font("Arial", Font.BOLD, 13)
@@ -152,7 +152,7 @@ class ChallengesPanel: JPanel() {
                     lChallengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)
 
                     val lExtraContentPanel = JPanel()
-                    lExtraContentPanel.background = Color.decode("#227755")
+                    lExtraContentPanel.background = JBColor.LIGHT_GRAY
                     lExtraContentPanel.border = BorderFactory.createEmptyBorder(10,10,10,10)
                     lExtraContentPanel.layout = BorderLayout()
                     lExtraContentPanel.isVisible = false
@@ -311,12 +311,13 @@ class ChallengesPanel: JPanel() {
 
 
                                             val methodName: String?
-                                            val pattern: Pattern =
-                                                Pattern.compile("(?<=\\bpublic\\s|private\\s|protected\\s)\\w+\\s+(\\w+)")
+                                            val pattern =
+                                                if (lChallenge.name == "Class Coverage") Pattern.compile("(public\\s)?(class|interface|enum)\\s([^\\n\\s]*)")
+                                                else Pattern.compile("(public|protected|private|static|\\s)( static)? +[\\w<>\\[\\]]+\\s+(\\w+) *\\([^)]*\\) *(\\{?|[^;])")
                                             val matcher: Matcher = pattern.matcher(codeTagContent)
 
                                             if (matcher.find()) {
-                                                methodName = matcher.group(1)
+                                                methodName = matcher.group(3)
                                                 val startOffset = methodName.let { it1 -> e.document.text.indexOf(it1) }
                                                 val endOffset = startOffset.plus(methodName.length)
 

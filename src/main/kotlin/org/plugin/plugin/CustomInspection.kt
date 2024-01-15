@@ -103,11 +103,13 @@ class CustomInspection : LocalInspectionTool() {
                             lChallenge.name?.trim() == "Method Coverage" || lChallenge.name == "Class Coverage" -> {
                                 val fileDocument = Jsoup.parse(lChallenge.snippet!!)
                                 val codeTagContent = fileDocument.select("code").text()
-                                val pattern: Pattern = Pattern.compile("(?<=\\bpublic\\s|private\\s|protected\\s)\\w+\\s+(\\w+)")
+                                val pattern =
+                                    if (lChallenge.name == "Class Coverage") Pattern.compile("(public\\s)?(class|interface|enum)\\s([^\\n\\s]*)")
+                                    else Pattern.compile("(public|protected|private|static|\\s)( static)? +[\\w<>\\[\\]]+\\s+(\\w+) *\\([^)]*\\) *(\\{?|[^;])")
                                 val matcher: Matcher = pattern.matcher(codeTagContent)
 
                                 if (matcher.find()) {
-                                    val methodName = matcher.group(1)
+                                    val methodName = matcher.group(3)
                                     val startOffset = file.text.indexOf(methodName)
                                     val quickFix = QuickFix()
                                     file.findElementAt(startOffset)?.let {
