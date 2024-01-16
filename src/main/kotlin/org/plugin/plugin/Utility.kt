@@ -356,7 +356,7 @@ object Utility {
     }
 
     fun getBaseUrl(): String {
-        val lURL = lPreferences.get("url", "http://localhost:8080/jenkins")
+        val lURL = lPreferences.get("url", "http://localhost:8080/jenkins").removeSuffix("/")
         return "$lURL/gamekins"
     }
 

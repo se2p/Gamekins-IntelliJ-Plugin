@@ -146,7 +146,14 @@ class AuthenticationPanel : JPanel() {
             preferences.put("projectName", project)
             preferences.put("url", URL)
 
-            client.api().jobsApi().jobInfo(null, project)
+            var folderPath: String? = null
+            var projectName = project
+            if (project.contains("/")) {
+                projectName = project.substringAfterLast("/")
+                folderPath = project.substringBeforeLast("/")
+            }
+
+            client.api().jobsApi().jobInfo(folderPath, projectName)
 
 
         } catch (e: Exception) {

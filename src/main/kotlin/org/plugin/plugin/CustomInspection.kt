@@ -127,20 +127,20 @@ class CustomInspection : LocalInspectionTool() {
             }
         }
     }
-}
 
-class QuickFix : LocalQuickFix {
-    override fun getName(): String {
-        return "Go to challenge"
-    }
+    class QuickFix : LocalQuickFix {
+        override fun getName(): String {
+            return "Go to challenge"
+        }
 
-    override fun getFamilyName(): String {
-        return name
-    }
+        override fun getFamilyName(): String {
+            return name
+        }
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        val toolWindowManager = ToolWindowManager.getInstance(project)
-        val myToolWindow: ToolWindow? = toolWindowManager.getToolWindow("Gamekins")
-        myToolWindow?.show()
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val toolWindowManager = ToolWindowManager.getInstance(project)
+            val myToolWindow: ToolWindow? = toolWindowManager.getToolWindow("Gamekins")
+            myToolWindow?.show()
+        }
     }
 }

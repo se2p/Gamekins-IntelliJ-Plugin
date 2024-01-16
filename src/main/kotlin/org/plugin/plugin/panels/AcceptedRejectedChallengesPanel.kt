@@ -11,7 +11,6 @@ import com.intellij.ui.util.minimumHeight
 import com.intellij.util.ui.JBUI
 import org.plugin.plugin.Constants
 import org.plugin.plugin.Utility
-import org.plugin.plugin.WebSocketClient
 import org.plugin.plugin.data.RestClient
 import java.awt.*
 import java.awt.event.ComponentAdapter
@@ -22,7 +21,7 @@ import javax.swing.border.LineBorder
 
 class AcceptedRejectedChallengesPanel : JPanel() {
     init {
-        this.setBackground(mainBackgroundColor)
+        this.background = mainBackgroundColor
         performInitialization()
     }
 
@@ -30,7 +29,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
         Utility.setAcceptedRejectedChallengesPanel(this)
         background = mainBackgroundColor
-        setLayout(GridLayout(1, 2, 10, 0))
+        layout = GridLayout(1, 2, 10, 0)
 
         // Completed Challenges Table
         val completedChallengesPanel = JPanel()
@@ -69,7 +68,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
         val lChallengesPanel = JPanel()
         lChallengesPanel.background = mainBackgroundColor
-        lChallengesPanel.setLayout(BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS))
+        lChallengesPanel.layout = BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS)
 
         val lProjectName = Utility.lPreferences.get("projectName", "")
         if (lProjectName != "") {
@@ -98,31 +97,29 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
                     lUpperPanel.addComponentListener(object : ComponentAdapter() {
                         override fun componentResized(evt: ComponentEvent) {
-                            lChallengeTitleLabelText.setText(
-                                "<HTML><p style='PADDING:0;MARGIN:0;WIDTH: " + lUpperPanel.width  +
-                                        "'>" + lChallenge.generalReason + "</p></HTML>"
-                            )
+                            lChallengeTitleLabelText.text = "<HTML><p style='PADDING:0;MARGIN:0;WIDTH: " + lUpperPanel.width  +
+                                    "'>" + lChallenge.generalReason + "</p></HTML>"
                         }
                     })
 
                     val lChallengeTitleName = JLabel("<html><div style='padding: 3px;'>${lChallenge.name}</div></html>").apply {
-                        setOpaque(true)
-                        setBackground(Color.decode("#ffc107"))
-                        setForeground(Color.decode("#212529"))
-                        setFont(font.deriveFont(Font.BOLD, 12f))
-                        setHorizontalAlignment(SwingConstants.CENTER)
-                        setVerticalAlignment(SwingConstants.CENTER)
+                        isOpaque = true
+                        background = Color.decode("#ffc107")
+                        foreground = Color.decode("#212529")
+                        font = font.deriveFont(Font.BOLD, 12f)
+                        horizontalAlignment = SwingConstants.CENTER
+                        verticalAlignment = SwingConstants.CENTER
                     }
 
                     val lScoreString = if (lChallenge.score!! > 1) "points" else "point"
 
                     val lChallengeTitleScore = JLabel("<html><div style='padding: 3px;'>${lChallenge.score.toString() + "&nbsp;" + lScoreString}</div></html>").apply {
-                        setOpaque(true)
-                        setBackground(Color.decode("#28a745"))
-                        setForeground(Color.WHITE)
-                        setFont(font.deriveFont(Font.BOLD, 12f))
-                        setHorizontalAlignment(SwingConstants.CENTER)
-                        setVerticalAlignment(SwingConstants.CENTER)
+                        isOpaque = true
+                        background = Color.decode("#28a745")
+                        foreground = Color.WHITE
+                        font = font.deriveFont(Font.BOLD, 12f)
+                        horizontalAlignment = SwingConstants.CENTER
+                        verticalAlignment = SwingConstants.CENTER
                     }
 
                     val lGbc = GridBagConstraints()
@@ -184,8 +181,8 @@ class AcceptedRejectedChallengesPanel : JPanel() {
         aInJPanel.add(lDescriptionLabel, BorderLayout.PAGE_START)
 
         val lChallengesPanel = JPanel()
-        lChallengesPanel.setLayout(BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS))
-        lChallengesPanel.background = Color.decode("#fff4e8")
+        lChallengesPanel.layout = BoxLayout(lChallengesPanel, BoxLayout.Y_AXIS)
+        lChallengesPanel.background = mainBackgroundColor
 
         val lProjectName = Utility.lPreferences.get("projectName", "")
         if (lProjectName != "") {
@@ -293,9 +290,6 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                 scrollPane.preferredSize = Dimension(200, 400)
 
                 aInJPanel.add(scrollPane, BorderLayout.CENTER)
-
-                //WebSocketClient().showNotification("Congratulations! You solved the challenge:\n${lRejectedChallengeList.last().first.generalReason?.replace("<b>", "")?.replace("</b>", "")}")
-
             } catch (e: Exception) {
                 e.printStackTrace()
             }
