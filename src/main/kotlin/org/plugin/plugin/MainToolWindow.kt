@@ -16,11 +16,11 @@
 
 package org.plugin.plugin
 
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import org.plugin.plugin.panels.AuthenticationPanel
 import org.plugin.plugin.panels.MainPanel
@@ -28,7 +28,6 @@ import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.ScrollPaneConstants
 
 class MainToolWindow  : ToolWindowFactory {
 
@@ -40,35 +39,51 @@ class MainToolWindow  : ToolWindowFactory {
             val main = JPanel(GridBagLayout())
 
             if (!Utility.isAuthenticated()) {
-                val authenticationPanel = AuthenticationPanel()
-                authenticationPanel.addAuthenticationListener(object : AuthenticationPanel.AuthenticationListener {
-                    override fun onAuthenticationResult(successful: Boolean) {
-                        if (successful) {
-                            main.remove(authenticationPanel)
-                            main.add(MainPanel(), GridBagConstraints().apply {
-                                gridx = 0
-                                gridy = 0
-                                weightx = 1.0
-                                weighty = 1.0
-                                fill = GridBagConstraints.BOTH
-                            })
-                            main.revalidate()
-                            main.repaint()
-                        }
-                    }
-                })
-                main.add(authenticationPanel)
+                main.add(createAuthenticationPanel(main))
             } else {
-                main.add(MainPanel(), GridBagConstraints().apply {
-                    gridx = 0
-                    gridy = 0
-                    weightx = 1.0
-                    weighty = 1.0
-                    fill = GridBagConstraints.BOTH
-                })
+                try {
+                    main.add(MainPanel(), GridBagConstraints().apply {
+                        gridx = 0
+                        gridy = 0
+                        weightx = 1.0
+                        weighty = 1.0
+                        fill = GridBagConstraints.BOTH
+                    })
+                } catch (exception: ExceptionInInitializerError) {
+                    Utility.logout()
+                    main.add(createAuthenticationPanel(main))
+                    var message = "Previous authentication did not work, please login again."
+                    if (!exception.message.isNullOrEmpty()) {
+                        message += " More information: ${exception.message}"
+                    }
+                    Utility.showNotification(message, NotificationType.ERROR)
+                }
             }
 
             return main
+        }
+
+        private fun createAuthenticationPanel(main: JPanel): AuthenticationPanel {
+            val authenticationPanel = AuthenticationPanel()
+            authenticationPanel.addAuthenticationListener(object : AuthenticationPanel.AuthenticationListener {
+
+                override fun onAuthenticationResult(successful: Boolean) {
+                    if (successful) {
+                        main.remove(authenticationPanel)
+                        main.add(MainPanel(), GridBagConstraints().apply {
+                            gridx = 0
+                            gridy = 0
+                            weightx = 1.0
+                            weighty = 1.0
+                            fill = GridBagConstraints.BOTH
+                        })
+                        main.revalidate()
+                        main.repaint()
+                    }
+                }
+            })
+
+            return authenticationPanel
         }
     }
 

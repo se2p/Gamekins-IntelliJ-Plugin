@@ -5,6 +5,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.plugin.plugin.Utility
 import java.io.IOException
 import java.util.prefs.Preferences
+import javax.swing.JOptionPane
 
 class RestClient private constructor() {
 
@@ -42,7 +43,7 @@ class RestClient private constructor() {
     }
 
     @Throws(IOException::class)
-    fun post(url: String, requestBody: RequestBody): String? {
+    fun post(url: String, requestBody: RequestBody): String {
         val request = Request.Builder()
             .url(url)
             .post(requestBody)
@@ -52,7 +53,7 @@ class RestClient private constructor() {
         return executeRequest(request)
     }
 
-    private fun executeRequest(request: Request): String? {
+    private fun executeRequest(request: Request): String {
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
                 throw IOException("HTTP request failed with code: ${response.code}, message: ${response.message}")

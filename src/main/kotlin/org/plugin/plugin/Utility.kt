@@ -5,10 +5,17 @@ import ChallengeList
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.intellij.ide.DataManager
+import com.intellij.notification.NotificationAction
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.content.ContentFactory
 import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -45,33 +52,29 @@ object Utility {
         this.project = project
     }
 
-    init {
-        println("Utility initialized")
-    }
-
     fun createRejectModal(challenge: String?, challengesPanel: ChallengesPanel) {
 
         val rejectModal = JDialog()
-        rejectModal.setTitle("Reject Challenge")
-        rejectModal.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE)
+        rejectModal.title = "Reject Challenge"
+        rejectModal.defaultCloseOperation = JDialog.DISPOSE_ON_CLOSE
         rejectModal.setSize(300, 250)
-        rejectModal.setModalityType(Dialog.ModalityType.APPLICATION_MODAL)
+        rejectModal.modalityType = Dialog.ModalityType.APPLICATION_MODAL
         rejectModal.setLocationRelativeTo(null)
         val modalContent = JPanel()
-        modalContent.setLayout(BorderLayout())
+        modalContent.layout = BorderLayout()
         val modalHeader = JPanel()
         val modalTitle = JLabel("Reject Challenge")
         modalHeader.add(modalTitle)
         val modalBody = JPanel()
-        modalBody.setLayout(BorderLayout())
+        modalBody.layout = BorderLayout()
         val formPanel = JPanel()
-        formPanel.setLayout(BorderLayout())
+        formPanel.layout = BorderLayout()
         val reasonPanel = JPanel()
-        reasonPanel.setLayout(BorderLayout())
+        reasonPanel.layout = BorderLayout()
         val reasonLabel = JLabel("Reason:")
         val reasonTextArea = JTextArea(5, 20)
-        reasonTextArea.setLineWrap(true)
-        reasonTextArea.setWrapStyleWord(true)
+        reasonTextArea.lineWrap = true
+        reasonTextArea.wrapStyleWord = true
         reasonPanel.add(reasonLabel, BorderLayout.NORTH)
         reasonPanel.add(JScrollPane(reasonTextArea), BorderLayout.CENTER)
 
@@ -86,7 +89,7 @@ object Utility {
         closeModalButton.addActionListener { rejectModal.dispose() }
 
         rejectButton.addActionListener {
-            rejectChallenge(challenge, reasonTextArea.getText()) { success, errorMessage ->
+            rejectChallenge(challenge, reasonTextArea.text) { success, errorMessage ->
                 if (success) {
                     rejectModal.dispose()
                     showMessageDialog("Reject successful!")
@@ -112,16 +115,16 @@ object Utility {
 
         val storedChallengesModal = JDialog()
 
-        storedChallengesModal.setTitle("Stored Challenges")
-        storedChallengesModal.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE)
+        storedChallengesModal.title = "Stored Challenges"
+        storedChallengesModal.defaultCloseOperation = JDialog.DISPOSE_ON_CLOSE
         storedChallengesModal.setSize(700, 500)
-        storedChallengesModal.setModalityType(Dialog.ModalityType.APPLICATION_MODAL)
+        storedChallengesModal.modalityType = Dialog.ModalityType.APPLICATION_MODAL
 
         val modalContent = JPanel()
-        modalContent.setLayout(BorderLayout())
+        modalContent.layout = BorderLayout()
 
         val modalBody = JPanel()
-        modalBody.setLayout(BoxLayout(modalBody, BoxLayout.Y_AXIS))
+        modalBody.layout = BoxLayout(modalBody, BoxLayout.Y_AXIS)
         modalBody.background = mainBackgroundColor
 
         for (index in aInStoredChallenges.indices) {
@@ -129,7 +132,7 @@ object Utility {
             val lChallenge = aInStoredChallenges[index]
             val lChallengePanel = JPanel()
             lChallengePanel.background = mainBackgroundColor
-            lChallengePanel.setLayout(BorderLayout())
+            lChallengePanel.layout = BorderLayout()
             lChallengePanel.maximumSize = Dimension(Int.MAX_VALUE, 100)
 
             val lLeftPanel = JPanel(FlowLayout(FlowLayout.LEFT))
@@ -231,7 +234,7 @@ object Utility {
 
     fun storeChallenge(aInChallenge: String?, aInCallback: (Boolean, String) -> Unit) {
 
-        val lProjectName = lPreferences.get("projectName", "")
+        val lProjectName = lPreferences["projectName", ""]
         if (lProjectName != "") {
             val json = """{"job": "$lProjectName", "challengeName": "$aInChallenge"}"""
             val mediaType = "application/json; charset=utf-8".toMediaType()
@@ -255,7 +258,7 @@ object Utility {
 
     fun restoreChallenge(challenge: String?, aInCallback: (Boolean, String) -> Unit) {
 
-        val lProjectName = lPreferences.get("projectName", "")
+        val lProjectName = lPreferences["projectName", ""]
         if (lProjectName != "") {
             val json = """{"job": "$lProjectName", "challengeName": "$challenge"}"""
             val mediaType = "application/json; charset=utf-8".toMediaType()
@@ -276,7 +279,7 @@ object Utility {
 
     private fun unshelveChallenge(aInChallenge: String?, aInCallback: (Boolean, String) -> Unit) {
 
-        val lProjectName = lPreferences.get("projectName", "")
+        val lProjectName = lPreferences["projectName", ""]
         if (lProjectName != "") {
             val json = """{"job": "$lProjectName", "challengeName": "$aInChallenge"}"""
             val mediaType = "application/json; charset=utf-8".toMediaType()
@@ -300,7 +303,7 @@ object Utility {
         aInReason: String,
         aInCallback: (Boolean, String) -> Unit
     ) {
-        val lProjectName = lPreferences.get("projectName", "")
+        val lProjectName = lPreferences["projectName", ""]
         if (lProjectName != "") {
             val json = """{"job": "$lProjectName", "challengeName": "$aInChallenge", "reason": "$aInReason"}"""
             val mediaType = "application/json; charset=utf-8".toMediaType()
@@ -320,7 +323,7 @@ object Utility {
     }
 
     fun isAuthenticated(): Boolean {
-        return lPreferences.get("token", "") != ""
+        return lPreferences["token", ""] != ""
     }
 
     fun saveToken(aInToken: String) {
@@ -341,7 +344,7 @@ object Utility {
 
     fun getCurrentChallenges(): List<Challenge>? {
         if (isAuthenticated()) {
-            val lProjectName = lPreferences.get("projectName", "")
+            val lProjectName = lPreferences["projectName", ""]
             if (lProjectName != "") {
 
                 val queryParams = mapOf(
@@ -356,7 +359,7 @@ object Utility {
     }
 
     fun getBaseUrl(): String {
-        val lURL = lPreferences.get("url", "http://localhost:8080/jenkins").removeSuffix("/")
+        val lURL = lPreferences["url", "http://localhost:8080/jenkins"].removeSuffix("/")
         return "$lURL/gamekins"
     }
 
@@ -374,8 +377,8 @@ object Utility {
     }
 
     fun getAuthorizationHeader(): String {
-        val token = lPreferences.get("token", "")
-        val username = lPreferences.get("username", "")
+        val token = lPreferences["token", ""]
+        val username = lPreferences["username", ""]
         return Credentials.basic(username, token)
     }
 
@@ -406,7 +409,7 @@ object Utility {
 
     fun getStoredChallengesLimit(): Int? {
 
-        val lProjectName = lPreferences.get("projectName", "")
+        val lProjectName = lPreferences["projectName", ""]
         if (lProjectName != "") {
             val queryParams = mapOf(
                 "job" to lProjectName
@@ -415,8 +418,40 @@ object Utility {
                 RestClient.getInstance().get(getBaseUrl() + Constants.STORE_CHALLENGE_LIMIT, queryParams)
             val jsonObject: JsonObject = JsonParser.parseString(lResponse.toString()).asJsonObject
 
-            return jsonObject.get("limit").asInt
+            return jsonObject["limit"].asInt
         }
         return null
+    }
+
+    fun showNotification(message: String, type: NotificationType = NotificationType.INFORMATION) {
+
+        NotificationGroupManager.getInstance().getNotificationGroup("Custom Notification Group")
+            .createNotification(
+                message,
+                type
+            )
+            .addAction(
+                NotificationAction.createSimple("Show more information"
+                ) {
+                    val myProject = DataManager.getInstance().dataContextFromFocus.resultSync
+                        .getData(PlatformDataKeys.PROJECT)
+                    val toolWindow = ToolWindowManager.getInstance(myProject!!).getToolWindow("Gamekins")!!
+                    refreshWindow()
+                    toolWindow.show()
+                }
+            )
+            .notify(null)
+    }
+
+    private fun refreshWindow() {
+        val project = DataManager.getInstance().dataContextFromFocus.resultSync
+            .getData(PlatformDataKeys.PROJECT)
+        val toolWindow = ToolWindowManager.getInstance(project!!).getToolWindow("Gamekins")!!
+        SwingUtilities.invokeLater {
+            toolWindow.contentManager.removeAllContents(true)
+            val content = ContentFactory.getInstance()
+                .createContent(MainToolWindow.createPanel(), null, false)
+            toolWindow.contentManager.addContent(content)
+        }
     }
 }
