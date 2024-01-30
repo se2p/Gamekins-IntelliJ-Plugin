@@ -138,7 +138,7 @@ class LeaderboardPanel : JPanel() {
                         userDetails.userName,
                         userDetails.teamName,
                         userDetails.completedChallenges,
-                        userDetails.completedQuests,
+                        userDetails.completedQuestTasks,
                         userDetails.completedAchievements,
                         userDetails.score
                     )

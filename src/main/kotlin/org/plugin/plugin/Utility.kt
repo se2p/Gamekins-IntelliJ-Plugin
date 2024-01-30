@@ -385,6 +385,7 @@ object Utility {
     fun logout() {
         lPreferences.remove("token")
         lPreferences.remove("username")
+        RestClient
     }
 
     fun startWebSocket() {

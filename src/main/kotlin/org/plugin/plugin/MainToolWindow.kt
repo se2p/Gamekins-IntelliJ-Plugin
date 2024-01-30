@@ -31,8 +31,6 @@ import javax.swing.JPanel
 
 class MainToolWindow  : ToolWindowFactory {
 
-    private val contentFactory = ContentFactory.getInstance()
-
     companion object {
         fun createPanel(): JComponent {
 
@@ -79,25 +77,26 @@ class MainToolWindow  : ToolWindowFactory {
                         })
                         main.revalidate()
                         main.repaint()
+                        Utility.startWebSocket()
                     }
                 }
             })
 
             return authenticationPanel
         }
-    }
 
-    fun rebuildPanel(toolWindow: ToolWindow) {
+        fun rebuildPanel(toolWindow: ToolWindow) {
 
-        val contentManager = toolWindow.contentManager
-        contentManager.removeAllContents(true)
+            val contentManager = toolWindow.contentManager
+            contentManager.removeAllContents(true)
 
-        val newPanel = createPanel()
-        contentManager.addContent(contentFactory.createContent(newPanel, null, false))
+            val newPanel = createPanel()
+            contentManager.addContent(ContentFactory.getInstance().createContent(newPanel, null, false))
+        }
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        toolWindow.contentManager.addContent( contentFactory.createContent(createPanel(), null, false))
+        toolWindow.contentManager.addContent( ContentFactory.getInstance().createContent(createPanel(), null, false))
     }
 
     override fun getAnchor(): ToolWindowAnchor {

@@ -57,13 +57,11 @@ class MainPanel: JPanel() {
                 it1 -> ToolWindowManager.getInstance(it1)
             }
 
-            val mainToolWindow = MainToolWindow()
             val myToolWindow: ToolWindow? = toolWindowManager?.getToolWindow("Gamekins")
 
             if (myToolWindow != null) {
-                mainToolWindow.rebuildPanel(myToolWindow)
+                MainToolWindow.rebuildPanel(myToolWindow)
             }
-
         }
 
         for (button in listOf(lLeaderboardButton, lChallengesButton, lQuestsButton, lAchievementsButton, lHelpButton, lLogoutButton)) {

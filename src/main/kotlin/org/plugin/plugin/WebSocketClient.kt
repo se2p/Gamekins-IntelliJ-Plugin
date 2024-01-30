@@ -27,7 +27,11 @@ class WebSocketClient {
 
             override fun onMessage(webSocket: WebSocket, text: String) {
                 println("Received message from server: $text")
-                Utility.showNotification(text)
+                val textSplit = text.split("]")
+                val userSplit = textSplit[0].removePrefix("[").split(",")
+                if (userSplit.contains(Utility.lPreferences["username", ""])) {
+                    Utility.showNotification(textSplit[1])
+                }
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
