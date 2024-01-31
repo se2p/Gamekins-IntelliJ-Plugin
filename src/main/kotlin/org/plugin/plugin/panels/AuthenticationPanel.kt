@@ -7,12 +7,9 @@ import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mai
 import com.intellij.util.ui.JBUI
 import org.plugin.plugin.Utility
 import java.awt.*
-import java.util.prefs.Preferences
 import javax.swing.*
 
 class AuthenticationPanel : JPanel() {
-
-    private val preferences = Preferences.userRoot().node("org.plugin.plugin.panels")
 
     private var authenticationListener: AuthenticationListener? = null
 
@@ -88,13 +85,13 @@ class AuthenticationPanel : JPanel() {
                 panel.revalidate()
                 panel.repaint()
 
-                val lJobInfo = authenticateUser(username, password, url, project)
+                val jobInfo = authenticateUser(username, password, url, project)
 
                 panel.remove(progressBar)
                 panel.revalidate()
                 panel.repaint()
 
-                if (lJobInfo != null) {
+                if (jobInfo != null) {
                     onLogin()
                 } else {
                     Utility.showNotification("Authentication failed.", NotificationType.ERROR)
@@ -131,9 +128,10 @@ class AuthenticationPanel : JPanel() {
                 .credentials("${username}:${password}")
                 .build()
 
-            val lToken = client.api().userApi().generateNewToken("token").data().tokenValue()
+            val token = client.api().userApi().generateNewToken("token").data().tokenValue()
+            val preferences = Utility.preferences
             preferences.put("username", username)
-            preferences.put("token", lToken)
+            preferences.put("token", token)
             preferences.put("projectName", project)
             preferences.put("url", url)
 

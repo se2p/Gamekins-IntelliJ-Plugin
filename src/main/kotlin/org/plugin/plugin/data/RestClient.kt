@@ -4,15 +4,12 @@ import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.plugin.plugin.Utility
 import java.io.IOException
-import java.util.prefs.Preferences
-import javax.swing.JOptionPane
 
 class RestClient private constructor() {
 
     private val client = OkHttpClient()
 
     companion object {
-        private const val PANEL_NODE = "org.plugin.plugin.panels"
         private var instance: RestClient? = null
 
         fun getInstance(): RestClient {

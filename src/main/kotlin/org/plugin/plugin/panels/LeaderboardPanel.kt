@@ -16,7 +16,6 @@ import java.awt.*
 import java.util.*
 import javax.swing.BorderFactory
 import javax.swing.ImageIcon
-import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTable
@@ -27,7 +26,7 @@ import javax.swing.table.DefaultTableModel
 
 class LeaderboardPanel : JPanel() {
 
-    private val lCenterRenderer = object : DefaultTableCellRenderer() {
+    private val centerRenderer = object : DefaultTableCellRenderer() {
         init {
             horizontalAlignment = SwingConstants.CENTER
         }
@@ -51,10 +50,6 @@ class LeaderboardPanel : JPanel() {
                 cellComponent.foreground = JBColor.BLACK
             }
 
-            if (cellComponent is JComponent) {
-                cellComponent.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
-            }
-
             return cellComponent
         }
     }
@@ -62,11 +57,11 @@ class LeaderboardPanel : JPanel() {
     init {
         this.background = mainBackgroundColor
         this.layout = GridBagLayout()
-        val lHeader = JLabel("Leaderboard")
-        lHeader.font = Font("Arial", Font.BOLD, 18)
+        val header = JLabel("Leaderboard")
+        header.font = Font("Arial", Font.BOLD, 18)
 
-        lHeader.alignmentX = JLabel.CENTER_ALIGNMENT
-        lHeader.alignmentY = JLabel.CENTER_ALIGNMENT
+        header.alignmentX = JLabel.CENTER_ALIGNMENT
+        header.alignmentY = JLabel.CENTER_ALIGNMENT
 
         val gbc = GridBagConstraints()
         gbc.insets = JBUI.insets(15, 15, 0, 15)
@@ -75,11 +70,11 @@ class LeaderboardPanel : JPanel() {
         gbc.weightx = 1.0
         gbc.weighty = 0.1
         gbc.fill = GridBagConstraints.BOTH
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.gridwidth = GridBagConstraints.REMAINDER
 
-        lHeader.horizontalAlignment = SwingConstants.LEFT;
+        header.horizontalAlignment = SwingConstants.LEFT
 
-        this.add(lHeader, gbc)
+        this.add(header, gbc)
 
         userTablePanel(this)
         teamTablePanel(this)
@@ -87,10 +82,10 @@ class LeaderboardPanel : JPanel() {
 
     private fun userTablePanel(mainPanel: JPanel) {
 
-        val lProjectName = Utility.lPreferences.get("projectName", "")
-        if (lProjectName != "") {
+        val projectName = Utility.preferences["projectName", ""]
+        if (projectName != "") {
             val queryParams = mapOf(
-                "job" to lProjectName
+                "job" to projectName
             )
 
             val response = RestClient.getInstance().get(Utility.getBaseUrl()+ Constants.GET_USERS, queryParams)
@@ -146,10 +141,13 @@ class LeaderboardPanel : JPanel() {
             }
 
 
-            table.setDefaultRenderer(Any::class.java, lCenterRenderer)
+            table.setDefaultRenderer(Any::class.java, centerRenderer)
             val tableHeader = table.tableHeader
-            tableHeader.defaultRenderer = lCenterRenderer
+            tableHeader.defaultRenderer = centerRenderer
             table.tableHeader.font = Font("Arial", Font.BOLD, 12)
+            table.setShowGrid(false)
+            table.showHorizontalLines = true
+            table.gridColor = JBColor.LIGHT_GRAY
             val scrollPane = JBScrollPane(table)
 
             val gbc = GridBagConstraints()
@@ -180,8 +178,11 @@ class LeaderboardPanel : JPanel() {
         table.background = mainBackgroundColor
         table.tableHeader.border = BorderFactory.createLineBorder(JBColor.GRAY, 1)
         table.rowHeight = 70
+        table.setShowGrid(false)
+        table.showHorizontalLines = true
+        table.gridColor = JBColor.LIGHT_GRAY
 
-        val projectName = Utility.lPreferences.get("projectName", "")
+        val projectName = Utility.preferences["projectName", ""]
 
         if (projectName.isNotEmpty()) {
             val queryParams = mapOf("job" to projectName)
@@ -205,8 +206,8 @@ class LeaderboardPanel : JPanel() {
 
                 table.tableHeader.font = Font("SansSerif", Font.BOLD, 12)
                // table.font = Font("SansSerif", Font.BOLD, 12)
-                table.tableHeader.defaultRenderer = lCenterRenderer
-                table.setDefaultRenderer(Any::class.java, lCenterRenderer)
+                table.tableHeader.defaultRenderer = centerRenderer
+                table.setDefaultRenderer(Any::class.java, centerRenderer)
 
                 val scrollPane = JBScrollPane(table)
                 val gbc = GridBagConstraints().apply {

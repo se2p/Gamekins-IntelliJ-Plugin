@@ -29,7 +29,7 @@ class WebSocketClient {
                 println("Received message from server: $text")
                 val textSplit = text.split("]")
                 val userSplit = textSplit[0].removePrefix("[").split(",")
-                if (userSplit.contains(Utility.lPreferences["username", ""])) {
+                if (userSplit.contains(Utility.preferences["username", ""])) {
                     Utility.showNotification(textSplit[1])
                 }
             }

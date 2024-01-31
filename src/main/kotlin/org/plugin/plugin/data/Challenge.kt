@@ -1,6 +1,7 @@
+package org.plugin.plugin.data
+
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
-import java.io.File
 
 @Serializable
 data class ChallengeParameter(
@@ -25,13 +26,10 @@ data class ChallengeParameter(
 @Serializable
 data class Details(
   val coverage: Double,
-  //val charset: Any?,
   val fileName: String,
   val test: Boolean,
   val filePath: String,
-  //val clientObject: Any? = null,
   val path: String,
-  //val file: File,
   val fileExtension: String,
   val packageName: String,
   val parameters: ChallengeParameter,

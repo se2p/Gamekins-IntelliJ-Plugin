@@ -19,15 +19,15 @@ class CustomInspection : LocalInspectionTool() {
         return object : PsiElementVisitor() {
             override fun visitFile(file: PsiFile) {
                 super.visitFile(file)
-                val lChallengeList = Utility.getCurrentChallenges()?.filter { it.name != "Test" && it.name != "Build" }
+                val challengeList = Utility.getCurrentChallenges()?.filter { it.name != "Test" && it.name != "Build" }
                     ?: return
 
-                for (lChallenge in lChallengeList) {
+                for (challenge in challengeList) {
                     val document = PsiDocumentManager.getInstance(file.project).getDocument(file)
-                    val fileNameWithExtension = lChallenge.details.fileName + "." + lChallenge.details.fileExtension
+                    val fileNameWithExtension = challenge.details.fileName + "." + challenge.details.fileExtension
 
                     if (document != null && fileNameWithExtension == file.name) {
-                        val description = when(lChallenge.name) {
+                        val description = when(challenge.name) {
                             "Mutation" -> "Write a test to kill the mutant here"
                             "Code Smell" -> "Improve your code by removing the smell here"
                             "Line Coverage" -> "Write a test to cover the line here"
@@ -37,8 +37,8 @@ class CustomInspection : LocalInspectionTool() {
                             else -> "Check the challenge here"
                         }
                         when {
-                            lChallenge.name?.trim() == "Mutation" || lChallenge.name?.trim()?.contains("Smell") == true -> {
-                                val fileDocument = Jsoup.parse(lChallenge.generalReason!!)
+                            challenge.name?.trim() == "Mutation" || challenge.name?.trim()?.contains("Smell") == true -> {
+                                val fileDocument = Jsoup.parse(challenge.generalReason!!)
                                 val lineNumberElement = fileDocument.select("b").first()
                                 val lineNumberText = lineNumberElement?.text()
                                 val documentLines = file.text.split("\n")
@@ -72,8 +72,8 @@ class CustomInspection : LocalInspectionTool() {
                                     }
                                 }
                             }
-                            lChallenge.name?.trim() == "Line Coverage" || lChallenge.name == "Branch Coverage" -> {
-                                val fileDocument = Jsoup.parse(lChallenge.toolTipText!!.substringAfter("Line content:"))
+                            challenge.name?.trim() == "Line Coverage" || challenge.name == "Branch Coverage" -> {
+                                val fileDocument = Jsoup.parse(challenge.toolTipText!!.substringAfter("Line content:"))
                                 val codeTagContent = fileDocument.select("body").text()
                                 val startOffset = document.text.indexOf(codeTagContent)
                                 val quickFix = QuickFix()
@@ -100,11 +100,11 @@ class CustomInspection : LocalInspectionTool() {
                                     )
                                 }
                             }
-                            lChallenge.name?.trim() == "Method Coverage" || lChallenge.name == "Class Coverage" -> {
-                                val fileDocument = Jsoup.parse(lChallenge.snippet!!)
+                            challenge.name?.trim() == "Method Coverage" || challenge.name == "Class Coverage" -> {
+                                val fileDocument = Jsoup.parse(challenge.snippet!!)
                                 val codeTagContent = fileDocument.select("code").text()
                                 val pattern =
-                                    if (lChallenge.name == "Class Coverage") Pattern.compile("(public\\s)?(class|interface|enum)\\s([^\\n\\s]*)")
+                                    if (challenge.name == "Class Coverage") Pattern.compile("(public\\s)?(class|interface|enum)\\s([^\\n\\s]*)")
                                     else Pattern.compile("(public|protected|private|static|\\s)( static)? +[\\w<>\\[\\]]+\\s+(\\w+) *\\([^)]*\\) *(\\{?|[^;])")
                                 val matcher: Matcher = pattern.matcher(codeTagContent)
 

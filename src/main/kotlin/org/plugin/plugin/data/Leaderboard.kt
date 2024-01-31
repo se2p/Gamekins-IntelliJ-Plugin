@@ -4,9 +4,6 @@ import java.io.Serializable
 
 /**
  * Container for the details of a user displayed on the Leaderboard.
- *
- * @author Philipp Straubinger
- * @since 0.1
  */
 class UserDetails( val userName: String,  val teamName: String,
                    val score: Int,  val completedChallenges: Int,
@@ -19,9 +16,6 @@ data class UserList(val users: List<UserDetails>)
 
 /**
  * Container for the details of a team displayed on the Leaderboard.
- *
- * @author Philipp Straubinger
- * @since 0.1
  */
 class TeamDetails( val teamName: String,  var score: Int,
                    var completedChallenges: Int,  var completedQuests: Int,

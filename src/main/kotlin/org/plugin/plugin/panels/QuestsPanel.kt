@@ -21,9 +21,9 @@ class QuestsPanel: JPanel() {
         initializePanel()
     }
 
-    fun initializePanel() {
+    private fun initializePanel() {
         this.layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        val lProjectName = Utility.lPreferences.get("projectName", "")
+        val projectName = Utility.preferences.get("projectName", "")
 
         this.add(JPanel().apply {
             layout = BorderLayout()
@@ -42,13 +42,13 @@ class QuestsPanel: JPanel() {
 
         this.add(Box.createRigidArea(Dimension(0, 10)))
 
-        val questsTasksList = fetchQuestsTasks(lProjectName)
+        val questsTasksList = fetchQuestsTasks(projectName)
 
         questsTasksList.forEachIndexed { index, task ->
-            val lQuestPanel = createSingleQuestPanel(task, index)
-            lQuestPanel.background = mainBackgroundColor
-            lQuestPanel.maximumHeight = 100
-            this.add(lQuestPanel)
+            val questPanel = createSingleQuestPanel(task, index)
+            questPanel.background = mainBackgroundColor
+            questPanel.maximumHeight = 100
+            this.add(questPanel)
         }
 
         this.add(JPanel().apply {
@@ -66,36 +66,36 @@ class QuestsPanel: JPanel() {
             add(label, BorderLayout.CENTER)
         })
 
-        val lQueryParams = mapOf(
-            "job" to lProjectName
+        val queryParams = mapOf(
+            "job" to projectName
         )
-        val lResponse =
-            RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_COMPLETED_QUESTS_TASKS, lQueryParams)
-        val lQuestsTasksList = Gson().fromJson(lResponse, CompletedQuestsListTasks::class.java).completedQuestTasks
+        val response =
+            RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_COMPLETED_QUESTS_TASKS, queryParams)
+        val questsTasksList1 = Gson().fromJson(response, CompletedQuestsListTasks::class.java).completedQuestTasks
 
-        for (lIndex in lQuestsTasksList.indices) {
+        for (lIndex in questsTasksList1.indices) {
 
-            val lQuestPanel = JPanel(GridLayout(2, 1, 0, 5))
-            lQuestPanel.background = Color.decode("#dbffe0")
+            val questPanel = JPanel(GridLayout(2, 1, 0, 5))
+            questPanel.background = Color.decode("#dbffe0")
 
-            lQuestPanel.border = BorderFactory.createCompoundBorder(
+            questPanel.border = BorderFactory.createCompoundBorder(
                 LineBorder(JBColor.GRAY, 0),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
             )
-            lQuestPanel.maximumHeight = 70
+            questPanel.maximumHeight = 70
 
-            val lQuestTask: QuestTask = lQuestsTasksList[lIndex]
-            val lQuestLabel = JLabel(lQuestTask.title)
-            lQuestLabel.foreground = JBColor.BLACK
-            val lHeaderPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0))
-            lHeaderPanel.background = Color.decode("#dbffe0")
+            val questTask: QuestTask = questsTasksList1[lIndex]
+            val questLabel = JLabel(questTask.title)
+            questLabel.foreground = JBColor.BLACK
+            val headerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0))
+            headerPanel.background = Color.decode("#dbffe0")
 
 
             val spacerLabel = JLabel("")
             spacerLabel.preferredSize = Dimension(10, 0)
 
-            val lScoreString = if (lQuestTask.score > 1) "points" else "point"
-            val lChallengeTitleScore = JLabel("<html><div style='padding: 3px;'>${lQuestTask.score.toString() + "&nbsp;" + lScoreString}</div></html>").apply {
+            val scoreString = if (questTask.score > 1) "points" else "point"
+            val challengeTitleScore = JLabel("<html><div style='padding: 3px;'>${questTask.score.toString() + "&nbsp;" + scoreString}</div></html>").apply {
                 isOpaque = true
                 background = Color.decode("#28a745")
                 foreground = JBColor.WHITE
@@ -104,20 +104,20 @@ class QuestsPanel: JPanel() {
                 verticalAlignment = SwingConstants.CENTER
             }
 
-            lHeaderPanel.add(lQuestLabel)
-            lHeaderPanel.add(spacerLabel)
-            lHeaderPanel.add(lChallengeTitleScore)
-            lQuestPanel.add(lHeaderPanel)
-            this.add(lQuestPanel)
+            headerPanel.add(questLabel)
+            headerPanel.add(spacerLabel)
+            headerPanel.add(challengeTitleScore)
+            questPanel.add(headerPanel)
+            this.add(questPanel)
         }
     }
 
     private fun createSingleQuestPanel(task: QuestTask, index: Int): JPanel {
-        val lQuestPanel = JPanel(GridLayout(2, 1, 0, 5)).apply {
+        val questPanel = JPanel(GridLayout(2, 1, 0, 5)).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             maximumSize = Dimension(Int.MAX_VALUE, 70)
         }
-        lQuestPanel.background = mainBackgroundColor
+        questPanel.background = mainBackgroundColor
         val questLabel = JLabel(task.title)
         val headerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0))
         headerPanel.background = mainBackgroundColor
@@ -125,8 +125,8 @@ class QuestsPanel: JPanel() {
         val spacerLabel = JLabel("")
         spacerLabel.preferredSize = Dimension(0, 0)
 
-        val lScoreString = if (task.score > 1) "points" else "point"
-        val lChallengeTitleScore = JLabel("${task.score} $lScoreString").apply {
+        val scoreString = if (task.score > 1) "points" else "point"
+        val challengeTitleScore = JLabel("${task.score} $scoreString").apply {
             isOpaque = true
             background = Color.decode("#28a745")
             foreground = JBColor.WHITE
@@ -136,9 +136,8 @@ class QuestsPanel: JPanel() {
             preferredSize = Dimension(60, 20)
         }
 
-        val lIndex = index + 1
         val progressBarLabel = JLabel(task.completedPercentage.toString()).apply {
-            text = "$lIndex. "
+            text = "${index + 1}. "
         }
         headerPanel.add(progressBarLabel)
         val progressBar = JProgressBar(0, 100).apply {
@@ -148,11 +147,11 @@ class QuestsPanel: JPanel() {
 
         headerPanel.add(questLabel)
         headerPanel.add(spacerLabel)
-        headerPanel.add(lChallengeTitleScore)
-        lQuestPanel.add(headerPanel)
-        lQuestPanel.add(progressBar)
+        headerPanel.add(challengeTitleScore)
+        questPanel.add(headerPanel)
+        questPanel.add(progressBar)
 
-        return lQuestPanel
+        return questPanel
     }
 
     private fun fetchQuestsTasks(projectName: String): List<QuestTask> {

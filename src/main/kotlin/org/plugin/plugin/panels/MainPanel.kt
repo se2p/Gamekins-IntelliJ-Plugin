@@ -16,18 +16,18 @@ import javax.swing.*
 
 class MainPanel: JPanel() {
 
-    private val lLeaderboardButton = JButton("Leaderboard")
-    private val lChallengesButton = JButton("Challenges")
-    private val lQuestsButton = JButton("Quests")
-    private val lAchievementsButton = JButton("Achievements")
-    private val lHelpButton = JButton("Help")
-    private val lLogoutButton = JButton("Logout")
+    private val leaderboardButton = JButton("Leaderboard")
+    private val challengesButton = JButton("Challenges")
+    private val questsButton = JButton("Quests")
+    private val achievementsButton = JButton("Achievements")
+    private val helpButton = JButton("Help")
+    private val logoutButton = JButton("Logout")
 
-    private val lLeaderboardPanel = LeaderboardPanel()
-    private val lChallengesPanel = ChallengesPanel()
-    private val lQuestsPanel = QuestsPanel()
-    private val lAchievementsPanel = AchievementsPanel()
-    private val lHelpPanel = HelpPanel()
+    private val leaderboardPanel = LeaderboardPanel()
+    private val challengesPanel = ChallengesPanel()
+    private val questsPanel = QuestsPanel()
+    private val achievementsPanel = AchievementsPanel()
+    private val helpPanel = HelpPanel()
 
     private val contentPanel = JPanel()
 
@@ -50,7 +50,7 @@ class MainPanel: JPanel() {
         centerPanel.alignmentX = CENTER_ALIGNMENT
         centerPanel.alignmentY = CENTER_ALIGNMENT
 
-        lLogoutButton.addActionListener {
+        logoutButton.addActionListener {
             Utility.logout()
 
             val toolWindowManager = Utility.project?.let {
@@ -64,20 +64,20 @@ class MainPanel: JPanel() {
             }
         }
 
-        for (button in listOf(lLeaderboardButton, lChallengesButton, lQuestsButton, lAchievementsButton, lHelpButton, lLogoutButton)) {
+        for (button in listOf(leaderboardButton, challengesButton, questsButton, achievementsButton, helpButton, logoutButton)) {
             centerPanel.add(button)
             button.font = Font("SansSerif", Font.BOLD, 12)
             button.background = mainBackgroundColor
             button.minimumHeight = 30
         }
 
-        lLeaderboardButton.addActionListener { switchToPanel(lLeaderboardPanel) }
-        lChallengesButton.addActionListener { switchToPanel(lChallengesPanel) }
-        lQuestsButton.addActionListener { switchToPanel(lQuestsPanel) }
-        lAchievementsButton.addActionListener { switchToPanel(lAchievementsPanel) }
-        lHelpButton.addActionListener { switchToPanel(lHelpPanel) }
+        leaderboardButton.addActionListener { switchToPanel(leaderboardPanel) }
+        challengesButton.addActionListener { switchToPanel(challengesPanel) }
+        questsButton.addActionListener { switchToPanel(questsPanel) }
+        achievementsButton.addActionListener { switchToPanel(achievementsPanel) }
+        helpButton.addActionListener { switchToPanel(helpPanel) }
 
-        switchToPanel(lChallengesPanel)
+        switchToPanel(challengesPanel)
 
         val contentPanelConstraints = GridBagConstraints()
         contentPanelConstraints.gridx = 0
@@ -85,8 +85,8 @@ class MainPanel: JPanel() {
         contentPanelConstraints.weighty = 0.95
         contentPanelConstraints.fill = GridBagConstraints.BOTH
 
-        val lScrollPane = JBScrollPane(contentPanel)
-        this.add(lScrollPane, contentPanelConstraints)
+        val scrollPane = JBScrollPane(contentPanel)
+        this.add(scrollPane, contentPanelConstraints)
 
 
         buttonsPanel.add(Box.createVerticalGlue())
@@ -94,9 +94,9 @@ class MainPanel: JPanel() {
         buttonsPanel.add(Box.createVerticalGlue())
 
 
-        val lScrollPanel = JBScrollPane(buttonsPanel)
-        lScrollPanel.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER
-        lScrollPanel.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
+        val scrollPanel = JBScrollPane(buttonsPanel)
+        scrollPanel.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER
+        scrollPanel.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
 
         val bottomPanelConstraints = GridBagConstraints()
         bottomPanelConstraints.gridx = 0
@@ -105,7 +105,7 @@ class MainPanel: JPanel() {
         bottomPanelConstraints.anchor = GridBagConstraints.PAGE_END
         bottomPanelConstraints.fill = GridBagConstraints.BOTH
 
-        this.add(lScrollPanel, bottomPanelConstraints)
+        this.add(scrollPanel, bottomPanelConstraints)
     }
 
     private fun switchToPanel(panel: JComponent) {

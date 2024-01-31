@@ -23,11 +23,11 @@ class AchievementsPanel : JPanel() {
     }
 
     private fun initializeAchievements() {
-        val lProjectName = lPreferences["projectName", ""] ?: return
-        val completedAchievements = fetchCompletedAchievements(lProjectName)
-        val unsolvedAchievements = fetchUnsolvedAchievements(lProjectName)
-        val badgeAchievements = fetchBadgeAchievements(lProjectName)
-        val progressAchievements = fetchProgressAchievements(lProjectName)
+        val projectName = lPreferences["projectName", ""] ?: return
+        val completedAchievements = fetchCompletedAchievements(projectName)
+        val unsolvedAchievements = fetchUnsolvedAchievements(projectName)
+        val badgeAchievements = fetchBadgeAchievements(projectName)
+        val progressAchievements = fetchProgressAchievements(projectName)
 
         this.layout = BoxLayout(this, BoxLayout.Y_AXIS)
 

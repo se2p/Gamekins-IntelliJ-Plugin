@@ -55,27 +55,27 @@ class ChallengesPanel: JPanel() {
 
         try {
 
-            val lChallengeList = Utility.getCurrentChallenges()
+            val challengeList = Utility.getCurrentChallenges()
             val separator = JSeparator(JSeparator.HORIZONTAL)
 
-            if (lChallengeList != null) {
-                for (index in lChallengeList.indices) {
+            if (challengeList != null) {
+                for (index in challengeList.indices) {
 
-                    val lChallenge = lChallengeList.getOrNull(index) ?: return
-                    val lChallengePanel = JPanel()
-                    lChallengePanel.setLayout(BorderLayout())
-                    lChallengePanel.background = mainBackgroundColor
-                    lChallengePanel.maximumHeight = 70
-                    val lRowNum = index + 1
+                    val challenge = challengeList.getOrNull(index) ?: return
+                    val challengePanel = JPanel()
+                    challengePanel.setLayout(BorderLayout())
+                    challengePanel.background = mainBackgroundColor
+                    challengePanel.maximumHeight = 70
+                    val rowNum = index + 1
 
-                    val lLeftPanel = JPanel(FlowLayout(FlowLayout.LEFT))
-                    val lChallengeHeader = JPanel(GridBagLayout())
-                    val lChallengeTitleLabel = JLabel(
+                    val leftPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+                    val challengeHeader = JPanel(GridBagLayout())
+                    val challengeTitleLabel = JLabel(
                         "<HTML><div WIDTH=550" + ">" +
-                                "$lRowNum. " +
-                                lChallenge.generalReason + "</div></HTML>"
+                                "$rowNum. " +
+                                challenge.generalReason + "</div></HTML>"
                     )
-                    lChallengeTitleLabel.alignmentX = JLabel.CENTER_ALIGNMENT
+                    challengeTitleLabel.alignmentX = JLabel.CENTER_ALIGNMENT
 
                     val gbc = GridBagConstraints()
                     gbc.gridx = 0
@@ -83,14 +83,14 @@ class ChallengesPanel: JPanel() {
                     gbc.weightx = 0.8
                     gbc.fill = GridBagConstraints.BOTH
 
-                    lLeftPanel.add(lChallengeTitleLabel)
-                    lChallengeHeader.add(lLeftPanel, gbc)
-                    lChallengeHeader.background = mainBackgroundColor
-                    lLeftPanel.background = mainBackgroundColor
+                    leftPanel.add(challengeTitleLabel)
+                    challengeHeader.add(leftPanel, gbc)
+                    challengeHeader.background = mainBackgroundColor
+                    leftPanel.background = mainBackgroundColor
 
-                    val scoreString = if (lChallenge.score!! > 1) "points" else "point"
-                    val lChallengeTitleScore =
-                        JLabel("<html><div style='padding: 3px;'>${lChallenge.score.toString() + "&nbsp;" + scoreString}</div></html>").apply {
+                    val scoreString = if (challenge.score!! > 1) "points" else "point"
+                    val challengeTitleScore =
+                        JLabel("<html><div style='padding: 3px;'>${challenge.score.toString() + "&nbsp;" + scoreString}</div></html>").apply {
                             isOpaque = true
                             background = Color.decode("#28a745")
                             foreground = JBColor.WHITE
@@ -99,8 +99,8 @@ class ChallengesPanel: JPanel() {
                             verticalAlignment = SwingConstants.CENTER
                         }
 
-                    val lChallengeTitleName =
-                        JLabel("<html><div style='padding: 3px;'>${lChallenge.name}</div></html>").apply {
+                    val challengeTitleName =
+                        JLabel("<html><div style='padding: 3px;'>${challenge.name}</div></html>").apply {
                             isOpaque = true
                             background = Color.decode("#ffc107")
                             foreground = Color.decode("#212529")
@@ -109,117 +109,117 @@ class ChallengesPanel: JPanel() {
                             verticalAlignment = SwingConstants.CENTER
                         }
 
-                    val lRightPanel = JPanel().apply {
+                    val rightPanel = JPanel().apply {
                         border = BorderFactory.createEmptyBorder(10, 0, 0, 20)
                         layout = BoxLayout(this, BoxLayout.X_AXIS)
                         background = mainBackgroundColor
-                        add(lChallengeTitleScore)
+                        add(challengeTitleScore)
                         add(Box.createHorizontalStrut(10))
-                        add(lChallengeTitleName)
+                        add(challengeTitleName)
                     }
 
-                    val lButtonsPanel = JPanel()
-                    lButtonsPanel.background = mainBackgroundColor
-                    lButtonsPanel.layout = FlowLayout(FlowLayout.RIGHT)
-                    val lStoreButton = JButton("Store")
-                    val lRejectButton = JButton("Reject")
-                    lRejectButton.background = mainBackgroundColor
-                    lRejectButton.foreground = JBColor.RED
-                    lRejectButton.isContentAreaFilled = false
-                    lRejectButton.isOpaque = true
-                    lRejectButton.font = Font("Arial", Font.BOLD, 13)
+                    val buttonsPanel = JPanel()
+                    buttonsPanel.background = mainBackgroundColor
+                    buttonsPanel.layout = FlowLayout(FlowLayout.RIGHT)
+                    val storeButton = JButton("Store")
+                    val rejectButton = JButton("Reject")
+                    rejectButton.background = mainBackgroundColor
+                    rejectButton.foreground = JBColor.RED
+                    rejectButton.isContentAreaFilled = false
+                    rejectButton.isOpaque = true
+                    rejectButton.font = Font("Arial", Font.BOLD, 13)
 
-                    lStoreButton.background = mainBackgroundColor
-                    lStoreButton.foreground = JBColor.DARK_GRAY
-                    lStoreButton.isContentAreaFilled = false
-                    lStoreButton.isOpaque = true
-                    lStoreButton.font = Font("Arial", Font.BOLD, 13)
+                    storeButton.background = mainBackgroundColor
+                    storeButton.foreground = JBColor.DARK_GRAY
+                    storeButton.isContentAreaFilled = false
+                    storeButton.isOpaque = true
+                    storeButton.font = Font("Arial", Font.BOLD, 13)
 
-                    val lExpandButton = JButton("Expand")
-                    lExpandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
-                    lExpandButton.background = mainBackgroundColor
-                    lExpandButton.foreground = JBColor.DARK_GRAY
-                    lExpandButton.isContentAreaFilled = false
-                    lExpandButton.isOpaque = true
-                    lExpandButton.font = Font("Arial", Font.BOLD, 13)
+                    val expandButton = JButton("Expand")
+                    expandButton.toolTipText = Constants.CHALLENGE_PANEL_DESCRIPTION
+                    expandButton.background = mainBackgroundColor
+                    expandButton.foreground = JBColor.DARK_GRAY
+                    expandButton.isContentAreaFilled = false
+                    expandButton.isOpaque = true
+                    expandButton.font = Font("Arial", Font.BOLD, 13)
 
                     gbc.gridx = 1
                     gbc.gridy = 0
                     gbc.weightx = 0.4
 
-                    lChallengeHeader.add(lRightPanel, gbc)
+                    challengeHeader.add(rightPanel, gbc)
 
-                    lChallengePanel.add(lChallengeHeader, BorderLayout.PAGE_START)
+                    challengePanel.add(challengeHeader, BorderLayout.PAGE_START)
 
-                    val lExtraContentPanel = JPanel()
-                    lExtraContentPanel.background = JBColor.LIGHT_GRAY
-                    lExtraContentPanel.border = BorderFactory.createEmptyBorder(10,10,10,10)
-                    lExtraContentPanel.layout = BorderLayout()
-                    lExtraContentPanel.isVisible = false
+                    val extraContentPanel = JPanel()
+                    extraContentPanel.background = JBColor.LIGHT_GRAY
+                    extraContentPanel.border = BorderFactory.createEmptyBorder(10,10,10,10)
+                    extraContentPanel.layout = BorderLayout()
+                    extraContentPanel.isVisible = false
 
 
-                    if (lChallenge.snippet != "") {
+                    if (challenge.snippet != "") {
 
-                        val lHtmlTag = lChallenge.snippet!!.let { it1 -> Jsoup.parse(it1) }
+                        val htmlTag = challenge.snippet!!.let { it1 -> Jsoup.parse(it1) }
 
                         val label = JLabel()
                         label.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                         label.verticalAlignment = SwingConstants.CENTER
                         label.horizontalAlignment = SwingConstants.LEADING
-                        setLinkLabelContent(label, lHtmlTag.select("a").toString())
+                        setLinkLabelContent(label, htmlTag.select("a").toString())
 
-                        if ((lChallenge.name?.trim()?.contains("Smell") == true))
+                        if ((challenge.name?.trim()?.contains("Smell") == true))
                         {
-                            val emTag = lHtmlTag.select("em")
+                            val emTag = htmlTag.select("em")
                             emTag.select("a").unwrap().getOrNull(1)
-                            val lTextLabel = JLabel("<HTML>$emTag</HTML>")
-                            lTextLabel.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                            lTextLabel.verticalAlignment = SwingConstants.CENTER
-                            lTextLabel.horizontalAlignment = SwingConstants.LEFT
-                            lExtraContentPanel.add(lTextLabel, BorderLayout.PAGE_START)
+                            val textLabel = JLabel("<HTML>$emTag</HTML>")
+                            textLabel.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                            textLabel.verticalAlignment = SwingConstants.CENTER
+                            textLabel.horizontalAlignment = SwingConstants.LEFT
+                            extraContentPanel.add(textLabel, BorderLayout.PAGE_START)
                         } else
                         {
-                            val lCodeBlock = lHtmlTag.select("pre").getOrNull(1)
-                            if (lCodeBlock != null) {
-                                val lCodeBlockLabel = JLabel("<HTML>${lCodeBlock.toString().trim()}</HTML>")
-                                lCodeBlockLabel.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                                lCodeBlockLabel.verticalAlignment = SwingConstants.CENTER
-                                lCodeBlockLabel.horizontalAlignment = SwingConstants.LEFT
-                                lExtraContentPanel.add(lCodeBlockLabel, BorderLayout.PAGE_START)
+                            val codeBlock = htmlTag.select("pre").getOrNull(1)
+                            if (codeBlock != null) {
+                                val codeBlockLabel = JLabel("<HTML>${codeBlock.toString().trim()}</HTML>")
+                                codeBlockLabel.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                                codeBlockLabel.verticalAlignment = SwingConstants.CENTER
+                                codeBlockLabel.horizontalAlignment = SwingConstants.LEFT
+                                extraContentPanel.add(codeBlockLabel, BorderLayout.PAGE_START)
                             }
                         }
 
-                        lExtraContentPanel.add(Box.createVerticalStrut(10))
-                        lExtraContentPanel.add(separator, BorderLayout.CENTER)
-                        lExtraContentPanel.add(label, BorderLayout.PAGE_END)
+                        extraContentPanel.add(Box.createVerticalStrut(10))
+                        extraContentPanel.add(separator, BorderLayout.CENTER)
+                        extraContentPanel.add(label, BorderLayout.PAGE_END)
 
                     }
 
-                    val lViewSourceButton = JButton("Go to source")
+                    val viewSourceButton = JButton("Go to source")
 
-                    lViewSourceButton.background = mainBackgroundColor
-                    lViewSourceButton.foreground = JBColor.DARK_GRAY
-                    lViewSourceButton.isContentAreaFilled = false
-                    lViewSourceButton.isOpaque = true
-                    lViewSourceButton.font = Font("Arial", Font.BOLD, 13)
+                    viewSourceButton.background = mainBackgroundColor
+                    viewSourceButton.foreground = JBColor.DARK_GRAY
+                    viewSourceButton.isContentAreaFilled = false
+                    viewSourceButton.isOpaque = true
+                    viewSourceButton.font = Font("Arial", Font.BOLD, 13)
 
                     when {
-                        lChallenge.name?.trim().equals("Mutation")
-                                || lChallenge.name?.trim()?.contains("Smell") == true -> {
+                        challenge.name?.trim().equals("Mutation")
+                                || challenge.name?.trim()?.contains("Smell") == true -> {
 
-                            lButtonsPanel.add(lExpandButton)
-                            lButtonsPanel.add(lViewSourceButton)
-                            lChallengePanel.add(lExtraContentPanel, BorderLayout.CENTER)
+                            buttonsPanel.add(expandButton)
+                            buttonsPanel.add(viewSourceButton)
+                            challengePanel.add(extraContentPanel, BorderLayout.CENTER)
 
-                            lViewSourceButton.addActionListener {
+                            viewSourceButton.addActionListener {
 
-                                val details = lChallenge.details
+                                val details = challenge.details
                                 val projectManager = ProjectManager.getInstance()
                                 val projects = projectManager.openProjects
                                 val fileSystem = LocalFileSystem.getInstance()
 
-                                val lFilePath = projects.getOrNull(0)?.basePath + details.filePath
-                                val file = fileSystem.findFileByPath(lFilePath)
+                                val filePath = projects.getOrNull(0)?.basePath + details.filePath
+                                val file = fileSystem.findFileByPath(filePath)
                                 file?.let { foundFile ->
                                     val fileEditorManager = projects.getOrNull(0)
                                         ?.let { it1 -> FileEditorManager.getInstance(it1) }
@@ -229,7 +229,7 @@ class ChallengesPanel: JPanel() {
                                         openFileDescriptor?.let { it1 -> fileEditorManager?.openTextEditor(it1, true) }
 
                                     editor?.let { e ->
-                                        val document = lChallenge.generalReason!!.let { it1 -> Jsoup.parse(it1) }
+                                        val document = challenge.generalReason!!.let { it1 -> Jsoup.parse(it1) }
 
                                         val lineNumberElement =
                                             document.select("b").first() // Select the first <b> element
@@ -251,20 +251,20 @@ class ChallengesPanel: JPanel() {
 
                         }
 
-                        lChallenge.name?.trim()?.contains("Coverage") == true -> {
-                            lButtonsPanel.add(lViewSourceButton)
-                            lViewSourceButton.addActionListener {
+                        challenge.name?.trim()?.contains("Coverage") == true -> {
+                            buttonsPanel.add(viewSourceButton)
+                            viewSourceButton.addActionListener {
 
-                                val details = lChallenge.details
+                                val details = challenge.details
 
                                 val projectManager = ProjectManager.getInstance()
                                 val projects = projectManager.openProjects
                                 val fileSystem = LocalFileSystem.getInstance()
 
-                                val lFilePath = projects.getOrNull(0)?.basePath + details.filePath
-                                val file = fileSystem.findFileByPath(lFilePath)
+                                val filePath = projects.getOrNull(0)?.basePath + details.filePath
+                                val file = fileSystem.findFileByPath(filePath)
 
-                                if ((lChallenge.name.trim() == "Line Coverage" || lChallenge.name == "Branch Coverage")
+                                if ((challenge.name.trim() == "Line Coverage" || challenge.name == "Branch Coverage")
                                 ) {
                                     file?.let { foundFile ->
                                         val fileEditorManager = projects.getOrNull(0)
@@ -280,7 +280,7 @@ class ChallengesPanel: JPanel() {
                                             }
 
                                         editor?.let { e ->
-                                            val document = lChallenge.toolTipText!!.substringAfter("Line content:")
+                                            val document = challenge.toolTipText!!.substringAfter("Line content:")
                                                 .let { it1 -> Jsoup.parse(it1) }
                                             val codeTagContent = document.select("body").text()
 
@@ -290,7 +290,7 @@ class ChallengesPanel: JPanel() {
                                             highlightCode(e, startOffset, endOffset)
                                         }
                                     }
-                                } else if ((lChallenge.name.trim() == "Method Coverage" || lChallenge.name == "Class Coverage")
+                                } else if ((challenge.name.trim() == "Method Coverage" || challenge.name == "Class Coverage")
                                 ) {
                                     file?.let { foundFile ->
                                         val fileEditorManager = projects.getOrNull(0)
@@ -306,13 +306,13 @@ class ChallengesPanel: JPanel() {
                                             }
 
                                         editor?.let { e ->
-                                            val document = lChallenge.snippet.let { it1 -> Jsoup.parse(it1) }
+                                            val document = challenge.snippet.let { it1 -> Jsoup.parse(it1) }
                                             val codeTagContent = document.select("code").text()
 
 
                                             val methodName: String?
                                             val pattern =
-                                                if (lChallenge.name == "Class Coverage") Pattern.compile("(public\\s)?(class|interface|enum)\\s([^\\n\\s]*)")
+                                                if (challenge.name == "Class Coverage") Pattern.compile("(public\\s)?(class|interface|enum)\\s([^\\n\\s]*)")
                                                 else Pattern.compile("(public|protected|private|static|\\s)( static)? +[\\w<>\\[\\]]+\\s+(\\w+) *\\([^)]*\\) *(\\{?|[^;])")
                                             val matcher: Matcher = pattern.matcher(codeTagContent)
 
@@ -332,22 +332,22 @@ class ChallengesPanel: JPanel() {
                     }
 
 
-                    lButtonsPanel.add(lStoreButton)
-                    lButtonsPanel.add(lRejectButton)
+                    buttonsPanel.add(storeButton)
+                    buttonsPanel.add(rejectButton)
 
-                    lExpandButton.addActionListener {
-                        lExtraContentPanel.isVisible = !lExtraContentPanel.isVisible
-                        if (lExpandButton.text == "Expand") {
-                            lExpandButton.text = "Reduce"
+                    expandButton.addActionListener {
+                        extraContentPanel.isVisible = !extraContentPanel.isVisible
+                        if (expandButton.text == "Expand") {
+                            expandButton.text = "Reduce"
                         } else {
-                            lExpandButton.text = "Expand"
+                            expandButton.text = "Expand"
                         }
-                        lChallengePanel.revalidate()
-                        lChallengePanel.repaint()
+                        challengePanel.revalidate()
+                        challengePanel.repaint()
                     }
-                    lStoreButton.addActionListener {
+                    storeButton.addActionListener {
                         Utility.storeChallenge(
-                            lChallenge.generalReason?.replace(Regex("<[^>]++>"), "")
+                            challenge.generalReason?.replace(Regex("<[^>]++>"), "")
                         ) { success, errorMessage ->
                             if (success) {
                                 Utility.showMessageDialog("Store successful!")
@@ -358,14 +358,14 @@ class ChallengesPanel: JPanel() {
                             }
                         }
                     }
-                    lRejectButton.addActionListener {
+                    rejectButton.addActionListener {
                         Utility.createRejectModal(
-                            lChallenge.generalReason?.replace(Regex("<[^>]++>"), ""), this
+                            challenge.generalReason?.replace(Regex("<[^>]++>"), ""), this
                         )
                     }
 
-                    lChallengePanel.add(lButtonsPanel, BorderLayout.PAGE_END)
-                    this.add(lChallengePanel)
+                    challengePanel.add(buttonsPanel, BorderLayout.PAGE_END)
+                    this.add(challengePanel)
 
                     this.add(separator, BorderLayout.CENTER)
                 }
@@ -387,10 +387,10 @@ class ChallengesPanel: JPanel() {
     }
 
     private fun createStoredButton(mainPanel: JPanel) {
-        val lProjectName = Utility.lPreferences.get("projectName", "")
-        if (lProjectName != "") {
+        val projectName = Utility.preferences["projectName", ""]
+        if (projectName != "") {
             val queryParams = mapOf(
-                "job" to lProjectName
+                "job" to projectName
             )
             val response =
                 RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_STORED_CHALLENGES, queryParams)
@@ -399,21 +399,21 @@ class ChallengesPanel: JPanel() {
             val storedChallengesLimit = Utility.getStoredChallengesLimit()
             val storedChallengesCount = challengeList.size
 
-            val lStoredChallengesButton = JButton("Stored Challenges ($storedChallengesCount/$storedChallengesLimit)")
-            lStoredChallengesButton.font = Font("Arial", Font.PLAIN, 14)
-            lStoredChallengesButton.addActionListener { _: ActionEvent? ->
+            val storedChallengesButton = JButton("Stored Challenges ($storedChallengesCount/$storedChallengesLimit)")
+            storedChallengesButton.font = Font("Arial", Font.PLAIN, 14)
+            storedChallengesButton.addActionListener { _: ActionEvent? ->
                 Utility.openStoredChallengesDialog(
                     challengeList, this
                 )
             }
-            lStoredChallengesButton.setSize(80, 40)
-            lStoredChallengesButton.background = mainBackgroundColor
+            storedChallengesButton.setSize(80, 40)
+            storedChallengesButton.background = mainBackgroundColor
 
-            val lJPanel = JPanel()
-            lJPanel.add(lStoredChallengesButton)
-            lJPanel.background = mainBackgroundColor
+            val jPanel = JPanel()
+            jPanel.add(storedChallengesButton)
+            jPanel.background = mainBackgroundColor
 
-            mainPanel.add(lJPanel, BorderLayout.CENTER)
+            mainPanel.add(jPanel, BorderLayout.CENTER)
 
         }
     }
