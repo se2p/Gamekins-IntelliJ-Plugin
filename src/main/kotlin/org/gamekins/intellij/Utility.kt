@@ -1,7 +1,5 @@
-package org.plugin.plugin
+package org.gamekins.intellij
 
-import Challenge
-import ChallengeList
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -19,10 +17,12 @@ import com.intellij.ui.content.ContentFactory
 import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.plugin.plugin.data.Message
-import org.plugin.plugin.data.RestClient
-import org.plugin.plugin.panels.AcceptedRejectedChallengesPanel
-import org.plugin.plugin.panels.ChallengesPanel
+import org.gamekins.intellij.data.Challenge
+import org.gamekins.intellij.data.ChallengeList
+import org.gamekins.intellij.data.Message
+import org.gamekins.intellij.data.RestClient
+import org.gamekins.intellij.panels.AcceptedRejectedChallengesPanel
+import org.gamekins.intellij.panels.ChallengesPanel
 import java.awt.*
 import java.io.IOException
 import java.nio.file.Files
@@ -33,7 +33,7 @@ import javax.swing.*
 
 object Utility {
 
-    val preferences: Preferences = Preferences.userRoot().node("org.plugin.plugin.panels")
+    val preferences: Preferences = Preferences.userRoot().node("org.gamekins.intellij")
 
     var challengesPanel: ChallengesPanel? = null
 
@@ -110,7 +110,7 @@ object Utility {
 
     }
 
-    fun openStoredChallengesDialog(aInStoredChallenges: List<Challenge>, challengesPanel: ChallengesPanel) {
+    fun openStoredChallengesDialog(storedChallenges: List<Challenge>, challengesPanel: ChallengesPanel) {
 
         val storedChallengesModal = JDialog()
 
@@ -126,9 +126,9 @@ object Utility {
         modalBody.layout = BoxLayout(modalBody, BoxLayout.Y_AXIS)
         modalBody.background = mainBackgroundColor
 
-        for (index in aInStoredChallenges.indices) {
+        for (index in storedChallenges.indices) {
 
-            val challenge = aInStoredChallenges[index]
+            val challenge = storedChallenges[index]
             val challengePanel = JPanel()
             challengePanel.background = mainBackgroundColor
             challengePanel.layout = BorderLayout()
@@ -231,11 +231,11 @@ object Utility {
         return ImageIcon(resizedImg)
     }
 
-    fun storeChallenge(aInChallenge: String?, aInCallback: (Boolean, String) -> Unit) {
+    fun storeChallenge(challenge: String?, callback: (Boolean, String) -> Unit) {
 
         val projectName = preferences["projectName", ""]
         if (projectName != "") {
-            val json = """{"job": "$projectName", "challengeName": "$aInChallenge"}"""
+            val json = """{"job": "$projectName", "challengeName": "$challenge"}"""
             val mediaType = "application/json; charset=utf-8".toMediaType()
             val requestBody = json.toRequestBody(mediaType)
 
@@ -247,15 +247,15 @@ object Utility {
             val kindValue = message.message.kind
 
             if (kindValue == "OK") {
-                aInCallback(true, "success")
+                callback(true, "success")
             } else {
-                aInCallback(false, "failure")
+                callback(false, "failure")
             }
         }
 
     }
 
-    fun restoreChallenge(challenge: String?, aInCallback: (Boolean, String) -> Unit) {
+    fun restoreChallenge(challenge: String?, callback: (Boolean, String) -> Unit) {
 
         val projectName = preferences["projectName", ""]
         if (projectName != "") {
@@ -268,19 +268,19 @@ object Utility {
             val kindValue = gson.fromJson(response, Message::class.java).message.kind
 
             if (kindValue == "OK") {
-                aInCallback(true, "success")
+                callback(true, "success")
             } else {
-                aInCallback(false, "failure")
+                callback(false, "failure")
             }
 
         }
     }
 
-    private fun unshelveChallenge(aInChallenge: String?, aInCallback: (Boolean, String) -> Unit) {
+    private fun unshelveChallenge(challenge: String?, callback: (Boolean, String) -> Unit) {
 
         val projectName = preferences["projectName", ""]
         if (projectName != "") {
-            val json = """{"job": "$projectName", "challengeName": "$aInChallenge"}"""
+            val json = """{"job": "$projectName", "challengeName": "$challenge"}"""
             val mediaType = "application/json; charset=utf-8".toMediaType()
             val requestBody = json.toRequestBody(mediaType)
 
@@ -290,21 +290,21 @@ object Utility {
             val kindValue = gson.fromJson(response, Message::class.java).message.kind
 
             if (kindValue == "OK") {
-                aInCallback(true, "success")
+                callback(true, "success")
             } else {
-                aInCallback(false, "failure")
+                callback(false, "failure")
             }
         }
     }
 
     private fun rejectChallenge(
-        aInChallenge: String?,
-        aInReason: String,
-        aInCallback: (Boolean, String) -> Unit
+        challenge: String?,
+        reason: String,
+        callback: (Boolean, String) -> Unit
     ) {
         val projectName = preferences["projectName", ""]
         if (projectName != "") {
-            val json = """{"job": "$projectName", "challengeName": "$aInChallenge", "reason": "$aInReason"}"""
+            val json = """{"job": "$projectName", "challengeName": "$challenge", "reason": "$reason"}"""
             val mediaType = "application/json; charset=utf-8".toMediaType()
             val requestBody = json.toRequestBody(mediaType)
 
@@ -314,9 +314,9 @@ object Utility {
             val kindValue = gson.fromJson(response, Message::class.java).message.kind
 
             if (kindValue == "OK") {
-                aInCallback(true, "success")
+                callback(true, "success")
             } else {
-                aInCallback(false, "failure")
+                callback(false, "failure")
             }
         }
     }
@@ -325,9 +325,9 @@ object Utility {
         return preferences["token", ""] != ""
     }
 
-    fun saveToken(aInToken: String) {
+    fun saveToken(token: String) {
         try {
-            Files.write(Path.of(Constants.TOKEN_FILE_PATH), aInToken.toByteArray(), StandardOpenOption.CREATE)
+            Files.write(Path.of(Constants.TOKEN_FILE_PATH), token.toByteArray(), StandardOpenOption.CREATE)
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -450,7 +450,7 @@ object Utility {
         SwingUtilities.invokeLater {
             toolWindow.contentManager.removeAllContents(true)
             val content = ContentFactory.getInstance()
-                .createContent(MainToolWindow.createPanel(), null, false)
+                .createContent(MainToolWindow().createPanel(), null, false)
             toolWindow.contentManager.addContent(content)
         }
     }

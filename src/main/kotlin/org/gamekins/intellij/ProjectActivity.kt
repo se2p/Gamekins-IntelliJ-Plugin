@@ -1,4 +1,4 @@
-package org.plugin.plugin
+package org.gamekins.intellij
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project

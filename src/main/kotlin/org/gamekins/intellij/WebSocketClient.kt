@@ -1,4 +1,4 @@
-package org.plugin.plugin
+package org.gamekins.intellij
 
 import okhttp3.*
 import okhttp3.Request

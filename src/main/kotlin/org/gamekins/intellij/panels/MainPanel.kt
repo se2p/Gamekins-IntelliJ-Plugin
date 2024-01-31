@@ -1,12 +1,12 @@
-package org.plugin.plugin.panels
+package org.gamekins.intellij.panels
 
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.util.minimumHeight
-import org.plugin.plugin.MainToolWindow
-import org.plugin.plugin.Utility
+import org.gamekins.intellij.MainToolWindow
+import org.gamekins.intellij.Utility
 import java.awt.Font
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -60,7 +60,7 @@ class MainPanel: JPanel() {
             val myToolWindow: ToolWindow? = toolWindowManager?.getToolWindow("Gamekins")
 
             if (myToolWindow != null) {
-                MainToolWindow.rebuildPanel(myToolWindow)
+                MainToolWindow().rebuildPanel(myToolWindow)
             }
         }
 

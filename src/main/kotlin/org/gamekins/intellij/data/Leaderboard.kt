@@ -1,4 +1,4 @@
-package org.plugin.plugin.data
+package org.gamekins.intellij.data
 
 import java.io.Serializable
 

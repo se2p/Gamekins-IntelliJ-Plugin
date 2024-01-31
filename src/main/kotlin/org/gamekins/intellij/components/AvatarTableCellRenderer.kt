@@ -1,4 +1,4 @@
-package org.plugin.plugin.components
+package org.gamekins.intellij.components
 
 import javax.swing.*
 import javax.swing.table.DefaultTableCellRenderer
@@ -7,13 +7,13 @@ import java.awt.Component
 
 class IconCellRenderer : DefaultTableCellRenderer() {
     override fun getTableCellRendererComponent(
-        table: JTable?,
+        table: JTable,
         value: Any?,
         isSelected: Boolean,
         hasFocus: Boolean,
         row: Int,
         column: Int
-    ): Component? {
+    ): Component {
         val label = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
         if (value is ImageIcon) {
             (label as JLabel).icon = value

@@ -1,6 +1,5 @@
-package org.plugin.plugin.panels
+package org.gamekins.intellij.panels
 
-import StoredChallengeList
 import com.google.gson.Gson
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ScrollType
@@ -15,9 +14,10 @@ import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mai
 import com.intellij.ui.JBColor
 import com.intellij.ui.util.maximumHeight
 import org.jsoup.Jsoup
-import org.plugin.plugin.Constants
-import org.plugin.plugin.Utility
-import org.plugin.plugin.data.RestClient
+import org.gamekins.intellij.Constants
+import org.gamekins.intellij.Utility
+import org.gamekins.intellij.data.RestClient
+import org.gamekins.intellij.data.StoredChallengeList
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.MouseAdapter

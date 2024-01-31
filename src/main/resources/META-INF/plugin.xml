@@ -1,12 +1,12 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>org.plugin.plugin</id>
-    <name>Gamekins Plugin</name>
+    <id>org.gamekins.intellij</id>
+    <name>Gamekins</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="ameer.anqawe@gmail.com" url="https://www.yourcompany.com">testCompany</vendor>
+    <vendor email="philipp.straubinger@uni-passau.de" url="https://www.uni-passau.de/">University of Passau</vendor>
 
-    <description>This is a gamified plugin using gamekins</description>
+    <description>This is an IntelliJ plugin for Gamekins to gamify software testing</description>
 
     <depends>com.intellij.modules.platform</depends>
     <!--<depends>com.intellij.modules.java</depends>
@@ -17,7 +17,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
-        <localInspection implementationClass="org.plugin.plugin.CustomInspection"
+        <localInspection implementationClass="org.gamekins.intellij.CustomInspection"
                          displayName="Gamekins"
                          groupName="Gamekins"
                          groupKey="GroupName"
@@ -28,8 +28,8 @@
                          enabledByDefault="true"
         />
         <!-- Change the id to something else (e.g. Personal ID) for the control group and change the group MyBundle.properties -->
-        <toolWindow factoryClass="org.plugin.plugin.MainToolWindow" id="Gamekins"/>
-        <postStartupActivity implementation="org.plugin.plugin.ProjectActivity" />
+        <toolWindow factoryClass="org.gamekins.intellij.MainToolWindow" id="Gamekins"/>
+        <postStartupActivity implementation="org.gamekins.intellij.ProjectActivity" />
 
     </extensions>
 

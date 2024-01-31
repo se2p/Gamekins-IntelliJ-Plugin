@@ -1,4 +1,4 @@
-package org.plugin.plugin.data
+package org.gamekins.intellij.data
 
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable

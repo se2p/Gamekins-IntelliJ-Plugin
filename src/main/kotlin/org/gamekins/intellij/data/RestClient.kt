@@ -1,8 +1,8 @@
-package org.plugin.plugin.data
+package org.gamekins.intellij.data
 
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.plugin.plugin.Utility
+import org.gamekins.intellij.Utility
 import java.io.IOException
 
 class RestClient private constructor() {

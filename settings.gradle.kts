@@ -5,4 +5,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "plugin"
+rootProject.name = "Gamekins IntelliJ Plugin"

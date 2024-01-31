@@ -1,4 +1,4 @@
-package org.plugin.plugin.panels
+package org.gamekins.intellij.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
@@ -6,12 +6,12 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
-import org.plugin.plugin.Constants
-import org.plugin.plugin.Utility
-import org.plugin.plugin.components.IconCellRenderer
-import org.plugin.plugin.data.RestClient
-import org.plugin.plugin.data.TeamList
-import org.plugin.plugin.data.UserList
+import org.gamekins.intellij.Constants
+import org.gamekins.intellij.Utility
+import org.gamekins.intellij.components.IconCellRenderer
+import org.gamekins.intellij.data.RestClient
+import org.gamekins.intellij.data.TeamList
+import org.gamekins.intellij.data.UserList
 import java.awt.*
 import java.util.*
 import javax.swing.BorderFactory
@@ -32,7 +32,7 @@ class LeaderboardPanel : JPanel() {
         }
 
         override fun getTableCellRendererComponent(
-            table: JTable?,
+            table: JTable,
             value: Any?,
             isSelected: Boolean,
             hasFocus: Boolean,

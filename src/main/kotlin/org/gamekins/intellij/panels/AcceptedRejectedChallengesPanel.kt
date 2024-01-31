@@ -1,7 +1,5 @@
-package org.plugin.plugin.panels
+package org.gamekins.intellij.panels
 
-import CompletedChallengeList
-import RejectedChallengeList
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
@@ -9,9 +7,11 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.util.maximumHeight
 import com.intellij.ui.util.minimumHeight
 import com.intellij.util.ui.JBUI
-import org.plugin.plugin.Constants
-import org.plugin.plugin.Utility
-import org.plugin.plugin.data.RestClient
+import org.gamekins.intellij.Constants
+import org.gamekins.intellij.Utility
+import org.gamekins.intellij.data.CompletedChallengeList
+import org.gamekins.intellij.data.RejectedChallengeList
+import org.gamekins.intellij.data.RestClient
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -51,9 +51,9 @@ class AcceptedRejectedChallengesPanel : JPanel() {
         performInitialization()
     }
 
-    private fun createCompletedChallengesTable(aInJPanel: JPanel) {
+    private fun createCompletedChallengesTable(jPanel: JPanel) {
 
-        aInJPanel.layout = BorderLayout(5,0)
+        jPanel.layout = BorderLayout(5,0)
 
         val descriptionLabel = JLabel("<html><div style='padding: 5px;'>Completed Challenges</div></html>")
         descriptionLabel.isOpaque = true
@@ -64,13 +64,13 @@ class AcceptedRejectedChallengesPanel : JPanel() {
         descriptionLabel.foreground = JBColor.WHITE
         descriptionLabel.maximumHeight = 40
 
-        aInJPanel.add(descriptionLabel, BorderLayout.PAGE_START)
+        jPanel.add(descriptionLabel, BorderLayout.PAGE_START)
 
         val challengesPanel = JPanel()
         challengesPanel.background = mainBackgroundColor
         challengesPanel.layout = BoxLayout(challengesPanel, BoxLayout.Y_AXIS)
 
-        val projectName = Utility.preferences.get("projectName", "")
+        val projectName = Utility.preferences["projectName", ""]
         if (projectName != "") {
             val queryParams = mapOf(
                 "job" to projectName
@@ -157,7 +157,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                 scrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
                 scrollPane.preferredSize = Dimension(200, 400)
 
-                aInJPanel.add(scrollPane, BorderLayout.CENTER)
+                jPanel.add(scrollPane, BorderLayout.CENTER)
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -165,9 +165,9 @@ class AcceptedRejectedChallengesPanel : JPanel() {
         }
     }
 
-    private fun createRejectedChallengesTable(aInJPanel: JPanel) {
+    private fun createRejectedChallengesTable(jPanel: JPanel) {
 
-        aInJPanel.layout = BorderLayout(5,0)
+        jPanel.layout = BorderLayout(5,0)
 
         val descriptionLabel = JLabel("<html><div style='padding: 5px;'>Rejected Challenges</div></html>")
         descriptionLabel.isOpaque = true
@@ -178,7 +178,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
         descriptionLabel.foreground = JBColor.WHITE
         descriptionLabel.maximumHeight = 40
 
-        aInJPanel.add(descriptionLabel, BorderLayout.PAGE_START)
+        jPanel.add(descriptionLabel, BorderLayout.PAGE_START)
 
         val challengesPanel = JPanel()
         challengesPanel.layout = BoxLayout(challengesPanel, BoxLayout.Y_AXIS)
@@ -289,7 +289,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                 scrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
                 scrollPane.preferredSize = Dimension(200, 400)
 
-                aInJPanel.add(scrollPane, BorderLayout.CENTER)
+                jPanel.add(scrollPane, BorderLayout.CENTER)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

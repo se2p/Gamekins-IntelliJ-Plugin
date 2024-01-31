@@ -1,4 +1,4 @@
-package org.plugin.plugin
+package org.gamekins.intellij
 
 // Constants.kt
 object Constants {
@@ -6,7 +6,6 @@ object Constants {
     const val CHALLENGE_PANEL_DESCRIPTION = "Expand to see more details"
 
 
-    const val API_BASE_URL = "http://localhost:8080/jenkins/gamekins"
     const val TOKEN_FILE_PATH = "./auth_token.txt"
 
 

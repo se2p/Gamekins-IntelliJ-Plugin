@@ -1,15 +1,15 @@
-package org.plugin.plugin.panels
+package org.gamekins.intellij.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
 import com.intellij.ui.util.maximumHeight
-import org.plugin.plugin.Constants
-import org.plugin.plugin.Utility
-import org.plugin.plugin.data.CompletedQuestsListTasks
-import org.plugin.plugin.data.QuestTask
-import org.plugin.plugin.data.QuestsListTasks
-import org.plugin.plugin.data.RestClient
+import org.gamekins.intellij.Constants
+import org.gamekins.intellij.Utility
+import org.gamekins.intellij.data.CompletedQuestTasksList
+import org.gamekins.intellij.data.QuestTask
+import org.gamekins.intellij.data.QuestTasksList
+import org.gamekins.intellij.data.RestClient
 import java.awt.*
 import javax.swing.*
 import javax.swing.border.LineBorder
@@ -71,9 +71,9 @@ class QuestsPanel: JPanel() {
         )
         val response =
             RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_COMPLETED_QUESTS_TASKS, queryParams)
-        val questsTasksList1 = Gson().fromJson(response, CompletedQuestsListTasks::class.java).completedQuestTasks
+        val questsTasksList1 = Gson().fromJson(response, CompletedQuestTasksList::class.java).completedQuestTasks
 
-        for (lIndex in questsTasksList1.indices) {
+        for (index in questsTasksList1.indices) {
 
             val questPanel = JPanel(GridLayout(2, 1, 0, 5))
             questPanel.background = Color.decode("#dbffe0")
@@ -84,7 +84,7 @@ class QuestsPanel: JPanel() {
             )
             questPanel.maximumHeight = 70
 
-            val questTask: QuestTask = questsTasksList1[lIndex]
+            val questTask: QuestTask = questsTasksList1[index]
             val questLabel = JLabel(questTask.title)
             questLabel.foreground = JBColor.BLACK
             val headerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0))
@@ -158,6 +158,6 @@ class QuestsPanel: JPanel() {
         val queryParams = mapOf("job" to projectName)
         val response =
             RestClient.getInstance().get(Utility.getBaseUrl() + Constants.GET_CURRENT_QUESTS_TASKS, queryParams)
-        return Gson().fromJson(response, QuestsListTasks::class.java).currentQuestTasks
+        return Gson().fromJson(response, QuestTasksList::class.java).currentQuestTasks
     }
 }

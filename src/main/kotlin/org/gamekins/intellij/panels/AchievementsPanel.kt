@@ -1,4 +1,4 @@
-package org.plugin.plugin.panels
+package org.gamekins.intellij.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
@@ -6,16 +6,13 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.util.maximumHeight
 import com.intellij.ui.util.maximumWidth
 import com.intellij.ui.util.minimumWidth
-import org.plugin.plugin.Constants
-import org.plugin.plugin.Utility
-import org.plugin.plugin.data.*
+import org.gamekins.intellij.Constants
+import org.gamekins.intellij.Utility
+import org.gamekins.intellij.data.*
 import java.awt.*
-import java.util.prefs.Preferences
 import javax.swing.*
 
 class AchievementsPanel : JPanel() {
-
-    private val lPreferences = Preferences.userRoot().node("org.plugin.plugin.panels")
 
     init {
         this.background = mainBackgroundColor
@@ -23,7 +20,7 @@ class AchievementsPanel : JPanel() {
     }
 
     private fun initializeAchievements() {
-        val projectName = lPreferences["projectName", ""] ?: return
+        val projectName = Utility.preferences["projectName", ""] ?: return
         val completedAchievements = fetchCompletedAchievements(projectName)
         val unsolvedAchievements = fetchUnsolvedAchievements(projectName)
         val badgeAchievements = fetchBadgeAchievements(projectName)
