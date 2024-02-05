@@ -26,6 +26,7 @@ import org.gamekins.intellij.panels.AuthenticationPanel
 import org.gamekins.intellij.panels.MainPanel
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
+import java.net.SocketTimeoutException
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -60,6 +61,14 @@ class MainToolWindow  : ToolWindowFactory {
                 Utility.logout()
                 main.add(createAuthenticationPanel(main))
                 var message = "Previous authentication did not work, please login again."
+                if (!exception.message.isNullOrEmpty()) {
+                    message += " More information: ${exception.message}"
+                }
+                Utility.showNotification(message, NotificationType.ERROR)
+            } catch (exception: SocketTimeoutException) {
+                Utility.logout()
+                main.add(createAuthenticationPanel(main))
+                var message = "Previous authentication resulted in a timeout, please login again."
                 if (!exception.message.isNullOrEmpty()) {
                     message += " More information: ${exception.message}"
                 }

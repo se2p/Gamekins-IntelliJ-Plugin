@@ -7,7 +7,7 @@ plugins {
 }
 
 
-group = "org.plugin"
+group = "org.gamekins.intellij"
 version = "1.1.0-SNAPSHOT"
 
 repositories {
@@ -45,6 +45,7 @@ tasks {
         gradleVersion = "8.4"
     }
 
+    //https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html
     patchPluginXml {
         sinceBuild.set("222")
         untilBuild.set("233.*")

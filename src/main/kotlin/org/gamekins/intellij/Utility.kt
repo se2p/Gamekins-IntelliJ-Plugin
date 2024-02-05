@@ -17,10 +17,7 @@ import com.intellij.ui.content.ContentFactory
 import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.gamekins.intellij.data.Challenge
-import org.gamekins.intellij.data.ChallengeList
-import org.gamekins.intellij.data.Message
-import org.gamekins.intellij.data.RestClient
+import org.gamekins.intellij.data.*
 import org.gamekins.intellij.panels.AcceptedRejectedChallengesPanel
 import org.gamekins.intellij.panels.ChallengesPanel
 import java.awt.*
@@ -180,7 +177,7 @@ object Utility {
 
             val unshelveButton = JButton("Unshelve")
             unshelveButton.background = mainBackgroundColor
-            unshelveButton.foreground = JBColor.RED
+            unshelveButton.foreground = JBColor.DARK_GRAY
             unshelveButton.isContentAreaFilled = false
             unshelveButton.isOpaque = true
             unshelveButton.font = Font("Arial", Font.BOLD, 13)
@@ -202,6 +199,69 @@ object Utility {
                 }
             }
 
+            if (canSend()) {
+                val sendButton = JButton("Send to:")
+                sendButton.background = mainBackgroundColor
+                sendButton.foreground = JBColor.DARK_GRAY
+                sendButton.isContentAreaFilled = false
+                sendButton.isOpaque = true
+                sendButton.font = Font("Arial", Font.BOLD, 13)
+                buttonsPanel.add(sendButton)
+
+                sendButton.addActionListener {
+                    val sendToModal = JDialog()
+
+                    sendToModal.title = "Send to:"
+                    sendToModal.defaultCloseOperation = JDialog.DISPOSE_ON_CLOSE
+                    sendToModal.setSize(200, 500)
+                    sendToModal.modalityType = Dialog.ModalityType.APPLICATION_MODAL
+
+                    val body = JPanel()
+                    body.layout = BoxLayout(body, BoxLayout.Y_AXIS)
+                    body.background = mainBackgroundColor
+
+                    val queryParams = mapOf(
+                        "job" to preferences["projectName", ""],
+                        "username" to preferences["username", ""]
+                    )
+
+                    val response = RestClient.getInstance().get(
+                        getBaseUrl() + Constants.GET_USER_FOR_SENDING, queryParams)
+                    val userList = Gson().fromJson(response, UserList::class.java).users
+
+                    userList.forEach {user ->
+                        val button = JButton(user.userName)
+                        button.background = mainBackgroundColor
+                        button.foreground = JBColor.DARK_GRAY
+                        button.isContentAreaFilled = false
+                        button.isOpaque = true
+                        button.font = Font("Arial", Font.BOLD, 13)
+                        body.add(button)
+
+                        button.addActionListener {
+                            val json = """{"job": "${preferences["projectName", ""]}", "challengeName": "${challenge.generalReason!!.replace(Regex("<[^>]++>"), "")}", "username": "${preferences["username", ""]}", "sendTo": "${user.userName}"}"""
+                            val mediaType = "application/json; charset=utf-8".toMediaType()
+                            val requestBody = json.toRequestBody(mediaType)
+
+                            val sendResponse = RestClient.getInstance().post(
+                                getBaseUrl() + Constants.SEND_CHALLENGE, requestBody)
+                            val message = gson.fromJson(sendResponse, Message::class.java)
+
+                            if (message.message.kind == "OK") {
+                                showMessageDialog("Sending successful!")
+                                challengesPanel.removeAll()
+                                challengesPanel.initializePanel()
+                            } else {
+                                showErrorDialog("Sending failed: ${message.message.message}")
+                            }
+                        }
+                    }
+
+                    sendToModal.setLocationRelativeTo(null)
+                    sendToModal.add(body)
+                    sendToModal.isVisible = true
+                }
+            }
 
             challengePanel.add(challengeHeader, BorderLayout.PAGE_START)
             challengePanel.add(buttonsPanel, BorderLayout.PAGE_END)
@@ -295,6 +355,22 @@ object Utility {
                 callback(false, "failure")
             }
         }
+    }
+
+    private fun canSend(): Boolean {
+        val projectName = preferences["projectName", ""]
+        if (projectName != "") {
+            val queryParams = mapOf(
+                    "job" to projectName
+                )
+            val response =
+                RestClient.getInstance().get(getBaseUrl() + Constants.GET_CAN_SEND, queryParams)
+            val jsonObject: JsonObject = JsonParser.parseString(response.toString()).asJsonObject
+
+            return jsonObject["canSend"].asBoolean
+        }
+
+        return false
     }
 
     private fun rejectChallenge(

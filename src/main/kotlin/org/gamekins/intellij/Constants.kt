@@ -20,6 +20,8 @@ object Constants {
     const val GET_CURRENT_CHALLENGES = "/getCurrentChallenges"
     const val GET_REJECTED_CHALLENGES = "/getRejectedChallenges"
     const val GET_COMPLETED_CHALLENGES = "/getCompletedChallenges"
+    const val GET_CAN_SEND = "/getCanSend"
+    const val SEND_CHALLENGE = "/sendChallenge"
 
 
     // QUESTS
@@ -28,6 +30,7 @@ object Constants {
 
     //LEADERBOARD
     const val GET_USERS = "/getUsers"
+    const val GET_USER_FOR_SENDING = "/getUserDetailsForSending"
     const val GET_TEAMS = "/getTeams"
 
     //Achievements

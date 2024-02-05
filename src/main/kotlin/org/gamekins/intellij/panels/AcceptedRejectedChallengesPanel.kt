@@ -85,7 +85,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
 
                     val challenge = completedChallengeList[index]
                     val challengePanel = JPanel(GridBagLayout())
-                    challengePanel.background = Color.decode("#dbffe0")
+                    challengePanel.background = mainBackgroundColor
                     challengePanel.border = LineBorder(JBColor.GRAY, 1)
                     val upperPanel = JPanel(FlowLayout(FlowLayout.LEFT))
                     upperPanel.background = Color.decode("#dbffe0")
@@ -133,7 +133,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                     gbc.gridy = 1
 
                     val lowerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 0, 0))
-                    lowerPanel.background = Color.decode("#dbffe0")
+                    lowerPanel.background = mainBackgroundColor
                     lowerPanel.minimumHeight  = 35
 
                     challengeTitleLabelText.addComponentListener(object : ComponentAdapter() {
@@ -199,13 +199,13 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                     val challenge = rejectedChallengeList[index]
                     val challengePanel = JPanel(GridBagLayout())
                     challengePanel.maximumSize = Dimension(Int.MAX_VALUE, 120)
-                    challengePanel.background = Color.decode("#fff4e8")
+                    challengePanel.background = mainBackgroundColor
                     challengePanel.border = LineBorder(JBColor.GRAY, 1)
 
 
                     val upperPanel = JPanel(FlowLayout(FlowLayout.LEFT))
                     upperPanel.preferredSize = Dimension(Int.MAX_VALUE, 70)
-                    upperPanel.background = Color.decode("#fff4e8")
+                    upperPanel.background = mainBackgroundColor
                     val challengeTitleLabelText = JLabel()
                     challengeTitleLabelText.foreground = JBColor.BLACK
                     challengeTitleLabelText.alignmentX = JLabel.CENTER_ALIGNMENT
@@ -263,7 +263,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                     gbc.gridy = 1
 
                     val lowerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 10, 0))
-                    lowerPanel.background = Color.decode("#fff4e8")
+                    lowerPanel.background = mainBackgroundColor
 
                     lowerPanel.minimumHeight  = 35
                     challengeTitleLabelText.addComponentListener(object : ComponentAdapter() {
