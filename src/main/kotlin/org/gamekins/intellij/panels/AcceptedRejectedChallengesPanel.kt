@@ -88,7 +88,7 @@ class AcceptedRejectedChallengesPanel : JPanel() {
                     challengePanel.background = mainBackgroundColor
                     challengePanel.border = LineBorder(JBColor.GRAY, 1)
                     val upperPanel = JPanel(FlowLayout(FlowLayout.LEFT))
-                    upperPanel.background = Color.decode("#dbffe0")
+                    upperPanel.background = mainBackgroundColor
                     upperPanel.preferredSize = Dimension(Int.MAX_VALUE, 70)
 
                     val challengeTitleLabelText = JLabel()
