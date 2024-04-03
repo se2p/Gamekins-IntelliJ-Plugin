@@ -1,4 +1,4 @@
-package org.gamekins.intellij.panels
+package org.gamekins.ide.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
@@ -6,9 +6,9 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.util.maximumHeight
 import com.intellij.ui.util.maximumWidth
 import com.intellij.ui.util.minimumWidth
-import org.gamekins.intellij.Constants
-import org.gamekins.intellij.Utility
-import org.gamekins.intellij.data.*
+import org.gamekins.ide.Constants
+import org.gamekins.ide.Utility
+import org.gamekins.ide.data.*
 import java.awt.*
 import javax.swing.*
 

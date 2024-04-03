@@ -1,4 +1,4 @@
-package org.gamekins.intellij
+package org.gamekins.ide
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service

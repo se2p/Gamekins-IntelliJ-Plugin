@@ -1,15 +1,15 @@
-package org.gamekins.intellij.panels
+package org.gamekins.ide.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.JBColor
 import com.intellij.ui.util.maximumHeight
-import org.gamekins.intellij.Constants
-import org.gamekins.intellij.Utility
-import org.gamekins.intellij.data.CompletedQuestTasksList
-import org.gamekins.intellij.data.QuestTask
-import org.gamekins.intellij.data.QuestTasksList
-import org.gamekins.intellij.data.RestClient
+import org.gamekins.ide.Constants
+import org.gamekins.ide.Utility
+import org.gamekins.ide.data.CompletedQuestTasksList
+import org.gamekins.ide.data.QuestTask
+import org.gamekins.ide.data.QuestTasksList
+import org.gamekins.ide.data.RestClient
 import java.awt.*
 import javax.swing.*
 import javax.swing.border.LineBorder

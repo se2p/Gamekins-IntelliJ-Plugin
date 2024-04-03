@@ -1,4 +1,4 @@
-package org.gamekins.intellij.panels
+package org.gamekins.ide.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
@@ -6,12 +6,12 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
-import org.gamekins.intellij.Constants
-import org.gamekins.intellij.Utility
-import org.gamekins.intellij.components.IconCellRenderer
-import org.gamekins.intellij.data.RestClient
-import org.gamekins.intellij.data.TeamList
-import org.gamekins.intellij.data.UserList
+import org.gamekins.ide.Constants
+import org.gamekins.ide.Utility
+import org.gamekins.ide.components.IconCellRenderer
+import org.gamekins.ide.data.RestClient
+import org.gamekins.ide.data.TeamList
+import org.gamekins.ide.data.UserList
 import java.awt.*
 import java.util.*
 import javax.swing.BorderFactory

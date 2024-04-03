@@ -1,4 +1,4 @@
-package org.gamekins.intellij.data
+package org.gamekins.ide.data
 
 class QuestTask(val name: String, val completedPercentage: Int, val score: Int, val title: String)
 

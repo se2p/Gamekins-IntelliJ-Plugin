@@ -1,11 +1,11 @@
-package org.gamekins.intellij.panels
+package org.gamekins.ide.panels
 
 import com.cdancy.jenkins.rest.JenkinsClient
 import com.cdancy.jenkins.rest.domain.job.JobInfo
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.util.ui.JBUI
-import org.gamekins.intellij.Utility
+import org.gamekins.ide.Utility
 import java.awt.*
 import javax.swing.*
 

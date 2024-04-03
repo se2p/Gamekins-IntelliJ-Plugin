@@ -1,12 +1,12 @@
-package org.gamekins.intellij.panels
+package org.gamekins.ide.panels
 
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.util.minimumHeight
-import org.gamekins.intellij.MainToolWindow
-import org.gamekins.intellij.Utility
+import org.gamekins.ide.MainToolWindow
+import org.gamekins.ide.Utility
 import java.awt.Font
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout

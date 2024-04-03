@@ -1,4 +1,4 @@
-package org.gamekins.intellij.components
+package org.gamekins.ide.components
 
 import javax.swing.*
 import javax.swing.table.DefaultTableCellRenderer

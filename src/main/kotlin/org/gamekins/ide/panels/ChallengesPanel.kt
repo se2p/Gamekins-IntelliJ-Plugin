@@ -1,4 +1,4 @@
-package org.gamekins.intellij.panels
+package org.gamekins.ide.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.editor.Editor
@@ -14,10 +14,10 @@ import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mai
 import com.intellij.ui.JBColor
 import com.intellij.ui.util.maximumHeight
 import org.jsoup.Jsoup
-import org.gamekins.intellij.Constants
-import org.gamekins.intellij.Utility
-import org.gamekins.intellij.data.RestClient
-import org.gamekins.intellij.data.StoredChallengeList
+import org.gamekins.ide.Constants
+import org.gamekins.ide.Utility
+import org.gamekins.ide.data.RestClient
+import org.gamekins.ide.data.StoredChallengeList
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.MouseAdapter

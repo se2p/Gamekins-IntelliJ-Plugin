@@ -1,4 +1,4 @@
-package org.gamekins.intellij
+package org.gamekins.ide
 
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFix

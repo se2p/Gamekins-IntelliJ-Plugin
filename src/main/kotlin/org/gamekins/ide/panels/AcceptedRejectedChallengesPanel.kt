@@ -1,4 +1,4 @@
-package org.gamekins.intellij.panels
+package org.gamekins.ide.panels
 
 import com.google.gson.Gson
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
@@ -7,11 +7,11 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.util.maximumHeight
 import com.intellij.ui.util.minimumHeight
 import com.intellij.util.ui.JBUI
-import org.gamekins.intellij.Constants
-import org.gamekins.intellij.Utility
-import org.gamekins.intellij.data.CompletedChallengeList
-import org.gamekins.intellij.data.RejectedChallengeList
-import org.gamekins.intellij.data.RestClient
+import org.gamekins.ide.Constants
+import org.gamekins.ide.Utility
+import org.gamekins.ide.data.CompletedChallengeList
+import org.gamekins.ide.data.RejectedChallengeList
+import org.gamekins.ide.data.RestClient
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent

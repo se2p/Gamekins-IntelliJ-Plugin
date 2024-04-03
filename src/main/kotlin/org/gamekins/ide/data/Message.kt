@@ -1,4 +1,4 @@
-package org.gamekins.intellij.data
+package org.gamekins.ide.data
 
 data class Message(
     val message: MessageDetails

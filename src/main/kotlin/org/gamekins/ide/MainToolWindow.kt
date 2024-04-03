@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package org.gamekins.intellij
+package org.gamekins.ide
 
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
-import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
-import org.gamekins.intellij.panels.AuthenticationPanel
-import org.gamekins.intellij.panels.MainPanel
+import org.gamekins.ide.panels.AuthenticationPanel
+import org.gamekins.ide.panels.MainPanel
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.net.SocketTimeoutException

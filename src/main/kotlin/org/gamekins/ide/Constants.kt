@@ -1,4 +1,4 @@
-package org.gamekins.intellij
+package org.gamekins.ide
 
 // Constants.kt
 object Constants {

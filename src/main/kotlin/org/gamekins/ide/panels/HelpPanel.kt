@@ -1,8 +1,8 @@
-package org.gamekins.intellij.panels
+package org.gamekins.ide.panels
 
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.mainBackgroundColor
 import com.intellij.util.ui.JBUI
-import org.gamekins.intellij.Constants
+import org.gamekins.ide.Constants
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import javax.swing.JPanel

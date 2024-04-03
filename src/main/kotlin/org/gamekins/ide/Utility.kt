@@ -1,4 +1,4 @@
-package org.gamekins.intellij
+package org.gamekins.ide
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -17,9 +17,9 @@ import com.intellij.ui.content.ContentFactory
 import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.gamekins.intellij.data.*
-import org.gamekins.intellij.panels.AcceptedRejectedChallengesPanel
-import org.gamekins.intellij.panels.ChallengesPanel
+import org.gamekins.ide.data.*
+import org.gamekins.ide.panels.AcceptedRejectedChallengesPanel
+import org.gamekins.ide.panels.ChallengesPanel
 import java.awt.*
 import java.io.IOException
 import java.nio.file.Files
@@ -30,7 +30,7 @@ import javax.swing.*
 
 object Utility {
 
-    val preferences: Preferences = Preferences.userRoot().node("org.gamekins.intellij")
+    val preferences: Preferences = Preferences.userRoot().node("org.gamekins.ide")
 
     var challengesPanel: ChallengesPanel? = null
 

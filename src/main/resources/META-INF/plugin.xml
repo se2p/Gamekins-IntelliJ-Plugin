@@ -1,6 +1,6 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>org.gamekins.intellij</id>
+    <id>org.gamekins.ide</id>
     <name>Gamekins</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
@@ -19,7 +19,7 @@ interactions with Gamekins directly in the IDE.]]></description>
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
-        <localInspection implementationClass="org.gamekins.intellij.CustomInspection"
+        <localInspection implementationClass="org.gamekins.ide.CustomInspection"
                          displayName="Gamekins"
                          groupName="Gamekins"
                          groupKey="GroupName"
@@ -30,8 +30,8 @@ interactions with Gamekins directly in the IDE.]]></description>
                          enabledByDefault="true"
         />
         <!-- Change the id to something else (e.g. Personal ID) for the control group and change the group MyBundle.properties -->
-        <toolWindow factoryClass="org.gamekins.intellij.MainToolWindow" id="Gamekins"/>
-        <postStartupActivity implementation="org.gamekins.intellij.ProjectActivity" />
+        <toolWindow factoryClass="org.gamekins.ide.MainToolWindow" id="Gamekins"/>
+        <postStartupActivity implementation="org.gamekins.ide.ProjectActivity" />
 
     </extensions>
 
