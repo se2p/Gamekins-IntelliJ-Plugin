@@ -36,10 +36,6 @@ class MainToolWindow  : ToolWindowFactory {
         toolWindow.contentManager.addContent(ContentFactory.getInstance().createContent(createPanel(), null, false))
     }
 
-    override fun getAnchor(): ToolWindowAnchor {
-        return ToolWindowAnchor.RIGHT
-    }
-
     override fun shouldBeAvailable(project: Project) = true
 
     fun createPanel(): JComponent {

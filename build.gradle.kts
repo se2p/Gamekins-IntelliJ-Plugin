@@ -1,14 +1,17 @@
+import org.jetbrains.changelog.Changelog
+
+fun properties(key: String) = project.findProperty(key).toString()
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.10"
     id("org.jetbrains.intellij") version "1.16.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.5.21"
-
+    id("org.jetbrains.changelog") version "2.0.0"
 }
 
-
-group = "org.gamekins.intellij"
-version = "1.1.0-SNAPSHOT"
+group = properties("pluginGroup")
+version = properties("pluginVersion")
 
 repositories {
     mavenCentral()
@@ -22,13 +25,16 @@ dependencies {
 
 }
 
-// Configure Gradle IntelliJ Plugin
-// Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
+// Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
-    version.set("2023.2.4")
-    type.set("IU") // Target IDE Platform
+    pluginName.set(properties("pluginName"))
+    version.set(properties("platformVersion"))
+    type.set(properties("platformType"))
+    downloadSources.set(properties("platformDownloadSources").toBoolean())
+    updateSinceUntilBuild.set(true)
 
-    plugins.set(listOf("com.intellij.java"))
+    // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
+    plugins.set(properties("platformPlugins").split(',').map(String::trim).filter(String::isNotEmpty))
 }
 
 tasks {
@@ -47,8 +53,16 @@ tasks {
 
     //https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html
     patchPluginXml {
-        sinceBuild.set("222")
-        untilBuild.set("233.*")
+        version.set(properties("pluginVersion"))
+        sinceBuild.set(properties("pluginSinceBuild"))
+        untilBuild.set(properties("pluginUntilBuild"))
+
+        // Get the latest available change notes from the changelog file
+        changeNotes.set(provider {
+            changelog.renderItem(changelog.run {
+                getOrNull(properties("pluginVersion")) ?: getLatest()
+            }, Changelog.OutputType.HTML)
+        })
     }
 
     signPlugin {

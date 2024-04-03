@@ -4,9 +4,11 @@
     <name>Gamekins</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="philipp.straubinger@uni-passau.de" url="https://www.uni-passau.de/">University of Passau</vendor>
+    <vendor url="https://www.fim.uni-passau.de/en/chair-for-software-engineering-ii">Chair for Software Engineering II</vendor>
 
-    <description>This is an IntelliJ plugin for Gamekins to gamify software testing</description>
+    <description><![CDATA[This is the repository of the IntelliJ plugin for
+    <a href="https://github.com/jenkinsci/gamekins-plugin">Gamekins</a> and allows
+interactions with Gamekins directly in the IDE.]]></description>
 
     <depends>com.intellij.modules.platform</depends>
     <!--<depends>com.intellij.modules.java</depends>
